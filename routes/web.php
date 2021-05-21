@@ -25,6 +25,12 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     Route::resource('dashboard', 'DashboardController');
 
 
+    //koperasi
+    Route::group(['namespace'=>'Koperasi\Master' ,'prefix'=>'koperasi','as'=>'koperasi.'],function () {
+
+        Route::resource('anggota','ListAnggotaController');
+    });
+
     //POS-transaksi
     Route::group(['namespace' => 'POS\Transaksi', 'prefix' => 'pos', 'as' => 'pos.'], function () {
 

@@ -29,11 +29,18 @@
                 <i class="fas fa-file-alt"></i> <span>User</span>
             </a>
         </li>
+        <li class="menu-header">Saldo</li>
+        <li @yield('menu')>
+            <a class="nav-link" href="#">
+                <i class="fas fa-file-alt"></i> <span>Saldo awal hutang dan simpanan</span>
+            </a>
+        </li>
+
         <li class="menu-header">KOPERASI</li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown @yield('koperasi')">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Master</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="#">List Anggota</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.anggota.index')}}">List Anggota</a></li>
                 <li><a class="nav-link" href="#">Transaksi</a></li>
                 <li><a class="nav-link" href="#">Account Lain-lain</a></li>
                 <li><a class="nav-link" href="#">Cicilan</a></li>
