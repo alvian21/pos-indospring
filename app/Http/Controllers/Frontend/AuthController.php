@@ -18,7 +18,7 @@ class AuthController extends Controller
     public function getLogin()
     {
         if (Auth::guard("web")->check()) {
-            return redirect("/dashboard");
+            return redirect()->route('dashboard.index');
         } else {
             return view("auth.new_login");
         }
