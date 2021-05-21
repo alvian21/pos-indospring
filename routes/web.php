@@ -23,7 +23,11 @@ Route::post("/login", "Frontend\AuthController@login")->name("login");
 
 Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' => 'admin'], function () {
     Route::resource('dashboard', 'DashboardController');
-
+    //saldo
+    Route::group(['namespace'=>'Saldo','prefix'=>'saldo','as'=>'saldo.'],function () {
+        Route::post('saldo_awal/excel','SaldoAwalController@member_import')->name('saldo_awal.import');
+        Route::resource('saldo_awal','SaldoAwalController');
+    });
 
     //koperasi
     Route::group(['namespace'=>'Koperasi\Master' ,'prefix'=>'koperasi','as'=>'koperasi.'],function () {
@@ -46,6 +50,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/data_barang', 'PenjualanController@get_data_barang')->name('penjualan.databarang');
             Route::get('/save_transaksi_penjualan', 'PenjualanController@save_data_transaksi')->name('penjualan.save');
         });
+
         Route::resource('pembelian', 'PembelianController');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('tfantartoko', 'TfAntarTokoController');

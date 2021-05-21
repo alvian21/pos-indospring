@@ -30,8 +30,8 @@
             </a>
         </li>
         <li class="menu-header">Saldo</li>
-        <li @yield('menu')>
-            <a class="nav-link" href="#">
+        <li class="nav-item @yield('saldo-awal') ">
+            <a class="nav-link" href="{{route('saldo.saldo_awal.index')}}">
                 <i class="fas fa-file-alt"></i> <span>Saldo awal hutang dan simpanan</span>
             </a>
         </li>
