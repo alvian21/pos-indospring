@@ -28,23 +28,26 @@ class PenjualanController extends Controller
         $trpenjualan = session('transaksi_penjualan');
         $datadetail = session('detail_transaksi_penjualan');
         $nomor = (int) substr($trmutasihd->Nomor, 14);
-        if ($nomor != 0) {
-            if ($nomor >= 9999) {
-                $nomor = $nomor + 1;
-                $formatNomor = "JU-" . date('y-m-d') . "-" . $nomor;
-            } else {
-                $nomor = $nomor + 1;
-                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "JU-" . date('y-m-d') . "-" . $addzero;
+        if ($trmutasihd) {
+            if ($nomor != 0) {
+                if ($nomor >= 9999) {
+                    $nomor = $nomor + 1;
+                    $formatNomor = "JU-" . date('y-m-d') . "-" . $nomor;
+                } else {
+                    $nomor = $nomor + 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "JU-" . date('y-m-d') . "-" . $addzero;
+                }
             }
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
             $formatNomor = "JU-" . date('y-m-d') . "-" . $addzero;
         }
+
         $trpenjualan = json_decode(json_encode($trpenjualan));
         $datadetail = json_decode(json_encode($datadetail));
-        return view("frontend.pos.transaksi.penjualan.index",[
+        return view("frontend.pos.transaksi.penjualan.index", [
             'formatNomor' => $formatNomor, 'penjualan' => $penjualan,
             'mslokasi' => $mslokasi, 'mssupplier' => $mssupplier,
             'trpenjualan' => $trpenjualan, 'msbarang' => $msbarang,
@@ -266,20 +269,19 @@ class PenjualanController extends Controller
 
             $datadetail = session('detail_transaksi_penjualan');
             foreach ($datadetail as $key => $value) {
-               $trmutasidt = new Trmutasidt();
-               $trmutasidt->Transaksi = 'PENJUALAN';
-               $trmutasidt->Nomor = $trpenjualan["nomor"];
-               $trmutasidt->Urut = $value["urut"];
-               $trmutasidt->KodeBarang = $value["barang"];
-               $trmutasidt->Keterangan = $value["keterangan"];
-               $trmutasidt->DiskonPersen = $value["diskon_persen"];
-               $trmutasidt->DiskonTunai = $value["diskon_rp"];
-               $trmutasidt->UserUpdate = "Super User";
-               $trmutasidt->LastUpdate = date('Y-m-d H:i');
-               $trmutasidt->Jumlah = $value['qty'];
-               $trmutasidt->Harga = $value['subtotal'];
-               $trmutasidt->save();
-
+                $trmutasidt = new Trmutasidt();
+                $trmutasidt->Transaksi = 'PENJUALAN';
+                $trmutasidt->Nomor = $trpenjualan["nomor"];
+                $trmutasidt->Urut = $value["urut"];
+                $trmutasidt->KodeBarang = $value["barang"];
+                $trmutasidt->Keterangan = $value["keterangan"];
+                $trmutasidt->DiskonPersen = $value["diskon_persen"];
+                $trmutasidt->DiskonTunai = $value["diskon_rp"];
+                $trmutasidt->UserUpdate = "Super User";
+                $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                $trmutasidt->Jumlah = $value['qty'];
+                $trmutasidt->Harga = $value['subtotal'];
+                $trmutasidt->save();
             }
             session()->forget('detail_transaksi_penjualan');
             session()->forget('transaksi_penjualan');

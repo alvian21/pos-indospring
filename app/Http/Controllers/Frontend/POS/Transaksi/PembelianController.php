@@ -27,21 +27,24 @@ class PembelianController extends Controller
         $msbarang = Msbarang::all();
         $trpembelian = session('transaksi_pembelian');
         $datadetail = session('detail_transaksi_pembelian');
-        $nomor = (int) substr($trmutasihd->Nomor, 14);
-        if ($nomor != 0) {
-            if ($nomor >= 9999) {
-                $nomor = $nomor + 1;
-                $formatNomor = "BE-" . date('y-m-d') . "-" . $nomor;
-            } else {
-                $nomor = $nomor + 1;
-                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "BE-" . date('y-m-d') . "-" . $addzero;
+        if ($trmutasihd) {
+            $nomor = (int) substr($trmutasihd->Nomor, 14);
+            if ($nomor != 0) {
+                if ($nomor >= 9999) {
+                    $nomor = $nomor + 1;
+                    $formatNomor = "BE-" . date('y-m-d') . "-" . $nomor;
+                } else {
+                    $nomor = $nomor + 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "BE-" . date('y-m-d') . "-" . $addzero;
+                }
             }
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
             $formatNomor = "BE-" . date('y-m-d') . "-" . $addzero;
         }
+
         $trpembelian = json_decode(json_encode($trpembelian));
         $datadetail = json_decode(json_encode($datadetail));
 
@@ -267,20 +270,19 @@ class PembelianController extends Controller
 
             $datadetail = session('detail_transaksi_pembelian');
             foreach ($datadetail as $key => $value) {
-               $trmutasidt = new Trmutasidt();
-               $trmutasidt->Transaksi = 'PEMBELIAN';
-               $trmutasidt->Nomor = $trpembelian["nomor"];
-               $trmutasidt->Urut = $value["urut"];
-               $trmutasidt->KodeBarang = $value["barang"];
-               $trmutasidt->Keterangan = $value["keterangan"];
-               $trmutasidt->DiskonPersen = $value["diskon_persen"];
-               $trmutasidt->DiskonTunai = $value["diskon_rp"];
-               $trmutasidt->UserUpdate = "Super User";
-               $trmutasidt->LastUpdate = date('Y-m-d H:i');
-               $trmutasidt->Jumlah = $value['qty'];
-               $trmutasidt->Harga = $value['subtotal'];
-               $trmutasidt->save();
-
+                $trmutasidt = new Trmutasidt();
+                $trmutasidt->Transaksi = 'PEMBELIAN';
+                $trmutasidt->Nomor = $trpembelian["nomor"];
+                $trmutasidt->Urut = $value["urut"];
+                $trmutasidt->KodeBarang = $value["barang"];
+                $trmutasidt->Keterangan = $value["keterangan"];
+                $trmutasidt->DiskonPersen = $value["diskon_persen"];
+                $trmutasidt->DiskonTunai = $value["diskon_rp"];
+                $trmutasidt->UserUpdate = "Super User";
+                $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                $trmutasidt->Jumlah = $value['qty'];
+                $trmutasidt->Harga = $value['subtotal'];
+                $trmutasidt->save();
             }
             session()->forget('detail_transaksi_pembelian');
             session()->forget('transaksi_pembelian');
