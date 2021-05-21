@@ -14,16 +14,16 @@
 <ul class="navbar-nav navbar-right mr-3">
 
     <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-            {{-- <div class="d-sm-none d-lg-inline-block">Hi, {{ Auth::guard('web')->user()->UserLogin }}</div> --}}
+            <div class="d-sm-none d-lg-inline-block">Hi, {{ Auth::guard('web')->user()->UserLogin }}</div>
         </a>
         <div class="dropdown-menu dropdown-menu-right">
-            {{-- <a href="{{ route('logout') }}" class="dropdown-item has-icon text-danger"
+            <a href="{{ route('logout') }}" class="dropdown-item has-icon text-danger"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fas fa-sign-out-alt"></i> Keluar
             </a>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
-            </form> --}}
+            </form>
         </div>
     </li>
 </ul>

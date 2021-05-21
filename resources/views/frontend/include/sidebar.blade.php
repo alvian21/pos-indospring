@@ -33,32 +33,32 @@
         <li class="nav-item dropdown">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Master</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="layout-default.html">List Anggota</a></li>
-                <li><a class="nav-link" href="layout-transparent.html">Transaksi</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Account Lain-lain</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Cicilan</a></li>
+                <li><a class="nav-link" href="#">List Anggota</a></li>
+                <li><a class="nav-link" href="#">Transaksi</a></li>
+                <li><a class="nav-link" href="#">Account Lain-lain</a></li>
+                <li><a class="nav-link" href="#">Cicilan</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="layout-default.html">Cek Saldo</a></li>
-                <li><a class="nav-link" href="layout-transparent.html">Approval Pinjaman</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">TopUp e-kop</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Pembayaran</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Aktivasi e-kop</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Proses Bulanan</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Web</a></li>
+                <li><a class="nav-link" href="#">Cek Saldo</a></li>
+                <li><a class="nav-link" href="#">Approval Pinjaman</a></li>
+                <li><a class="nav-link" href="#">TopUp e-kop</a></li>
+                <li><a class="nav-link" href="#">Pembayaran</a></li>
+                <li><a class="nav-link" href="#">Aktivasi e-kop</a></li>
+                <li><a class="nav-link" href="#">Proses Bulanan</a></li>
+                <li><a class="nav-link" href="#">Web</a></li>
             </ul>
         </li>
         <li class="menu-header">POS | Point Of Sale</li>
         <li class="nav-item dropdown">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Master</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="layout-default.html">Lokasi</a></li>
-                <li><a class="nav-link" href="layout-transparent.html">Barang - Kategori</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Barang</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Supplier</a></li>
+                <li><a class="nav-link" href="#">Lokasi</a></li>
+                <li><a class="nav-link" href="#">Barang - Kategori</a></li>
+                <li><a class="nav-link" href="#">Barang</a></li>
+                <li><a class="nav-link" href="#">Supplier</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown @yield('pos')">
@@ -74,7 +74,7 @@
         <li class="nav-item dropdown">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Laporan</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="layout-default.html">Stok</a></li>
+                <li><a class="nav-link" href="#">Stok</a></li>
             </ul>
         </li>
     </ul>
