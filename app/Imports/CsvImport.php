@@ -11,6 +11,7 @@ use App\Trtransaksiperiode;
 use Illuminate\Support\Facades\Auth;
 use App\Msanggota;
 use App\Mscicilan;
+use App\Trperiode;
 
 class CsvImport implements ToCollection
 {
@@ -62,12 +63,12 @@ class CsvImport implements ToCollection
                         $trsaldohutang->TotalBerapaKali =  $value[5];
                         $trsaldohutang->save();
 
-                        Trtransaksiperiode::create([
+                        Trperiode::create([
                             'Nomor' =>  "TB-21-05-21-0001",
-                            'Periode' =>  date('Ym'),
-                            'KodeUser' =>  $value[0],
+                            'Periode' =>  "202105",
+                            'KodeUser' =>  "SF14091044",
                             'KodeTransaksi' =>  "20",
-                            'Nilai' =>  $value[2],
+                            'Nilai' =>  "2815000",
                             'UserUpdate' =>  "dudung",
                             'LastUpdate' =>  date('Y-m-d H:i:s'),
                         ]);
