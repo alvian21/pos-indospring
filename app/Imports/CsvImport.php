@@ -27,8 +27,7 @@ class CsvImport implements ToCollection
 
         foreach ($collection as $key => $value) {
             if ($key > 0) {
-                $anggota = Msanggota::where("Kode", $value[0])->first();
-                if ($anggota) {
+
                     $trsaldosimpanan = new Trsaldosimpanan();
                     $trsaldosimpanan->Tanggal = date('Y-m-d H:i:s');
                     $trsaldosimpanan->KodeUser = $value[0];
@@ -93,7 +92,12 @@ class CsvImport implements ToCollection
                         $datatrpinjaman = new Trpinjaman();
                         $datatrpinjaman->Nomor = $formatNomorpinjaman;
                         $datatrpinjaman->KodeAnggota = $value[0];
-                        $datatrpinjaman->SubDept = $anggota->SubDept;
+                        if($anggota){
+                            $datatrpinjaman->SubDept = $anggota->SubDept;
+                        }else{
+                            $datatrpinjaman->SubDept = "-";
+                        }
+
                         $datatrpinjaman->Pinjaman = $mscicilan->Nominal;
                         $datatrpinjaman->CicilanTotal = $mscicilan->CicilanTotal;
                         $datatrpinjaman->BerapaKaliBayar = $value[5];
@@ -118,7 +122,7 @@ class CsvImport implements ToCollection
                         $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
                         $trtransaksiperiode->save();
                     }
-                }
+
             }
         }
 
