@@ -15,7 +15,6 @@ class Trperiode extends Model
         'KodeUser',
         'KodeTransaksi',
         'Nilai',
-        'UserUpdate',
-        'LastUpdate'
+        'UserUpdate'
     ];
 }

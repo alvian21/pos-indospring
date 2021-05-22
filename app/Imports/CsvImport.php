@@ -69,8 +69,7 @@ class CsvImport implements ToCollection
                             'KodeUser' =>  "SF14091044",
                             'KodeTransaksi' =>  "20",
                             'Nilai' =>  "2815000",
-                            'UserUpdate' =>  "dudung",
-                            'LastUpdate' =>  date('Y-m-d H:i:s'),
+                            'UserUpdate' =>  "dudung"
                         ]);
                         // $trtransaksiperiode = new Trtransaksiperiode();
                         // $trtransaksiperiode->Nomor = $formatNomor;
