@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TestPeriode extends Model
 {
-    protected $table = "test_periode";
+    protected $table = "trtransaksiperiode";
     public $timestamps = false;
 
     protected $fillable = [
