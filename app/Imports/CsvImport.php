@@ -63,7 +63,7 @@ class CsvImport implements ToCollection
                         $trsaldohutang->save();
 
                         Trtransaksiperiode::create([
-                            'Nomor' =>  $formatNomor,
+                            'Nomor' =>  "TB-21-05-21-0001",
                             'Periode' =>  date('Ym'),
                             'KodeUser' =>  $value[0],
                             'KodeTransaksi' =>  "20",
