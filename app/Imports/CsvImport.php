@@ -26,7 +26,7 @@ class CsvImport implements ToCollection
         foreach ($collection as $key => $value) {
             if ($key > 0) {
                 $anggota = Msanggota::where("Kode", $value[0])->first();
-                if($anggota){
+                if ($anggota) {
                     $trsaldosimpanan = new Trsaldosimpanan();
                     $trsaldosimpanan->Tanggal = date('Y-m-d H:i:s');
                     $trsaldosimpanan->KodeUser = $value[0];
@@ -52,7 +52,7 @@ class CsvImport implements ToCollection
                     }
 
 
-                    if ($value[2] != null) {
+                    if ($value[2] != null || $value[2] != '') {
                         $trsaldohutang = new Trsaldohutang();
                         $trsaldohutang->Tanggal = date('Y-m-d H:i:s');
                         $trsaldohutang->KodeUser = $value[0];
@@ -103,7 +103,9 @@ class CsvImport implements ToCollection
                         $datatrpinjaman->ApprovalStatus = "DISETUJUI";
                         $datatrpinjaman->PengajuanPinjaman = $mscicilan->Nominal;
                         $datatrpinjaman->save();
-                    } else {
+                    }
+
+                    if ($value[2] == null || $value[2] == '') {
                         $trtransaksiperiode = new Trtransaksiperiode();
                         $trtransaksiperiode->Nomor = $formatNomor;
                         $trtransaksiperiode->Periode = date('Ym');
@@ -115,7 +117,6 @@ class CsvImport implements ToCollection
                         $trtransaksiperiode->save();
                     }
                 }
-
             }
         }
 
