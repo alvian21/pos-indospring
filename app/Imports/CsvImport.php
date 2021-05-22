@@ -34,13 +34,14 @@ class CsvImport implements ToCollection
                     $trsaldosimpanan->Saldo = $value[1];
                     $trsaldosimpanan->save();
 
-                    $trperiode = Trtransaksiperiode::where('KodeUser', $value[0])->whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
+                    $trperiode = Trtransaksiperiode::where('KodeUser', $value[0])->whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->max('Nomor');
                     if ($trperiode) {
                         $formatNomor = $trperiode->Nomor;
                     } else {
-                        $trperiode = Trtransaksiperiode::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
-                        if ($trperiode) {
-                            $substr = substr($trperiode->Nomor, -5);
+                        $trperiode = Trtransaksiperiode::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->max('Nomor');
+
+                        if ($trperiode != null) {
+                            $substr = substr($trperiode, -5);
                             $substr = (int) str_replace('-', '', $substr);
                             $nomor = $substr + 1;
                             $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
@@ -50,6 +51,8 @@ class CsvImport implements ToCollection
                             $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
                             $formatNomor = "TB-" . date('Y-m-d') . "-" . $addzero;
                         }
+
+                        // dd($formatNomor);
                     }
 
 
@@ -73,10 +76,20 @@ class CsvImport implements ToCollection
                         $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
                         $trtransaksiperiode->save();
 
+                        $trtransaksiperiode = new Trtransaksiperiode();
+                        $trtransaksiperiode->Nomor = $formatNomor;
+                        $trtransaksiperiode->Periode = date('Ym');
+                        $trtransaksiperiode->KodeUser = $value[0];
+                        $trtransaksiperiode->KodeTransaksi = "01";
+                        $trtransaksiperiode->Nilai = $value[1];
+                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
+                        $trtransaksiperiode->save();
 
-                        $trpinjaman = Trpinjaman::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
-                        if ($trpinjaman) {
-                            $substr = substr($trpinjaman->Nomor, -5);
+
+                        $trpinjaman = Trpinjaman::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->max('Nomor');
+                        if ($trpinjaman != null) {
+                            $substr = substr($trpinjaman, -5);
                             $substr = (int) str_replace('-', '', $substr);
                             $nomor = $substr + 1;
                             $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
