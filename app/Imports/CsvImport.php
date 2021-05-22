@@ -62,15 +62,24 @@ class CsvImport implements ToCollection
                         $trsaldohutang->TotalBerapaKali =  $value[5];
                         $trsaldohutang->save();
 
-                        $trtransaksiperiode = new Trtransaksiperiode();
-                        $trtransaksiperiode->Nomor = ($formatNomor != null) ? $formatNomor : '';
-                        $trtransaksiperiode->Periode = date('Ym');
-                        $trtransaksiperiode->KodeUser = ($value[0] != null) ? $value[0] : '';
-                        $trtransaksiperiode->KodeTransaksi = "20";
-                        $trtransaksiperiode->Nilai = ($value[2] != null) ? $value[2] : '';
-                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
-                        $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
-                        $trtransaksiperiode->save();
+                        Trtransaksiperiode::create([
+                            'Nomor' =>  $formatNomor,
+                            'Periode' =>  date('Ym'),
+                            'KodeUser' =>  $value[0],
+                            'KodeTransaksi' =>  "20",
+                            'Nilai' =>  $value[2],
+                            'UserUpdate' =>  "dudung",
+                            'LastUpdate' =>  date('Y-m-d H:i:s'),
+                        ]);
+                        // $trtransaksiperiode = new Trtransaksiperiode();
+                        // $trtransaksiperiode->Nomor = $formatNomor;
+                        // $trtransaksiperiode->Periode = date('Ym');
+                        // $trtransaksiperiode->KodeUser = $value[0];
+                        // $trtransaksiperiode->KodeTransaksi = "20";
+                        // $trtransaksiperiode->Nilai = $value[2];
+                        // $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        // $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
+                        // $trtransaksiperiode->save();
 
 
                         $trpinjaman = Trpinjaman::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
@@ -107,11 +116,11 @@ class CsvImport implements ToCollection
 
                     // if ($value[2] == null || $value[2] == '') {
                     //     $trtransaksiperiode = new Trtransaksiperiode();
-                    //     $trtransaksiperiode->Nomor = ($formatNomor != null) ? $value[2] : '';
+                    //     $trtransaksiperiode->Nomor = $formatNomor;
                     //     $trtransaksiperiode->Periode = date('Ym');
-                    //     $trtransaksiperiode->KodeUser = ($value[0] != null) ? $value[0] : '';
+                    //     $trtransaksiperiode->KodeUser = $value[0];
                     //     $trtransaksiperiode->KodeTransaksi = "01";
-                    //     $trtransaksiperiode->Nilai = ($value[1] != null) ?  $value[1] : '';
+                    //     $trtransaksiperiode->Nilai = $value[1];
                     //     $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
                     //     $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
                     //     $trtransaksiperiode->save();
