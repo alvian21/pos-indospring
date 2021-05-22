@@ -105,17 +105,17 @@ class CsvImport implements ToCollection
                         $datatrpinjaman->save();
                     }
 
-                    if ($value[2] == null || $value[2] == '') {
-                        $trtransaksiperiode = new Trtransaksiperiode();
-                        $trtransaksiperiode->Nomor = ($formatNomor != null) ? $value[2] : '';
-                        $trtransaksiperiode->Periode = date('Ym');
-                        $trtransaksiperiode->KodeUser = ($value[0] != null) ? $value[0] : '';
-                        $trtransaksiperiode->KodeTransaksi = "01";
-                        $trtransaksiperiode->Nilai = ($value[1] != null) ?  $value[1] : '';
-                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
-                        $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
-                        $trtransaksiperiode->save();
-                    }
+                    // if ($value[2] == null || $value[2] == '') {
+                    //     $trtransaksiperiode = new Trtransaksiperiode();
+                    //     $trtransaksiperiode->Nomor = ($formatNomor != null) ? $value[2] : '';
+                    //     $trtransaksiperiode->Periode = date('Ym');
+                    //     $trtransaksiperiode->KodeUser = ($value[0] != null) ? $value[0] : '';
+                    //     $trtransaksiperiode->KodeTransaksi = "01";
+                    //     $trtransaksiperiode->Nilai = ($value[1] != null) ?  $value[1] : '';
+                    //     $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                    //     $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
+                    //     $trtransaksiperiode->save();
+                    // }
                 }
             }
         }
