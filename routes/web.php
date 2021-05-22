@@ -24,15 +24,18 @@ Route::post("/login", "Frontend\AuthController@login")->name("login");
 Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' => 'admin'], function () {
     Route::resource('dashboard', 'DashboardController');
     //saldo
-    Route::group(['namespace'=>'Saldo','prefix'=>'saldo','as'=>'saldo.'],function () {
-        Route::post('saldo_awal/excel','SaldoAwalController@member_import')->name('saldo_awal.import');
-        Route::resource('saldo_awal','SaldoAwalController');
+    Route::group(['namespace' => 'Saldo', 'prefix' => 'saldo', 'as' => 'saldo.'], function () {
+        Route::post('saldo_awal/excel', 'SaldoAwalController@SaldoImport')->name('saldo_awal.import');
+        Route::resource('saldo_awal', 'SaldoAwalController');
     });
 
     //koperasi
-    Route::group(['namespace'=>'Koperasi\Master' ,'prefix'=>'koperasi','as'=>'koperasi.'],function () {
+    Route::group(['namespace' => 'Koperasi\Master', 'prefix' => 'koperasi', 'as' => 'koperasi.'], function () {
 
-        Route::resource('anggota','ListAnggotaController');
+        Route::group(['prefix' => 'anggota'], function () {
+            Route::post('/import_excel','ListAnggotaController@AnggotaImport')->name('anggota.import');
+        });
+        Route::resource('anggota', 'ListAnggotaController');
     });
 
     //POS-transaksi

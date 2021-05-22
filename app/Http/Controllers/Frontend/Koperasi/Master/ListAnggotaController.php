@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Msanggota;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\AnggotaImport;
 
 class ListAnggotaController extends Controller
 {
@@ -179,5 +181,15 @@ class ListAnggotaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function AnggotaImport(Request $request)
+    {
+        if ($request->file('file')) {
+            Excel::import(new AnggotaImport, $request->file('file'));
+            return back()->with('success', 'Data has been imported');
+        } else {
+            return back()->with('error', 'Please input the file');
+        }
     }
 }

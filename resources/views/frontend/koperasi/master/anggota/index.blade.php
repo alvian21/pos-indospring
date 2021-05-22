@@ -17,7 +17,10 @@
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Master | List anggota</h4>
                         <div class="row">
                             <div class="col-md-12">
-                                <a type="button" href="{{route('koperasi.anggota.create')}}" class="btn btn-primary float-right addAnggota ">Tambah
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImport">
+                                    Import Excel
+                                   </button>
+                                <a type="button" href="{{route('koperasi.anggota.create')}}" class="btn btn-primary float-right addAnggota ml-2">Tambah
                                     Anggota</a>
 
                             </div>
@@ -79,7 +82,31 @@
     </div>
 </section>
 
-
+<div class="modal fade" id="modalImport" tabindex="-1" role="dialog" aria-labelledby="modalImportLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalImportLabel">Import Excel</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="POST" action="{{route('koperasi.anggota.import')}}" enctype="multipart/form-data">
+            @csrf
+        <div class="modal-body">
+                <div class="form-group">
+                  <label for="exampleFormControlFile1">Import File Excel</label>
+                  <input type="file" required class="form-control-file" name="file" id="exampleFormControlFile1">
+                </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Import</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
 @endsection
 @section('scripts')
 <script type="text/javascript">

@@ -97,7 +97,7 @@ class SaldoAwalController extends Controller
         //
     }
 
-    public function member_import(Request $request)
+    public function SaldoImport(Request $request)
     {
         if ($request->file('file')) {
             Excel::import(new CsvImport, $request->file('file'));
