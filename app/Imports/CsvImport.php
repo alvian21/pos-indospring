@@ -35,11 +35,11 @@ class CsvImport implements ToCollection
                     $trsaldosimpanan->Saldo = $value[1];
                     $trsaldosimpanan->save();
 
-                    $trperiode = TestPeriode::where('KodeUser', $value[0])->whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
+                    $trperiode = Trtransaksiperiode::where('KodeUser', $value[0])->whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
                     if ($trperiode) {
                         $formatNomor = $trperiode->Nomor;
                     } else {
-                        $trperiode = TestPeriode::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
+                        $trperiode = Trtransaksiperiode::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->OrderBy('LastUpdate', 'DESC')->first();
                         if ($trperiode) {
                             $substr = substr($trperiode->Nomor, -5);
                             $substr = (int) str_replace('-', '', $substr);
@@ -64,7 +64,7 @@ class CsvImport implements ToCollection
                         $trsaldohutang->TotalBerapaKali =  $value[5];
                         $trsaldohutang->save();
 
-                        $trtransaksiperiode = new TestPeriode();
+                        $trtransaksiperiode = new Trtransaksiperiode();
                         $trtransaksiperiode->Nomor = $formatNomor;
                         $trtransaksiperiode->Periode = date('Ym');
                         $trtransaksiperiode->KodeUser = $value[0];
@@ -107,17 +107,17 @@ class CsvImport implements ToCollection
                         $datatrpinjaman->save();
                     }
 
-                    // if ($value[2] == null || $value[2] == '') {
-                    //     $trtransaksiperiode = new Trtransaksiperiode();
-                    //     $trtransaksiperiode->Nomor = $formatNomor;
-                    //     $trtransaksiperiode->Periode = date('Ym');
-                    //     $trtransaksiperiode->KodeUser = $value[0];
-                    //     $trtransaksiperiode->KodeTransaksi = "01";
-                    //     $trtransaksiperiode->Nilai = $value[1];
-                    //     $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
-                    //     $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
-                    //     $trtransaksiperiode->save();
-                    // }
+                    if ($value[2] == null || $value[2] == '') {
+                        $trtransaksiperiode = new Trtransaksiperiode();
+                        $trtransaksiperiode->Nomor = $formatNomor;
+                        $trtransaksiperiode->Periode = date('Ym');
+                        $trtransaksiperiode->KodeUser = $value[0];
+                        $trtransaksiperiode->KodeTransaksi = "01";
+                        $trtransaksiperiode->Nilai = $value[1];
+                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
+                        $trtransaksiperiode->save();
+                    }
                 }
             }
         }
