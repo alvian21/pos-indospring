@@ -565,8 +565,7 @@
        $('#subtotal').val(subtotal);
      });
 
-
-     $('.btnDetailInsert').on('click',function () {
+     $(document).on('click','.btnDetailInsert',function () {
 
         var barang = $('#barang').val();
         var qty = $('#qty').val();
