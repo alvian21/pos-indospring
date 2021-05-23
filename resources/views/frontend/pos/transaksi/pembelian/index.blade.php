@@ -19,7 +19,7 @@
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-primary float-right addTransaksi ">Transaksi
                                     Pembelian</button>
-                                <button type="button" class="btn btn-primary float-right adddetailBarang mr-2">Input
+                                <button type="button" class="btn btn-primary float-right btnDetailBarang mr-2">Input
                                     Detail Barang</button>
                             </div>
                         </div>
@@ -43,6 +43,7 @@
                                         <th>Pajak</th>
                                         <th>Total Harga</th>
                                         <th>Keterangan</th>
+                                        <th>Action</th>
                                     </tr>
 
                                 </thead>
@@ -79,11 +80,13 @@
                                         <th>Urut</th>
                                         <th>Kode Barang</th>
                                         <th>Barang</th>
+                                        <th>Qty</th>
+                                        <th>Harga</th>
                                         <th>Diskon Persen</th>
                                         <th>Diskon Tunai</th>
-                                        <th>Harga</th>
+
                                         <th>SubTotal</th>
-                                        <th>Keterangan</th>
+                                        <th>Action</th>
                                     </tr>
 
                                 </thead>
@@ -160,15 +163,16 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="text" class="form-control" id="diskon_persen" value="0" name="diskon_persen"
-                                    required>
+                                <input type="text" class="form-control" id="diskon_persen" value="0"
+                                    name="diskon_persen" required>
                             </div>
 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp)</label>
-                                <input type="text" class="form-control" id="diskon_rp" value="0" name="diskon_rp" required>
+                                <input type="text" class="form-control" id="diskon_rp" value="0" name="diskon_rp"
+                                    required>
                             </div>
 
                         </div>
@@ -184,7 +188,8 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="lokasi">Lokasi</label>
-                                <input type="text" class="form-control" id="lokasi" name="lokasi" value="{{auth()->user()->KodeLokasi}}" readonly >
+                                <input type="text" class="form-control" id="lokasi" name="lokasi"
+                                    value="{{auth()->user()->KodeLokasi}}" readonly>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -195,14 +200,6 @@
                         </div>
                     </div>
 
-                    {{-- <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="total">Total</label>
-                                <input type="text" class="form-control" id="total" readonly>
-                            </div>
-                        </div>
-                    </div> --}}
                     @endif
 
                 </div>
@@ -212,6 +209,110 @@
                     @if(!session()->has('transaksi_pembelian'))
                     <button type="submit" class="btn btn-primary">Post</button>
                     @endif
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{-- Modal Edit tr --}}
+<div class="modal fade bd-example-modal-lg" id="editTrModal" tabindex="-1" role="dialog"
+    aria-labelledby="editTrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTrModalLabel">Edit Transaksi Pembelian</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{route('pos.update.trpembelian')}}">
+                @csrf
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="transaksi">Transaksi</label>
+                                <input type="text" class="form-control" id="transaksi" name="transaksi" readonly
+                                    value="PEMBELIAN">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="nomor">Nomor</label>
+                                <input type="text" class="form-control" id="nomor" name="nomor" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="text" class="form-control" id="tanggal" name="tanggal" readonly
+                                    value="{{date('d M y H:i')}}">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="supplier_edit">Supplier</label>
+                                <select class="form-control js-example-basic-single" id="supplier_edit" name="supplier">
+                                    @forelse ($mssupplier as $item)
+                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
+                                    @empty
+                                    <option value="">not found</option>
+                                    @endforelse
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="diskon_persen">Diskon (%)</label>
+                                <input type="number" class="form-control" id="diskon_persen" value="0"
+                                    name="diskon_persen" required>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="diskon_rp">Diskon (Rp)</label>
+                                <input type="number" class="form-control" id="diskon_rp" value="0" name="diskon_rp"
+                                    required>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="pajak">Pajak</label>
+                                <input type="text" class="form-control" id="pajak" value="10" name="pajak" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lokasi">Lokasi</label>
+                                <input type="text" class="form-control" id="lokasi" name="lokasi"
+                                    value="{{auth()->user()->KodeLokasi}}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="keterangan">keterangan</label>
+                                <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                    <button type="submit" class="btn btn-primary">Update</button>
+
                 </div>
             </form>
         </div>
@@ -228,13 +329,15 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form  id="formDetail">
-
+            <form id="formDetail">
+                <input type="hidden" name="id_urut" id="id_urut">
                 <div class="modal-body">
                     @if(session()->has('transaksi_pembelian'))
                     <div id="alert-detail">
                         <div class="alert alert-danger" role="alert">
 
+                        </div>
+                        <div class="alert alert-success" role="alert">
                         </div>
                     </div>
                     <div class="row">
@@ -262,7 +365,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="harga">Harga</label>
-                                <input type="text" class="form-control" name="harga" readonly id="harga">
+                                <input type="number" class="form-control" name="harga" id="harga">
                             </div>
                         </div>
 
@@ -278,14 +381,16 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="text" class="form-control" name="diskon_persen" id="diskon_persen" value="0">
+                                <input type="text" class="form-control diskon_persen" name="diskon_persen"
+                                    id="diskon_persen" value="0">
                             </div>
 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="diskon_rp">Diskon (Rp))</label>
-                                <input type="text" class="form-control" name="diskon_rp" id="diskon_rp" value="0">
+                                <label for="diskon_rp">Diskon (Rp)</label>
+                                <input type="text" class="form-control diskon_rp" name="diskon_rp" id="diskon_rp"
+                                    value="0">
                             </div>
                         </div>
 
@@ -296,7 +401,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="keterangan">keterangan</label>
-                                <textarea class="form-control" name="keterangan" id="keterangan" rows="3"></textarea>
+                                <textarea class="form-control keterangan" name="keterangan" id="keterangan"
+                                    rows="3"></textarea>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -316,7 +422,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     @if(session()->has('transaksi_pembelian'))
-                    <button type="button" class="btn btn-primary btnDetailInsert">Insert</button>
+                    <button type="button" class="btn btn-primary btnBarangModal">Insert</button>
                     {{-- <input type="submit" value="submit" class="btn btn-primary" name="submit"> --}}
                     @endif
                 </div>
@@ -324,18 +430,23 @@
         </div>
     </div>
 </div>
+
+
 @endsection
 @section('scripts')
 <script type="text/javascript">
     $(document).ready(function(){
-        @if (session()->has('detail_transaksi_pembelian'))
-        $('.btnSimpan').show();
-        @else
-        $('.btnSimpan').hide();
-        @endif
-    $('#alert-detail').hide();
 
+    $('#alert-detail').hide();
+    var subtotal;
+     var qty;
+     var harga;
+     var ds_rp;
+     var ds_persen;
     var table = $("#table-transaksi").DataTable({
+        "columnDefs": [
+            { "visible": false, "targets": 9}
+        ],
         "scrollX": true,
         processing: true,
         serverSide: true,
@@ -351,8 +462,9 @@
             {data: 'pajak', name: 'pajak'},
             {data: 'total_harga', name: 'total_harga'},
             {data: 'keterangan', name: 'keterangan'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
 
-        ]
+        ],
     });
 
     var table_detail = $("#table-detail").DataTable({
@@ -364,11 +476,12 @@
             {data: 'urut', name: 'urut'},
             {data: 'barang', name: 'barang'},
             {data: 'nama_barang', name: 'nama_barang'},
+            {data: 'qty', name: 'qty'},
+            {data: 'harga', name: 'harga'},
             {data: 'diskon_persen', name: 'diskon_persen'},
             {data: 'diskon_rp', name: 'diskon_rp'},
-            {data: 'harga', name: 'harga'},
             {data: 'subtotal', name: 'subtotal'},
-            {data: 'keterangan', name: 'keterangan'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
 
         ]
     });
@@ -378,8 +491,11 @@
     $('.addTransaksi').on('click',function () {
         $('#transaksiModal').modal('show');
     })
-    $('.adddetailBarang').on('click',function () {
+    $('.btnDetailBarang').on('click',function () {
         $('#barangModal').modal('show');
+        ds_persen = $('.diskon_persen').val();
+        ds_rp = $('.diskon_rp').val();
+        $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
     });
 
     $('#barang').on('change', function () {
@@ -394,20 +510,61 @@
             },
             success:function(data){
                 $('#nama_barang').val(data["Nama"])
-                $('#harga').val(data["HargaJual"])
+
             }
         })
         }
 
      });
 
-     $('#qty').on('keyup', function(){
-         var qty = $(this).val();
-         var harga = $('#harga').val();
-
-         var subtotal = qty * harga;
+     function diskon_persen(sub_total, diskon){
+        if(diskon != 0 || diskon != ''){
+            var hitung = (diskon/100) * sub_total;
+            var hasil = sub_total - hitung;
+            return hasil;
+        }else{
+            return sub_total;
+        }
+     }
+     function diskon_rp(sub_total, diskon){
+        if(diskon != 0 || diskon != ''){
+            var hasil = sub_total - diskon;
+            return hasil;
+        }else{
+            return sub_total;
+        }
+     }
+     $('#qty').on('keyup keydown keypress', function(){
+          qty = $(this).val();
+          harga = $('#harga').val();
+          ds_persen = $('.diskon_persen').val();
+            ds_rp = $('.diskon_rp').val();
+            subtotal = qty * harga;
+            subtotal = diskon_persen(subtotal, ds_persen);
+            subtotal = diskon_rp(subtotal, ds_rp);
          $('#subtotal').val(subtotal);
      });
+
+     $(' .diskon_persen').on('keyup keydown', function(){
+         var diskon = $(this).val();
+
+        ds_rp = $('.diskon_rp').val();
+            subtotal = qty * harga;
+            subtotal = diskon_persen(subtotal, diskon);
+            subtotal = diskon_rp(subtotal, ds_rp);
+            $('#subtotal').val(subtotal);
+
+     });
+
+     $('.diskon_rp').on('keyup keydown keypress', function(){
+         var diskon = $(this).val();
+         ds_persen = $('.diskon_persen').val();
+         subtotal = qty * harga;
+        subtotal = diskon_persen(subtotal, ds_persen);
+        subtotal = diskon_rp(subtotal, diskon);
+       $('#subtotal').val(subtotal);
+     });
+
 
      $('.btnDetailInsert').on('click',function () {
 
@@ -432,14 +589,105 @@
                    method: "POST",
                    data: $('#formDetail').serialize(),
                    success:function(data){
+                       $('.alert-success').text('Data berhasil di tambahkan')
+                       $('.alert-danger').hide()
+                       $('#alert-detail').show();
+                       setTimeout(function(){ $('#alert-detail').hide()},3000);
                        $('#formDetail').trigger("reset");
                        table_detail.ajax.reload();
                        table.ajax.reload();
                        $('.btnSimpan').show();
+                       $('#barang').val('0');
                    }
                })
             }
       });
+
+      $(document).on('click','.btnDetailUpdate',function () {
+        alert('hello')
+        var barang = $('#barang').val();
+        var qty = $('#qty').val();
+            if(barang == '0'){
+            $('.alert-danger').text('pilih barang terlebih dahulu')
+                $('#alert-detail').show();
+
+            }else if(qty == undefined || qty == 0 || qty == ''){
+                $('.alert-danger').text('qty harus diisi')
+                $('#alert-detail').show();
+
+            }else{
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+            $.ajax({
+                url:"{{route('pos.detail_transaksi_pembelian.update')}}",
+                method: "POST",
+                data: $('#formDetail').serialize(),
+                success:function(data){
+                    $('.alert-success').text('Data berhasil di update')
+                    $('.alert-danger').hide()
+                    $('#alert-detail').show();
+                    setTimeout(function(){ $('#alert-detail').hide()},3000);
+                    $('#formDetail').trigger("reset");
+                    table_detail.ajax.reload();
+                    table.ajax.reload();
+                    $('.btnSimpan').show();
+                    $('#barang').val('0');
+                }
+            })
+            }
+        });
+
+      $('#barangModal').on('hidden.bs.modal', function() {
+                $(this).find('form').trigger('reset');
+                $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
+            });
+
+
+      $(document).on('click','.btnedittr',function(){
+
+          var row = $(this).closest("tr");
+          var data =  $('#table-transaksi').DataTable().row(row).data()
+          $('#nomor').val(data['nomor']);
+          var dataselect = "";
+          $('#supplier_edit option').each(function(){
+             if($(this).val()==data['kode'].trim()){
+               dataselect = $(this).val();
+             }
+          })
+          $('#keterangan').val(data['keterangan'])
+          $('[id=supplier_edit]').val(dataselect).trigger('change');
+          $('#diskon_persen').val(data['diskon_persen']);
+          $('#diskon_rp').val(data['diskon_rp']);
+          $('#pajak').val(data['pajak']);
+          $('#editTrModal').modal('show');
+
+      })
+
+      $(document).on('click', '.btnDetailBarangEdit', function(){
+        var row = $(this).closest("tr");
+          var data =  $('#table-detail').DataTable().row(row).data()
+          $('#id_urut').val(data['urut']);
+          $('#harga').val(data['harga']);
+          $('#nama_barang').val(data['nama_barang']);
+          console.log(data)
+          var dataselect = "";
+          $('#barang option').each(function(){
+             if($(this).val()==data['barang'].trim()){
+               dataselect = $(this).val();
+             }
+          })
+          $('.keterangan').val(data['keterangan']);
+          $('.diskon_rp').val(data['diskon_rp']);
+          $('.diskon_persen').val(data['diskon_persen']);
+          $('#subtotal').val(data['subtotal']);
+          $('#qty').val(data['qty']);
+          $('[id=barang]').val(dataselect).trigger('change');
+          $('.btnBarangModal').removeClass('btnDetailInsert').addClass('btnDetailUpdate')
+          $('#barangModal').modal('show')
+      })
 
     $('.btnsimpan').on('click', function(){
         swal({

@@ -46,14 +46,27 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/data_pembelian','PembelianController@getDataPembelian')->name('pembelian.transaksi');
             Route::post('/transaksi_pembelian', 'PembelianController@store_transaksi')->name('transaksi_pembelian.store');
             Route::post('/detail_transaksi_pembelian', 'PembelianController@store_detail')->name('detail_transaksi_pembelian.store');
+            Route::post('/detail_transaksi_pembelian_update', 'PembelianController@update_detail_barang')->name('detail_transaksi_pembelian.update');
             Route::get('/data_barang', 'PembelianController@get_data_barang')->name('pembelian.databarang');
             Route::get('/save_transaksi_pembelian', 'PembelianController@save_data_transaksi')->name('pembelian.save');
+            Route::post('/update_transaksi','PembelianController@update_transaksi')->name('update.trpembelian');
         });
         Route::group(['prefix' => 'penjualan'], function () {
+            Route::get('/data_detail','PenjualanController@getDataDetail')->name('penjualan.datadetail');
+            Route::get('/data_penjualan','PenjualanController@getDataPenjualan')->name('penjualan.transaksi');
             Route::post('/transaksi_penjualan', 'PenjualanController@store_transaksi')->name('transaksi_penjualan.store');
             Route::post('/detail_transaksi_penjualan', 'PenjualanController@store_detail')->name('detail_transaksi_penjualan.store');
             Route::get('/data_barang', 'PenjualanController@get_data_barang')->name('penjualan.databarang');
             Route::get('/save_transaksi_penjualan', 'PenjualanController@save_data_transaksi')->name('penjualan.save');
+        });
+
+        Route::group(['prefix' => 'stockhilang'], function () {
+            Route::get('/data_detail','StockHilangController@getDataDetail')->name('stockhilang.datadetail');
+            Route::get('/data_stockhilang','StockHilangController@getDataStockHilang')->name('stockhilang.transaksi');
+            Route::post('/transaksi_stockhilang', 'StockHilangController@store_transaksi')->name('transaksi_stockhilang.store');
+            Route::post('/detail_transaksi_stockhilang', 'StockHilangController@store_detail')->name('detail_transaksi_stockhilang.store');
+            Route::get('/data_barang', 'StockHilangController@get_data_barang')->name('stockhilang.databarang');
+            Route::get('/save_transaksi_stockhilang', 'StockHilangController@save_data_transaksi')->name('stockhilang.save');
         });
 
         Route::resource('pembelian', 'PembelianController');

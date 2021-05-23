@@ -9,6 +9,7 @@ use App\Trmutasihd;
 use App\Mslokasi;
 use App\Mssupplier;
 use App\Trmutasidt;
+use DataTables;
 use Illuminate\Support\Facades\Validator;
 
 class PenjualanController extends Controller
@@ -25,33 +26,33 @@ class PenjualanController extends Controller
         $mslokasi = Mslokasi::all();
         $mssupplier = Mssupplier::all();
         $msbarang = Msbarang::all();
-        $trpenjualan = session('transaksi_penjualan');
-        $datadetail = session('detail_transaksi_penjualan');
-        $nomor = (int) substr($trmutasihd->Nomor, 14);
+
         if ($trmutasihd) {
+            $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
                 if ($nomor >= 9999) {
                     $nomor = $nomor + 1;
-                    $formatNomor = "JU-" . date('y-m-d') . "-" . $nomor;
+                    $formatNomor = "PE-" . date('Y-m-d') . "-" . $nomor;
                 } else {
                     $nomor = $nomor + 1;
                     $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                    $formatNomor = "JU-" . date('y-m-d') . "-" . $addzero;
+                    $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
                 }
             }
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "JU-" . date('y-m-d') . "-" . $addzero;
+            $formatNomor = "PE-" . date('y-m-d') . "-" . $addzero;
         }
+        // session()->forget('detail_transaksi_penjualan');
+        // session()->forget('transaksi_penjualan');
 
-        $trpenjualan = json_decode(json_encode($trpenjualan));
-        $datadetail = json_decode(json_encode($datadetail));
+
+
         return view("frontend.pos.transaksi.penjualan.index", [
             'formatNomor' => $formatNomor, 'penjualan' => $penjualan,
             'mslokasi' => $mslokasi, 'mssupplier' => $mssupplier,
-            'trpenjualan' => $trpenjualan, 'msbarang' => $msbarang,
-            'datadetail' => $datadetail
+            'msbarang' => $msbarang
         ]);
     }
 
@@ -245,7 +246,7 @@ class PenjualanController extends Controller
 
             session(['transaksi_penjualan' => $data]);
             session()->save();
-            return redirect()->route('pos.penjualan.index')->with("success", "Detail transaksi penjualan berhasil ditambahkan");
+            return response()->json(['message' => 'saved']);
         }
     }
 
@@ -286,6 +287,56 @@ class PenjualanController extends Controller
             session()->forget('detail_transaksi_penjualan');
             session()->forget('transaksi_penjualan');
             return redirect()->route('pos.penjualan.index')->with("success", "Detail dan data transaksi penjualan berhasil disimpan");
+        }
+    }
+
+    public function getDataDetail(Request $request)
+    {
+        if ($request->ajax()) {
+            if (session()->has('detail_transaksi_penjualan')) {
+                $datadetail = session('detail_transaksi_penjualan');
+            } else {
+                $datadetail = [[
+                    'urut' => '',
+                    'barang' => '',
+                    'nama_barang' => '',
+                    'diskon_persen' => '',
+                    'diskon_rp' => '',
+                    'harga' => '',
+                    'subtotal' => '',
+                    'keterangan' => '',
+                ]];
+            }
+
+            return Datatables::of($datadetail)->make(true);
+        }
+    }
+
+
+    public function getDataPenjualan(Request $request)
+    {
+        if ($request->ajax()) {
+            $datapenjualan = [];
+            if (session()->has('transaksi_penjualan')) {
+                $penjualan = session('transaksi_penjualan');
+            } else {
+                $penjualan = [
+                    'transaksi' => '',
+                    'nomor' => '',
+                    'tanggal' => '',
+                    'kode' => '',
+                    'supplier' => '',
+                    'diskon_persen' => '',
+                    'diskon_rp' => '',
+                    'pajak' => '',
+                    'total_harga' => '',
+                    'keterangan' => '',
+                ];
+            }
+
+            array_push($datapenjualan, $penjualan);
+
+            return Datatables::of($datapenjualan)->make(true);
         }
     }
 }
