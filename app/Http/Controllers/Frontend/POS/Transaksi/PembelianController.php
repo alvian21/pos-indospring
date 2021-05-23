@@ -464,7 +464,8 @@ class PembelianController extends Controller
                         $value["nama_barang"] = $request->get("nama_barang");
                         $value["qty"] = $request->get("qty");
                         $value["diskon_persen"] = $request->get("diskon_persen");
-                        $value["subtotal"] = $request->get("subtotal");
+                        $value["subtotal"] = $request->get('subtotal');
+                        $value["diskon_rp"] = $request->get("diskon_rp");
                         $value["diskon_rp"] = $request->get("diskon_rp");
                         $value["keterangan"] = $request->get("keterangan");
                         $total = $total + $request->get('subtotal');
