@@ -460,13 +460,13 @@ class PembelianController extends Controller
                 foreach ($datadetail as $key => $value) {
                     if ($value["urut"] == $request->get('id_urut')) {
                         $value["urut"] = $value["urut"];
-                        $value["barang"] = $request("barang");
-                        $value["nama_barang"] = $request("nama_barang");
-                        $value["qty"] = $request("qty");
-                        $value["diskon_persen"] = $request("diskon_persen");
-                        $value["subtotal"] = $request("subtotal");
-                        $value["diskon_rp"] = $request("diskon_rp");
-                        $value["keterangan"] = $request("keterangan");
+                        $value["barang"] = $request->get("barang");
+                        $value["nama_barang"] = $request->get("nama_barang");
+                        $value["qty"] = $request->get("qty");
+                        $value["diskon_persen"] = $request->get("diskon_persen");
+                        $value["subtotal"] = $request->get("subtotal");
+                        $value["diskon_rp"] = $request->get("diskon_rp");
+                        $value["keterangan"] = $request->get("keterangan");
                         $total = $total + $request->get('subtotal');
                         array_push($arr, $value);
                     } else {
