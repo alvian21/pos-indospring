@@ -47,20 +47,7 @@
 
                                 </thead>
                                 <tbody>
-                                    @if(session()->has('transaksi_pembelian'))
-                                    <tr>
-                                        <td>{{$trpembelian->transaksi}}</td>
-                                        <td>{{$trpembelian->nomor}}</td>
-                                        <td>{{$trpembelian->tanggal}}</td>
-                                        <td>{{$trpembelian->kode}}</td>
-                                        <td>{{$trpembelian->supplier}}</td>
-                                        <td>{{$trpembelian->diskon_persen}}</td>
-                                        <td>{{$trpembelian->diskon_rp}}</td>
-                                        <td>{{$trpembelian->pajak}}</td>
-                                        <td>{{$trpembelian->total_harga}}</td>
-                                        <td>{{$trpembelian->keterangan}}</td>
-                                    </tr>
-                                    @endif
+
                                 </tbody>
                             </table>
                         </div>
@@ -101,29 +88,13 @@
 
                                 </thead>
                                 <tbody>
-                                    @if(session()->has('detail_transaksi_pembelian'))
-                                    @foreach ($datadetail as $row )
-                                    <tr>
-                                        <td>{{$row->urut}}</td>
-                                        <td>{{$row->barang}}</td>
-                                        <td>{{$row->nama_barang}}</td>
-                                        <td>{{$row->diskon_persen}}</td>
-                                        <td>{{$row->diskon_rp}}</td>
-                                        <td>{{$row->harga}}</td>
-                                        <td>{{$row->subtotal}}</td>
-                                        <td>{{$row->keterangan}}</td>
-                                    </tr>
-                                    @endforeach
 
-                                    @endif
                                 </tbody>
 
                             </table>
-                            @if(session()->has('detail_transaksi_pembelian'))
-                            <div class="float-right mt-3">
+                            <div class="float-right mt-3 btnSimpan">
                                 <button type="button" class="btn btn-primary btnsimpan">Simpan</button>
                             </div>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -189,36 +160,31 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="text" class="form-control" id="diskon_persen" name="diskon_persen"
+                                <input type="text" class="form-control" id="diskon_persen" value="0" name="diskon_persen"
                                     required>
                             </div>
 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="pajak">Pajak</label>
-                                <input type="text" class="form-control" id="pajak" name="pajak" required>
+                                <label for="diskon_rp">Diskon (Rp)</label>
+                                <input type="text" class="form-control" id="diskon_rp" value="0" name="diskon_rp" required>
                             </div>
+
                         </div>
                     </div>
                     <div class="row">
+
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="diskon_rp">Diskon (Rp)</label>
-                                <input type="text" class="form-control" id="diskon_rp" name="diskon_rp" required>
+                                <label for="pajak">Pajak</label>
+                                <input type="text" class="form-control" id="pajak" value="10" name="pajak" required>
                             </div>
-
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="lokasi">Lokasi</label>
-                                <select class="form-control js-example-basic-single" id="lokasi" name="lokasi">
-                                    @forelse ($mslokasi as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
-                                    @empty
-                                    <option value="">not found</option>
-                                    @endforelse
-                                </select>
+                                <input type="text" class="form-control" id="lokasi" name="lokasi" value="{{auth()->user()->KodeLokasi}}" readonly >
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -262,8 +228,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="{{route('pos.detail_transaksi_pembelian.store')}}" id="formDetail">
-                @csrf
+            <form  id="formDetail">
+
                 <div class="modal-body">
                     @if(session()->has('transaksi_pembelian'))
                     <div id="alert-detail">
@@ -305,21 +271,21 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="qty">Qty</label>
-                                <input type="number" class="form-control" name="qty" id="qty">
+                                <input type="number" class="form-control" name="qty" id="qty" value="1">
                             </div>
 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="text" class="form-control" name="diskon_persen" id="diskon_persen">
+                                <input type="text" class="form-control" name="diskon_persen" id="diskon_persen" value="0">
                             </div>
 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp))</label>
-                                <input type="text" class="form-control" name="diskon_rp" id="diskon_rp">
+                                <input type="text" class="form-control" name="diskon_rp" id="diskon_rp" value="0">
                             </div>
                         </div>
 
@@ -350,8 +316,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     @if(session()->has('transaksi_pembelian'))
-                    {{-- <button type="submit" class="btn btn-primary">Insert</button> --}}
-                    <input type="submit" value="submit" class="btn btn-primary" name="submit">
+                    <button type="button" class="btn btn-primary btnDetailInsert">Insert</button>
+                    {{-- <input type="submit" value="submit" class="btn btn-primary" name="submit"> --}}
                     @endif
                 </div>
             </form>
@@ -362,15 +328,49 @@
 @section('scripts')
 <script type="text/javascript">
     $(document).ready(function(){
-
+        @if (session()->has('detail_transaksi_pembelian'))
+        $('.btnSimpan').show();
+        @else
+        $('.btnSimpan').hide();
+        @endif
     $('#alert-detail').hide();
 
     var table = $("#table-transaksi").DataTable({
         "scrollX": true,
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('pos.pembelian.transaksi') }}",
+        columns: [
+            {data: 'transaksi', name: 'transaksi'},
+            {data: 'nomor', name: 'nomor'},
+            {data: 'tanggal', name: 'tanggal'},
+            {data: 'kode', name: 'kode'},
+            {data: 'supplier', name: 'supplier'},
+            {data: 'diskon_persen', name: 'diskon_persen'},
+            {data: 'diskon_rp', name: 'diskon_rp'},
+            {data: 'pajak', name: 'pajak'},
+            {data: 'total_harga', name: 'total_harga'},
+            {data: 'keterangan', name: 'keterangan'},
+
+        ]
     });
 
     var table_detail = $("#table-detail").DataTable({
         "scrollX": true,
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('pos.pembelian.datadetail') }}",
+        columns: [
+            {data: 'urut', name: 'urut'},
+            {data: 'barang', name: 'barang'},
+            {data: 'nama_barang', name: 'nama_barang'},
+            {data: 'diskon_persen', name: 'diskon_persen'},
+            {data: 'diskon_rp', name: 'diskon_rp'},
+            {data: 'harga', name: 'harga'},
+            {data: 'subtotal', name: 'subtotal'},
+            {data: 'keterangan', name: 'keterangan'},
+
+        ]
     });
 
     $('.js-example-basic-single').select2();
@@ -409,19 +409,35 @@
          $('#subtotal').val(subtotal);
      });
 
-     $('#formDetail').on('submit',function () {
+     $('.btnDetailInsert').on('click',function () {
+
         var barang = $('#barang').val();
         var qty = $('#qty').val();
             if(barang == '0'){
                $('.alert-danger').text('pilih barang terlebih dahulu')
                 $('#alert-detail').show();
-                return false;
+
             }else if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
-                return false;
+
             }else{
-                return true;
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+               $.ajax({
+                   url:"{{route('pos.detail_transaksi_pembelian.store')}}",
+                   method: "POST",
+                   data: $('#formDetail').serialize(),
+                   success:function(data){
+                       $('#formDetail').trigger("reset");
+                       table_detail.ajax.reload();
+                       table.ajax.reload();
+                       $('.btnSimpan').show();
+                   }
+               })
             }
       });
 

@@ -10,6 +10,8 @@ use App\Mslokasi;
 use App\Mssupplier;
 use App\Trmutasidt;
 use Illuminate\Support\Facades\Validator;
+use DataTables;
+use Illuminate\Support\Facades\Session;
 
 class PembelianController extends Controller
 {
@@ -18,7 +20,7 @@ class PembelianController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->OrderBy('Tanggal', 'DESC')->first();
         $pembelian = Trmutasihd::where('Transaksi', 'PEMBELIAN')->get();
@@ -26,17 +28,17 @@ class PembelianController extends Controller
         $mssupplier = Mssupplier::all();
         $msbarang = Msbarang::all();
         $trpembelian = session('transaksi_pembelian');
-        $datadetail = session('detail_transaksi_pembelian');
+
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
                 if ($nomor >= 9999) {
                     $nomor = $nomor + 1;
-                    $formatNomor = "BE-" . date('y-m-d') . "-" . $nomor;
+                    $formatNomor = "BE-" . date('Y-m-d') . "-" . $nomor;
                 } else {
                     $nomor = $nomor + 1;
                     $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                    $formatNomor = "BE-" . date('y-m-d') . "-" . $addzero;
+                    $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
                 }
             }
         } else {
@@ -44,15 +46,33 @@ class PembelianController extends Controller
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
             $formatNomor = "BE-" . date('y-m-d') . "-" . $addzero;
         }
-
+        // session()->forget('detail_transaksi_pembelian');
+        // session()->forget('transaksi_pembelian');
         $trpembelian = json_decode(json_encode($trpembelian));
-        $datadetail = json_decode(json_encode($datadetail));
+        if ($request->ajax()) {
+            if (session()->has('detail_transaksi_pembelian')) {
+                $datadetail = session('detail_transaksi_pembelian');
+            } else {
+                $datadetail = [[
+                    'urut' => '',
+                    'barang' => '',
+                    'nama_barang' => '',
+                    'diskon_persen' => '',
+                    'diskon_rp' => '',
+                    'harga' => '',
+                    'subtotal' => '',
+                    'keterangan' => '',
+                ]];
+            }
+
+            return Datatables::of($datadetail)->make(true);
+        }
 
         return view("frontend.pos.transaksi.pembelian.index", [
             'formatNomor' => $formatNomor, 'pembelian' => $pembelian,
             'mslokasi' => $mslokasi, 'mssupplier' => $mssupplier,
             'trpembelian' => $trpembelian, 'msbarang' => $msbarang,
-            'datadetail' => $datadetail
+
         ]);
     }
 
@@ -138,6 +158,7 @@ class PembelianController extends Controller
         ]);
 
         if ($validator->fails()) {
+       
             return redirect()->back()->withErrors($validator->errors());
         } else {
             $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
@@ -185,13 +206,11 @@ class PembelianController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator->errors());
         } else {
-
-
             $arr = [];
-            $trpembelian = session('transaksi_pembelian');
+            $trpembelian = Session::get('transaksi_pembelian');
             $total = 0;
-            if (session()->has('detail_transaksi_pembelian')) {
-                $datadetail = session('detail_transaksi_pembelian');
+            if (Session::has('detail_transaksi_pembelian')) {
+                $datadetail = Session::get('detail_transaksi_pembelian');
                 $no = 0;
                 foreach ($datadetail as $key => $value) {
                     $total = $total + $value["subtotal"];
@@ -211,8 +230,9 @@ class PembelianController extends Controller
                 ];
                 $total = $total + $request->get('subtotal');
                 array_push($arr, $data);
-                session(['detail_transaksi_pembelian' => $arr]);
-                session()->save();
+                Session::forget('detail_transaksi_pembelian');
+                Session::put('detail_transaksi_pembelian', $arr);
+                Session::save();
             } else {
                 $data = [
                     'urut' => 1,
@@ -227,7 +247,9 @@ class PembelianController extends Controller
                 ];
                 $total = $total + $request->get('subtotal');
                 array_push($arr, $data);
-                session(['detail_transaksi_pembelian' => $arr]);
+                Session::forget('detail_transaksi_pembelian');
+                Session::put('detail_transaksi_pembelian', $arr);
+                Session::save();
             }
 
             $data = [
@@ -243,10 +265,10 @@ class PembelianController extends Controller
                 'keterangan' => $trpembelian['keterangan'],
                 'total_harga' => $total
             ];
-
-            session(['transaksi_pembelian' => $data]);
-            session()->save();
-            return redirect()->route('pos.pembelian.index')->with("success", "Detail transaksi pembelian berhasil ditambahkan");
+            Session::forget('transaksi_pembelian');
+            Session::put('transaksi_pembelian', $data);
+            Session::save();
+            return response()->json(['message'=>'saved']);
         }
     }
 
@@ -287,6 +309,56 @@ class PembelianController extends Controller
             session()->forget('detail_transaksi_pembelian');
             session()->forget('transaksi_pembelian');
             return redirect()->route('pos.pembelian.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
+        }
+    }
+
+    public function getDataDetail(Request $request)
+    {
+        if ($request->ajax()) {
+            if (session()->has('detail_transaksi_pembelian')) {
+                $datadetail = session('detail_transaksi_pembelian');
+            } else {
+                $datadetail = [[
+                    'urut' => '',
+                    'barang' => '',
+                    'nama_barang' => '',
+                    'diskon_persen' => '',
+                    'diskon_rp' => '',
+                    'harga' => '',
+                    'subtotal' => '',
+                    'keterangan' => '',
+                ]];
+            }
+
+            return Datatables::of($datadetail)->make(true);
+        }
+    }
+
+
+    public function getDataPembelian(Request $request)
+    {
+        if ($request->ajax()) {
+            $datapembelian =[];
+            if (session()->has('transaksi_pembelian')) {
+                $pembelian = session('transaksi_pembelian');
+            } else {
+                $pembelian = [
+                    'transaksi' => '',
+                    'nomor' => '',
+                    'tanggal' => '',
+                    'kode' => '',
+                    'supplier' => '',
+                    'diskon_persen' => '',
+                    'diskon_rp' => '',
+                    'pajak' => '',
+                    'total_harga' => '',
+                    'keterangan' => '',
+                ];
+            }
+
+            array_push($datapembelian, $pembelian);
+
+            return Datatables::of($datapembelian)->make(true);
         }
     }
 }

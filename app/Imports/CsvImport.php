@@ -24,7 +24,7 @@ class CsvImport implements ToCollection
 
         $month = date('m');
         $year = date('Y');
-
+        $user = session('nama_anggota');
         foreach ($collection as $key => $value) {
             if ($key > 0) {
 
@@ -70,7 +70,7 @@ class CsvImport implements ToCollection
                         $trtransaksiperiode->KodeUser = $value[0];
                         $trtransaksiperiode->KodeTransaksi = "20";
                         $trtransaksiperiode->Nilai = $value[2];
-                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        $trtransaksiperiode->UserUpdate = $user;
                         $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
                         $trtransaksiperiode->save();
 
@@ -80,7 +80,7 @@ class CsvImport implements ToCollection
                         $trtransaksiperiode->KodeUser = $value[0];
                         $trtransaksiperiode->KodeTransaksi = "01";
                         $trtransaksiperiode->Nilai = $value[1];
-                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        $trtransaksiperiode->UserUpdate = $user;
                         $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
                         $trtransaksiperiode->save();
 
@@ -116,7 +116,7 @@ class CsvImport implements ToCollection
                         $datatrpinjaman->CicilanBunga = $mscicilan->CicilanBunga;
                         $datatrpinjaman->Alasan = "Saldo Awal";
                         $datatrpinjaman->TanggalPengajuan = date('Y-m-d');
-                        $datatrpinjaman->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        $datatrpinjaman->UserUpdate = $user;
                         $datatrpinjaman->ApprovalStatus = "DISETUJUI";
                         $datatrpinjaman->PengajuanPinjaman = $mscicilan->Nominal;
                         $datatrpinjaman->save();
@@ -129,7 +129,7 @@ class CsvImport implements ToCollection
                         $trtransaksiperiode->KodeUser = $value[0];
                         $trtransaksiperiode->KodeTransaksi = "01";
                         $trtransaksiperiode->Nilai = $value[1];
-                        $trtransaksiperiode->UserUpdate = Auth::guard('web')->user()->UserLogin;
+                        $trtransaksiperiode->UserUpdate = $user;
                         $trtransaksiperiode->LastUpdate =  date('Y-m-d H:i:s');
                         $trtransaksiperiode->save();
                     }

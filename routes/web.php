@@ -42,6 +42,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     Route::group(['namespace' => 'POS\Transaksi', 'prefix' => 'pos', 'as' => 'pos.'], function () {
 
         Route::group(['prefix' => 'pembelian'], function () {
+            Route::get('/data_detail','PembelianController@getDataDetail')->name('pembelian.datadetail');
+            Route::get('/data_pembelian','PembelianController@getDataPembelian')->name('pembelian.transaksi');
             Route::post('/transaksi_pembelian', 'PembelianController@store_transaksi')->name('transaksi_pembelian.store');
             Route::post('/detail_transaksi_pembelian', 'PembelianController@store_detail')->name('detail_transaksi_pembelian.store');
             Route::get('/data_barang', 'PembelianController@get_data_barang')->name('pembelian.databarang');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Msanggota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:web')->except(["login","getLogin"]);
+        $this->middleware('auth:web')->except(["login", "getLogin"]);
     }
     public function getLogin()
     {
@@ -37,6 +38,9 @@ class AuthController extends Controller
             $user = User::where('UserLogin', $request->get('username'))->where('UserPassword', $request->get('password'))->first();
             if ($user) {
                 $auth = Auth::guard("web")->login($user);
+                $user = Auth::guard('web')->user();
+                $anggota = Msanggota::where("Kode", $user->KodeAnggota)->first();
+                session(['nama_anggota' => $anggota->Nama]);
                 session()->flash('info', 'Selamat Datang  !');
                 return redirect()->route('dashboard.index');
             } else {
