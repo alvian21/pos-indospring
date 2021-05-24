@@ -46,7 +46,7 @@ class PembelianController extends Controller
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "BE-" . date('y-m-d') . "-" . $addzero;
+            $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
         }
         // session()->forget('detail_transaksi_pembelian');
         // session()->forget('transaksi_pembelian');
