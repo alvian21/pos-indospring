@@ -158,6 +158,7 @@ class PembelianController extends Controller
                 'diskon_rp' => $request->get('diskon_rp'),
                 'lokasi' => $request->get('lokasi'),
                 'keterangan' => $request->get('keterangan'),
+                'total_harga_sebelum' => 0,
                 'total_harga' => 0,
                 'total_harga_setelah_pajak' => 0
             ];
@@ -240,6 +241,7 @@ class PembelianController extends Controller
 
             //hitung diskon persen
             $hasil = $total;
+            $total_sebelum = $total;
             if ($trpembelian['diskon_persen'] != '0') {
                 $diskon_persen = $trpembelian['diskon_persen'];
                 $hitung = ($diskon_persen / 100) * $total;
@@ -263,8 +265,9 @@ class PembelianController extends Controller
                 'diskon_rp' => $trpembelian['diskon_rp'],
                 'lokasi' => $trpembelian['lokasi'],
                 'keterangan' => $trpembelian['keterangan'],
+                'total_harga_sebelum' => $total_sebelum,
                 'total_harga' => $hasil,
-                'total_harga_setelah_pajak'=> $pajak
+                'total_harga_setelah_pajak' => $pajak
             ];
             Session::forget('transaksi_pembelian');
             Session::put('transaksi_pembelian', $data);
@@ -311,6 +314,7 @@ class PembelianController extends Controller
             }
             session()->forget('detail_transaksi_pembelian');
             session()->forget('transaksi_pembelian');
+            session()->save();
             return redirect()->route('pos.pembelian.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
         }
     }
@@ -334,7 +338,7 @@ class PembelianController extends Controller
                     $sub["subtotal"] = $row['subtotal'];
                     $sub["diskon_rp"] = $row['diskon_rp'];
                     $sub["keterangan"] = $row['keterangan'];
-                    $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
+                    $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button data-urut="' . $row['urut'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
                     $data2[] = $sub;
                 }
             } else {
@@ -355,33 +359,41 @@ class PembelianController extends Controller
     {
         if ($request->ajax()) {
             $datapembelian = [];
+            $data2 = array();
             if (session()->has('transaksi_pembelian')) {
                 $pembelian = session('transaksi_pembelian');
+                array_push($datapembelian, $pembelian);
+
+                $count = count($datapembelian);
+                $no = 1;
+                foreach ($datapembelian as $row) {
+                    $sub = array();
+                    $sub["transaksi"] = $row['transaksi'];
+                    $sub["nomor"] = $row['nomor'];
+                    $sub["tanggal"] = $row['tanggal'];
+                    $sub["kode"] = $row['kode'];
+                    $sub["supplier"] = $row['supplier'];
+                    $sub["diskon_persen"] = $row['diskon_persen'];
+                    $sub["pajak"] = $row['pajak'];
+                    $sub["diskon_rp"] = $row['diskon_rp'];
+                    $sub["lokasi"] = $row['lokasi'];
+                    $sub["keterangan"] = $row['keterangan'];
+                    $sub["total_harga_sebelum"] = $row['total_harga_sebelum'];
+                    $sub["total_harga"] = $row['total_harga'];
+                    $sub["total_harga_setelah_pajak"] = $row['total_harga_setelah_pajak'];
+                    $sub["action"] = '<button class="edit btn btn-warning btnedittr">Edit</button>';
+                    $data2[] = $sub;
+                }
             } else {
-                $pembelian = [
-                    'transaksi' => '',
-                    'nomor' => '',
-                    'tanggal' => '',
-                    'kode' => '',
-                    'supplier' => '',
-                    'diskon_persen' => '',
-                    'diskon_rp' => '',
-                    'pajak' => '',
-                    'total_harga' => '',
-                    'keterangan' => '',
-                ];
+                $count = 0;
             }
-
-            array_push($datapembelian, $pembelian);
-
-            return Datatables::of($datapembelian)->addIndexColumn()
-                ->addColumn('action', function ($row) {
-
-                    $btn = '<button class="edit btn btn-warning btnedittr">Edit</button>';
-
-                    return $btn;
-                })
-                ->rawColumns(['action'])->make(true);
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
         }
     }
 
@@ -407,23 +419,30 @@ class PembelianController extends Controller
             $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
             $trpembelian = Session::get('transaksi_pembelian');
             $total = 0;
-            $datadetail = Session::get('detail_transaksi_pembelian');
-            foreach ($datadetail as $key => $value) {
-                $total = $total + $value["subtotal"];
+            if (session()->has('detail_transaksi_pembelian')) {
+                $datadetail = Session::get('detail_transaksi_pembelian');
+                foreach ($datadetail as $key => $value) {
+                    $total = $total + $value["subtotal"];
+                }
             }
+
 
             //hitung diskon persen
             $hasil = $total;
-            if ($request->get('diskon_persen') != '0') {
-                $diskon_persen = $request->get('diskon_persen');
-                $hitung = ($diskon_persen / 100) * $total;
-                $hasil = $total - $hitung;
+            $total_sebelum = $total;
+            if ($total != 0) {
+                if ($request->get('diskon_persen') != '0') {
+                    $diskon_persen = $request->get('diskon_persen');
+                    $hitung = ($diskon_persen / 100) * $total;
+                    $hasil = $total - $hitung;
+                }
+                //diskon rp
+                if ($request->get('diskon_rp') != '0') {
+                    $diskon_rp = $request->get('diskon_rp');
+                    $hasil = $hasil - $diskon_rp;
+                }
             }
-            //diskon rp
-            if ($request->get('diskon_rp') != '0') {
-                $diskon_rp = $request->get('diskon_rp');
-                $hasil = $hasil - $diskon_rp;
-            }
+
             //pajak
             $pajak = $hasil + (($request->get('pajak') / 100) * $hasil);
             $data = [
@@ -437,8 +456,9 @@ class PembelianController extends Controller
                 'diskon_rp' => $request->get('diskon_rp'),
                 'lokasi' => $request->get('lokasi'),
                 'keterangan' => $request->get('keterangan'),
+                'total_harga_sebelum' => $total_sebelum,
                 'total_harga' => $hasil,
-                'total_harga_setelah_pajak'=> $pajak
+                'total_harga_setelah_pajak' => $pajak
             ];
             session(['transaksi_pembelian' => $data]);
 
@@ -493,6 +513,7 @@ class PembelianController extends Controller
 
             //hitung diskon persen
             $hasil = $total;
+            $total_sebelum = $total;
             if ($trpembelian['diskon_persen'] != '0') {
                 $diskon_persen = $trpembelian['diskon_persen'];
                 $hitung = ($diskon_persen / 100) * $total;
@@ -516,13 +537,93 @@ class PembelianController extends Controller
                 'diskon_rp' => $trpembelian['diskon_rp'],
                 'lokasi' => $trpembelian['lokasi'],
                 'keterangan' => $trpembelian['keterangan'],
+                'total_harga_sebelum' => $total_sebelum,
                 'total_harga' => $hasil,
-                'total_harga_setelah_pajak'=> $pajak
+                'total_harga_setelah_pajak' => $pajak
             ];
             Session::forget('transaksi_pembelian');
             Session::put('transaksi_pembelian', $data);
             Session::save();
             return response()->json(['message' => 'saved']);
+        }
+    }
+
+    public function check_session_detail(Request $request)
+    {
+        if ($request->ajax()) {
+            $message = "";
+            if (Session::has('detail_transaksi_pembelian')) {
+                $message = "true";
+            } else {
+                $message = "false";
+            }
+
+            return response()->json([
+                'message' => $message
+            ]);
+        }
+    }
+
+    public function delete_data($id)
+    {
+        if (session()->has('detail_transaksi_pembelian')) {
+            $datadetail = Session::get('detail_transaksi_pembelian');
+            $arr = [];
+            $total  = 0;
+            $trpembelian = Session::get('transaksi_pembelian');
+            foreach ($datadetail as $key => $value) {
+                if ($value["urut"] != $id) {
+                    $total = $total + $value["subtotal"];
+                    array_push($arr, $value);
+                }
+            }
+
+            Session::forget('detail_transaksi_pembelian');
+            Session::put('detail_transaksi_pembelian', $arr);
+            Session::save();
+
+            //hitung diskon persen
+            $hasil = $total;
+            $total_sebelum = $total;
+            if ($trpembelian['diskon_persen'] != '0') {
+                $diskon_persen = $trpembelian['diskon_persen'];
+                $hitung = ($diskon_persen / 100) * $total;
+                $hasil = $total - $hitung;
+            }
+            //diskon rp
+            if ($trpembelian['diskon_rp'] != '0') {
+                $diskon_rp = $trpembelian['diskon_rp'];
+                $hasil = $hasil - $diskon_rp;
+            }
+            //pajak
+
+            $pajak = $hasil + (($trpembelian['pajak'] / 100) * $hasil);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $data = [
+                'transaksi' => $trpembelian['transaksi'],
+                'nomor' => $trpembelian['nomor'],
+                'tanggal' => $trpembelian['tanggal'],
+                'kode' => $trpembelian['kode'],
+                'supplier' => $trpembelian['supplier'],
+                'diskon_persen' => $trpembelian['diskon_persen'],
+                'pajak' => $trpembelian['pajak'],
+                'diskon_rp' => $trpembelian['diskon_rp'],
+                'lokasi' => $trpembelian['lokasi'],
+                'keterangan' => $trpembelian['keterangan'],
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ];
+            Session::forget('transaksi_pembelian');
+            Session::put('transaksi_pembelian', $data);
+            Session::save();
+            return redirect()->route('pos.pembelian.index')->with("success", "Detail barang berhasil dihapus");
         }
     }
 }

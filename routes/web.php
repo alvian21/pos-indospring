@@ -43,6 +43,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
         Route::group(['prefix' => 'pembelian'], function () {
             Route::get('/data_detail','PembelianController@getDataDetail')->name('pembelian.datadetail');
+            Route::get('/check_session','PembelianController@check_session_detail')->name('pembelian.check');
             Route::get('/data_pembelian','PembelianController@getDataPembelian')->name('pembelian.transaksi');
             Route::post('/transaksi_pembelian', 'PembelianController@store_transaksi')->name('transaksi_pembelian.store');
             Route::post('/detail_transaksi_pembelian', 'PembelianController@store_detail')->name('detail_transaksi_pembelian.store');
@@ -50,6 +51,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/data_barang', 'PembelianController@get_data_barang')->name('pembelian.databarang');
             Route::get('/save_transaksi_pembelian', 'PembelianController@save_data_transaksi')->name('pembelian.save');
             Route::post('/update_transaksi','PembelianController@update_transaksi')->name('update.trpembelian');
+            Route::get('/delete_detail/{id}', 'PembelianController@delete_data');
         });
         Route::group(['prefix' => 'penjualan'], function () {
             Route::get('/data_detail','PenjualanController@getDataDetail')->name('penjualan.datadetail');

@@ -199,7 +199,21 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ttl_harga">Total Harga</label>
+                                <input type="text" class="form-control"  value="0" name="ttl_harga" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ttl_harga_pajak">Total Harga + Pajak</label>
+                                <input type="text" class="form-control" value="0"  name="ttl_harga_pajak"
+                                  readonly>
+                            </div>
+                        </div>
+                    </div>
                     @endif
 
                 </div>
@@ -269,7 +283,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="number" class="form-control" id="diskon_persen" value="0"
+                                <input type="number" class="form-control" id="diskon_persen_edit" value="0"
                                     name="diskon_persen" required>
                             </div>
 
@@ -277,7 +291,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp)</label>
-                                <input type="number" class="form-control" id="diskon_rp" value="0" name="diskon_rp"
+                                <input type="number" class="form-control" id="diskon_rp_edit" value="0" name="diskon_rp"
                                     required>
                             </div>
 
@@ -288,7 +302,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="pajak">Pajak</label>
-                                <input type="text" class="form-control" id="pajak" value="10" name="pajak" required>
+                                <input type="text" class="form-control" id="pajak_edit" value="10" name="pajak" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -306,7 +320,21 @@
                         </div>
                     </div>
 
-
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ttl_harga">Total Harga</label>
+                                <input type="text" class="form-control" id="ttl_harga" value="0" name="ttl_harga" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ttl_harga_pajak">Total Harga + Pajak</label>
+                                <input type="text" class="form-control" value="0" id="ttl_harga_pajak" name="ttl_harga_pajak"
+                                  readonly>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -443,6 +471,7 @@
      var harga;
      var ds_rp;
      var ds_persen;
+     var ttl_harga=0;
     var table = $("#table-transaksi").DataTable({
         "columnDefs": [
             { "visible": false, "targets": 9}
@@ -534,6 +563,17 @@
             return sub_total;
         }
      }
+
+     function pajak(sub_total, pajak){
+         if(pajak != 0 || pajak != ''){
+            var ht_pajak = sub_total + ((pajak/100)*sub_total);
+            return ht_pajak;
+         }else{
+            return sub_total;
+         }
+
+     }
+
      $('#qty').on('keyup keydown keypress', function(){
           qty = $(this).val();
           harga = $('#harga').val();
@@ -666,13 +706,28 @@
                dataselect = $(this).val();
              }
           })
+          console.log(data)
+          $('#ttl_harga').val(data['total_harga'])
+          $('#ttl_harga_pajak').val(data['total_harga_setelah_pajak'])
           $('#keterangan').val(data['keterangan'])
           $('[id=supplier_edit]').val(dataselect).trigger('change');
-          $('#diskon_persen').val(data['diskon_persen']);
-          $('#diskon_rp').val(data['diskon_rp']);
-          $('#pajak').val(data['pajak']);
+          $('#diskon_persen_edit').val(data['diskon_persen']);
+          $('#diskon_rp_edit').val(data['diskon_rp']);
+          $('#pajak_edit').val(data['pajak']);
+          ttl_harga = data['total_harga_sebelum']
           $('#editTrModal').modal('show');
 
+      })
+
+      $(document).on('keyup','#diskon_persen_edit, #diskon_rp_edit, #pajak_edit', function(){
+          var ds_persen_edit = $('#diskon_persen_edit').val();
+          var ds_rp_edit = $('#diskon_rp_edit').val();
+          var ds_persen = diskon_persen(ttl_harga, ds_persen_edit);
+          var ds_rp = diskon_rp(ds_persen, ds_rp_edit);
+          var pajak = $('#pajak_edit').val();
+          var ht_pajak = pajak(ds_rp, pajak);
+          $('#ttl_harga').val(ds_rp);
+          $('#ttl_harga_pajak').val(ht_pajak);
       })
 
       $(document).on('click', '.btnDetailBarangEdit', function(){
@@ -701,18 +756,51 @@
       })
 
     $('.btnsimpan').on('click', function(){
+
+
+        $.ajax({
+            url:"{{route('pos.pembelian.check')}}",
+            method:"GET",
+            success:function(data){
+                if(data['message']=='true'){
+                    swal({
+                        title: "Apa anda yakin menyimpan data transaksi ini?",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        })
+                        .then((willSave) => {
+                        if (willSave) {
+                            window.location.href = "{{route('pos.pembelian.save')}}"
+                        }
+                        });
+                }else{
+                    swal("Detail Belum Diisi!");
+                }
+            }
+        })
+
+
+    })
+
+    $(document).on('click','.btnDelete', function () {
+       var urut = $(this).data('urut')
+       console.log(urut);
         swal({
-            title: "Apa anda yakin menyimpan data transaksi ini?",
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this imaginary file!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
             })
-            .then((willSave) => {
-            if (willSave) {
-                window.location.href = "{{route('pos.pembelian.save')}}"
+            .then((willDelete) => {
+            if (willDelete) {
+               window.location.href="/admin/pos/pembelian/delete_detail/"+urut;
+            } else {
+                swal("Your imaginary file is safe!");
             }
             });
-    })
+     })
 
 })
 </script>
