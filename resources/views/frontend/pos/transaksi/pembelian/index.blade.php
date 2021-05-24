@@ -547,8 +547,9 @@
 
      $(' .diskon_persen').on('keyup keydown', function(){
          var diskon = $(this).val();
-
-        ds_rp = $('.diskon_rp').val();
+            qty = $("#qty").val();
+            harga = $('#harga').val();
+            ds_rp = $('.diskon_rp').val();
             subtotal = qty * harga;
             subtotal = diskon_persen(subtotal, diskon);
             subtotal = diskon_rp(subtotal, ds_rp);
@@ -558,6 +559,8 @@
 
      $('.diskon_rp').on('keyup keydown keypress', function(){
          var diskon = $(this).val();
+         qty = $("#qty").val();
+        harga = $('#harga').val();
          ds_persen = $('.diskon_persen').val();
          subtotal = qty * harga;
         subtotal = diskon_persen(subtotal, ds_persen);
