@@ -603,7 +603,6 @@
       });
 
       $(document).on('click','.btnDetailUpdate',function () {
-        alert('hello')
         var barang = $('#barang').val();
         var qty = $('#qty').val();
             if(barang == '0'){
@@ -646,7 +645,7 @@
 
 
       $(document).on('click','.btnedittr',function(){
-
+        
           var row = $(this).closest("tr");
           var data =  $('#table-transaksi').DataTable().row(row).data()
           $('#nomor').val(data['nomor']);

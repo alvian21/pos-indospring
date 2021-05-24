@@ -22,12 +22,14 @@ class PembelianController extends Controller
      */
     public function index(Request $request)
     {
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->OrderBy('Tanggal', 'DESC')->first();
+        $day = date('d');
+        $month = date('m');
+        $year = date('Y');
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal',$year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
         $pembelian = Trmutasihd::where('Transaksi', 'PEMBELIAN')->get();
         $mslokasi = Mslokasi::all();
         $mssupplier = Mssupplier::all();
         $msbarang = Msbarang::all();
-
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
@@ -312,31 +314,35 @@ class PembelianController extends Controller
     public function getDataDetail(Request $request)
     {
         if ($request->ajax()) {
-            if (session()->has('detail_transaksi_pembelian')) {
-                $datadetail = session('detail_transaksi_pembelian');
-            } else {
-                $datadetail = [[
-                    'urut' => '',
-                    'barang' => '',
-                    'nama_barang' => '',
-                    'diskon_persen' => '',
-                    'qty' => '',
-                    'diskon_rp' => '',
-                    'harga' => '',
-                    'subtotal' => '',
-                    'keterangan' => '',
-                ]];
+            $datadetail = session('detail_transaksi_pembelian');
+            $data2 = array();
+            if($datadetail != null){
+                $count = count($datadetail);
+                $no = 1;
+                foreach ($datadetail as $row) {
+                    $sub = array();
+                    $sub["urut"] = $row['urut'];
+                    $sub["barang"] = $row['barang'];
+                    $sub["nama_barang"] = $row['nama_barang'];
+                    $sub["harga"] = $row['harga'];
+                    $sub["qty"] = $row['qty'];
+                    $sub["diskon_persen"] = $row['diskon_persen'];
+                    $sub["subtotal"] = $row['subtotal'];
+                    $sub["diskon_rp"] = $row['diskon_rp'];
+                    $sub["keterangan"] = $row['keterangan'];
+                    $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
+                    $data2[] = $sub;
+                }
+            }else{
+                $count = 0;
             }
-
-            return Datatables::of($datadetail)->addIndexColumn()
-                ->addColumn('action', function ($row) {
-
-                    $btn = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button>';
-                    $btn .= '<button class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
-
-                    return $btn;
-                })
-                ->rawColumns(['action'])->make(true);
+                $output = [
+                    "draw" => $request->get('draw'),
+                    "recordsTotal" => $count,
+                    "recordsFiltered" => $count,
+                    "data" => $data2
+                ];
+                return response()->json($output);
         }
     }
 
