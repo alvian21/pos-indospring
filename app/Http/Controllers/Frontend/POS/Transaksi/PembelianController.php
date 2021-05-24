@@ -11,6 +11,7 @@ use App\Mssupplier;
 use App\Trmutasidt;
 use Illuminate\Support\Facades\Validator;
 use DataTables;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class PembelianController extends Controller
@@ -25,7 +26,7 @@ class PembelianController extends Controller
         $day = date('d');
         $month = date('m');
         $year = date('Y');
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal',$year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
         $pembelian = Trmutasihd::where('Transaksi', 'PEMBELIAN')->get();
         $mslokasi = Mslokasi::all();
         $mssupplier = Mssupplier::all();
@@ -157,7 +158,8 @@ class PembelianController extends Controller
                 'diskon_rp' => $request->get('diskon_rp'),
                 'lokasi' => $request->get('lokasi'),
                 'keterangan' => $request->get('keterangan'),
-                'total_harga' => 0
+                'total_harga' => 0,
+                'total_harga_setelah_pajak' => 0
             ];
 
             session(['transaksi_pembelian' => $data]);
@@ -249,7 +251,7 @@ class PembelianController extends Controller
                 $hasil = $hasil - $diskon_rp;
             }
             //pajak
-            $hasil = $hasil + $trpembelian['pajak'];
+            $pajak = $hasil + (($trpembelian['pajak'] / 100) * $hasil);
             $data = [
                 'transaksi' => $trpembelian['transaksi'],
                 'nomor' => $trpembelian['nomor'],
@@ -261,7 +263,8 @@ class PembelianController extends Controller
                 'diskon_rp' => $trpembelian['diskon_rp'],
                 'lokasi' => $trpembelian['lokasi'],
                 'keterangan' => $trpembelian['keterangan'],
-                'total_harga' => $hasil
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak'=> $pajak
             ];
             Session::forget('transaksi_pembelian');
             Session::put('transaksi_pembelian', $data);
@@ -285,8 +288,9 @@ class PembelianController extends Controller
             $trmutasihd->Pajak = $trpembelian["pajak"];
             $trmutasihd->LokasiTujuan = $trpembelian["lokasi"];
             $trmutasihd->TotalHarga = $trpembelian["total_harga"];
-            $trmutasihd->UserUpdateSP = session('nama_anggota');
+            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->StatusPesanan = "Dalam Proses";
+            $trmutasihd->TotalHargaSetelahPajak = $trpembelian["total_harga_setelah_pajak"];
             $trmutasihd->save();
 
             $datadetail = session('detail_transaksi_pembelian');
@@ -299,7 +303,7 @@ class PembelianController extends Controller
                 $trmutasidt->Keterangan = $value["keterangan"];
                 $trmutasidt->DiskonPersen = $value["diskon_persen"];
                 $trmutasidt->DiskonTunai = $value["diskon_rp"];
-                $trmutasidt->UserUpdate = session('nama_anggota');
+                $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
                 $trmutasidt->LastUpdate = date('Y-m-d H:i');
                 $trmutasidt->Jumlah = $value['qty'];
                 $trmutasidt->Harga = $value['subtotal'];
@@ -316,7 +320,7 @@ class PembelianController extends Controller
         if ($request->ajax()) {
             $datadetail = session('detail_transaksi_pembelian');
             $data2 = array();
-            if($datadetail != null){
+            if ($datadetail != null) {
                 $count = count($datadetail);
                 $no = 1;
                 foreach ($datadetail as $row) {
@@ -333,16 +337,16 @@ class PembelianController extends Controller
                     $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
                     $data2[] = $sub;
                 }
-            }else{
+            } else {
                 $count = 0;
             }
-                $output = [
-                    "draw" => $request->get('draw'),
-                    "recordsTotal" => $count,
-                    "recordsFiltered" => $count,
-                    "data" => $data2
-                ];
-                return response()->json($output);
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
         }
     }
 
@@ -421,7 +425,7 @@ class PembelianController extends Controller
                 $hasil = $hasil - $diskon_rp;
             }
             //pajak
-            $hasil = $hasil + $request->get('pajak');
+            $pajak = $hasil + (($request->get('pajak') / 100) * $hasil);
             $data = [
                 'transaksi' => $request->get('transaksi'),
                 'nomor' => $request->get('nomor'),
@@ -433,7 +437,8 @@ class PembelianController extends Controller
                 'diskon_rp' => $request->get('diskon_rp'),
                 'lokasi' => $request->get('lokasi'),
                 'keterangan' => $request->get('keterangan'),
-                'total_harga' => $hasil
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak'=> $pajak
             ];
             session(['transaksi_pembelian' => $data]);
 
@@ -499,7 +504,7 @@ class PembelianController extends Controller
                 $hasil = $hasil - $diskon_rp;
             }
             //pajak
-            $hasil = $hasil + $trpembelian['pajak'];
+            $pajak = $hasil + (($trpembelian['pajak'] / 100) * $hasil);
             $data = [
                 'transaksi' => $trpembelian['transaksi'],
                 'nomor' => $trpembelian['nomor'],
@@ -511,7 +516,8 @@ class PembelianController extends Controller
                 'diskon_rp' => $trpembelian['diskon_rp'],
                 'lokasi' => $trpembelian['lokasi'],
                 'keterangan' => $trpembelian['keterangan'],
-                'total_harga' => $hasil
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak'=> $pajak
             ];
             Session::forget('transaksi_pembelian');
             Session::put('transaksi_pembelian', $data);

@@ -590,6 +590,7 @@
                    success:function(data){
                        $('.alert-success').text('Data berhasil di tambahkan')
                        $('.alert-danger').hide()
+                       $('[id=barang]').val('0').trigger('change');
                        $('#alert-detail').show();
                        setTimeout(function(){ $('#alert-detail').hide()},3000);
                        $('#formDetail').trigger("reset");
@@ -627,12 +628,16 @@
                     $('.alert-success').text('Data berhasil di update')
                     $('.alert-danger').hide()
                     $('#alert-detail').show();
-                    setTimeout(function(){ $('#alert-detail').hide()},3000);
+                    setTimeout(function(){ $('#alert-detail').hide()
+                    $('#barangModal').modal('hide')
+                    },3000);
                     $('#formDetail').trigger("reset");
                     table_detail.ajax.reload();
                     table.ajax.reload();
+                    $('[id=barang]').val('0').trigger('change');
                     $('.btnSimpan').show();
                     $('#barang').val('0');
+
                 }
             })
             }
@@ -640,12 +645,15 @@
 
       $('#barangModal').on('hidden.bs.modal', function() {
                 $(this).find('form').trigger('reset');
+                $('[id=barang]').val('0').trigger('change');
+                $('.btnBarangModal').text('insert');
+                $('#barangModalLabel').text('Input detail barang')
                 $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
             });
 
 
       $(document).on('click','.btnedittr',function(){
-        
+
           var row = $(this).closest("tr");
           var data =  $('#table-transaksi').DataTable().row(row).data()
           $('#nomor').val(data['nomor']);
@@ -677,12 +685,14 @@
                dataselect = $(this).val();
              }
           })
+          $('.btnBarangModal').text('update');
           $('.keterangan').val(data['keterangan']);
           $('.diskon_rp').val(data['diskon_rp']);
           $('.diskon_persen').val(data['diskon_persen']);
           $('#subtotal').val(data['subtotal']);
           $('#qty').val(data['qty']);
           $('[id=barang]').val(dataselect).trigger('change');
+          $('#barangModalLabel').text('Edit detail barang')
           $('.btnBarangModal').removeClass('btnDetailInsert').addClass('btnDetailUpdate')
           $('#barangModal').modal('show')
       })

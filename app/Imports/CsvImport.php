@@ -24,7 +24,7 @@ class CsvImport implements ToCollection
 
         $month = date('m');
         $year = date('Y');
-        $user = session('nama_anggota');
+        $user = auth('web')->user()->UserLogin;
         foreach ($collection as $key => $value) {
             if ($key > 0) {
 
