@@ -242,13 +242,13 @@ class PembelianController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
-            if ($trpembelian['diskon_persen'] != '0') {
+            if ($trpembelian['diskon_persen'] >= 0) {
                 $diskon_persen = $trpembelian['diskon_persen'];
                 $hitung = ($diskon_persen / 100) * $total;
                 $hasil = $total - $hitung;
             }
             //diskon rp
-            if ($trpembelian['diskon_rp'] != '0') {
+            if ($trpembelian['diskon_rp'] >= 0) {
                 $diskon_rp = $trpembelian['diskon_rp'];
                 $hasil = $hasil - $diskon_rp;
             }
@@ -431,13 +431,13 @@ class PembelianController extends Controller
             $hasil = $total;
             $total_sebelum = $total;
             if ($total != 0) {
-                if ($request->get('diskon_persen') != '0') {
+                if ($request->get('diskon_persen') >= 0) {
                     $diskon_persen = $request->get('diskon_persen');
                     $hitung = ($diskon_persen / 100) * $total;
                     $hasil = $total - $hitung;
                 }
                 //diskon rp
-                if ($request->get('diskon_rp') != '0') {
+                if ($request->get('diskon_rp') >= 0) {
                     $diskon_rp = $request->get('diskon_rp');
                     $hasil = $hasil - $diskon_rp;
                 }
@@ -514,13 +514,13 @@ class PembelianController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
-            if ($trpembelian['diskon_persen'] != '0') {
+            if ($trpembelian['diskon_persen'] >= 0) {
                 $diskon_persen = $trpembelian['diskon_persen'];
                 $hitung = ($diskon_persen / 100) * $total;
                 $hasil = $total - $hitung;
             }
             //diskon rp
-            if ($trpembelian['diskon_rp'] != '0') {
+            if ($trpembelian['diskon_rp'] >= 0) {
                 $diskon_rp = $trpembelian['diskon_rp'];
                 $hasil = $hasil - $diskon_rp;
             }
@@ -585,13 +585,13 @@ class PembelianController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
-            if ($trpembelian['diskon_persen'] != '0') {
+            if ($trpembelian['diskon_persen'] >= 0) {
                 $diskon_persen = $trpembelian['diskon_persen'];
                 $hitung = ($diskon_persen / 100) * $total;
                 $hasil = $total - $hitung;
             }
             //diskon rp
-            if ($trpembelian['diskon_rp'] != '0') {
+            if ($trpembelian['diskon_rp'] >= 0) {
                 $diskon_rp = $trpembelian['diskon_rp'];
                 $hasil = $hasil - $diskon_rp;
             }

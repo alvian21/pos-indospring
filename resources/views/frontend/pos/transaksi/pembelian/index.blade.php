@@ -547,7 +547,7 @@
      });
 
      function diskon_persen(sub_total, diskon){
-        if(diskon != 0 || diskon != ''){
+        if(diskon >= 0 || diskon != ''){
             var hitung = (diskon/100) * sub_total;
             var hasil = sub_total - hitung;
             return hasil;
@@ -556,7 +556,7 @@
         }
      }
      function diskon_rp(sub_total, diskon){
-        if(diskon != 0 || diskon != ''){
+        if(diskon >= 0 || diskon != ''){
             var hasil = sub_total - diskon;
             return hasil;
         }else{
@@ -565,7 +565,7 @@
      }
 
      function pajak(sub_total, pajak){
-         if(pajak != 0 || pajak != ''){
+         if(pajak >= 0 || pajak != ''){
             var ht_pajak = sub_total + ((pajak/100)*sub_total);
             return ht_pajak;
          }else{
@@ -617,6 +617,9 @@
         console.log(subtotal);
         subtotal = diskon_persen(subtotal, ds_persen);
         subtotal = diskon_rp(subtotal, ds_rp);
+        if(subtotal <=0){
+            subtotal = 0;
+        }
          $('#subtotal').val(subtotal);
      })
 
