@@ -41,7 +41,7 @@
                                         <th>Diskon Persen</th>
                                         <th>Diskon Tunai</th>
                                         <th>Pajak</th>
-                                        <th>Total Harga</th>
+                                        <th>Total Harga + Pajak</th>
                                         <th>Keterangan</th>
                                         <th>Action</th>
                                     </tr>
@@ -489,7 +489,7 @@
             {data: 'diskon_persen', name: 'diskon_persen'},
             {data: 'diskon_rp', name: 'diskon_rp'},
             {data: 'pajak', name: 'pajak'},
-            {data: 'total_harga', name: 'total_harga'},
+            {data: 'total_harga_setelah_pajak', name: 'total_harga_setelah_pajak'},
             {data: 'keterangan', name: 'keterangan'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
 
@@ -706,7 +706,6 @@
                dataselect = $(this).val();
              }
           })
-          console.log(data)
           $('#ttl_harga').val(data['total_harga'])
           $('#ttl_harga_pajak').val(data['total_harga_setelah_pajak'])
           $('#keterangan').val(data['keterangan'])
