@@ -724,8 +724,8 @@
           var ds_rp_edit = $('#diskon_rp_edit').val();
           var ds_persen = diskon_persen(ttl_harga, ds_persen_edit);
           var ds_rp = diskon_rp(ds_persen, ds_rp_edit);
-          var pajak = $('#pajak_edit').val();
-          var ht_pajak = pajak(ds_rp, pajak);
+          var get_pajak = $('#pajak_edit').val();
+          var ht_pajak = pajak(ds_rp, get_pajak);
           $('#ttl_harga').val(ds_rp);
           $('#ttl_harga_pajak').val(ht_pajak);
       })
