@@ -630,11 +630,11 @@
             if(barang == '0'){
                $('.alert-danger').text('pilih barang terlebih dahulu')
                 $('#alert-detail').show();
-
+                $('.alert-success').hide();
             }else if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
-
+                $('.alert-success').hide();
             }else{
                 $.ajaxSetup({
                     headers: {
@@ -666,12 +666,13 @@
         var qty = $('#qty').val();
             if(barang == '0'){
             $('.alert-danger').text('pilih barang terlebih dahulu')
+            $('.alert-success').hide();
                 $('#alert-detail').show();
 
             }else if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
-
+                $('.alert-success').hide();
             }else{
                 $.ajaxSetup({
                     headers: {
@@ -683,18 +684,17 @@
                 method: "POST",
                 data: $('#formDetail').serialize(),
                 success:function(data){
+                    $('#formDetail').trigger("reset");
+                    table_detail.ajax.reload();
+                    table.ajax.reload();
+                    $('[id=barang]').val('0').trigger('change');
+                    $('.btnSimpan').show();
                     $('.alert-success').text('Data berhasil di update')
                     $('.alert-danger').hide()
                     $('#alert-detail').show();
                     setTimeout(function(){ $('#alert-detail').hide()
                     $('#barangModal').modal('hide')
                     },3000);
-                    $('#formDetail').trigger("reset");
-                    table_detail.ajax.reload();
-                    table.ajax.reload();
-                    $('[id=barang]').val('0').trigger('change');
-                    $('.btnSimpan').show();
-                    $('#barang').val('0');
 
                 }
             })
