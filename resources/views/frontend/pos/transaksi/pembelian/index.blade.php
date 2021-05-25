@@ -409,7 +409,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="text" class="form-control diskon_persen" name="diskon_persen"
+                                <input type="number" class="form-control diskon_persen" name="diskon_persen"
                                     id="diskon_persen" value="0">
                             </div>
 
@@ -417,7 +417,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp)</label>
-                                <input type="text" class="form-control diskon_rp" name="diskon_rp" id="diskon_rp"
+                                <input type="number" class="form-control diskon_rp" name="diskon_rp" id="diskon_rp"
                                     value="0">
                             </div>
                         </div>
@@ -574,39 +574,51 @@
 
      }
 
-     $('#qty').on('keyup keydown keypress', function(){
-          qty = $(this).val();
-          harga = $('#harga').val();
-          ds_persen = $('.diskon_persen').val();
-            ds_rp = $('.diskon_rp').val();
-            subtotal = qty * harga;
-            subtotal = diskon_persen(subtotal, ds_persen);
-            subtotal = diskon_rp(subtotal, ds_rp);
-         $('#subtotal').val(subtotal);
-     });
+    //  $('#qty').on('keyup keydown keypress', function(){
+    //       qty = $(this).val();
+    //       harga = $('#harga').val();
+    //       ds_persen = $('.diskon_persen').val();
+    //         ds_rp = $('.diskon_rp').val();
+    //         subtotal = qty * harga;
+    //         subtotal = diskon_persen(subtotal, ds_persen);
+    //         subtotal = diskon_rp(subtotal, ds_rp);
+    //      $('#subtotal').val(subtotal);
+    //  });
 
-     $(' .diskon_persen').on('keyup keydown', function(){
-         var diskon = $(this).val();
-            qty = $("#qty").val();
-            harga = $('#harga').val();
-            ds_rp = $('.diskon_rp').val();
-            subtotal = qty * harga;
-            subtotal = diskon_persen(subtotal, diskon);
-            subtotal = diskon_rp(subtotal, ds_rp);
-            $('#subtotal').val(subtotal);
+    //  $(' .diskon_persen').on('keyup keydown', function(){
+    //      var diskon = $(this).val();
+    //         qty = $("#qty").val();
+    //         harga = $('#harga').val();
+    //         ds_rp = $('.diskon_rp').val();
+    //         subtotal = qty * harga;
+    //         subtotal = diskon_persen(subtotal, diskon);
+    //         subtotal = diskon_rp(subtotal, ds_rp);
+    //         $('#subtotal').val(subtotal);
 
-     });
+    //  });
 
-     $('.diskon_rp').on('keyup keydown keypress', function(){
-         var diskon = $(this).val();
-         qty = $("#qty").val();
+    //  $('.diskon_rp').on('keyup keydown keypress', function(){
+    //      var diskon = $(this).val();
+    //      qty = $("#qty").val();
+    //     harga = $('#harga').val();
+    //      ds_persen = $('.diskon_persen').val();
+    //      subtotal = qty * harga;
+    //     subtotal = diskon_persen(subtotal, ds_persen);
+    //     subtotal = diskon_rp(subtotal, diskon);
+    //    $('#subtotal').val(subtotal);
+    //  });
+
+     $(document).on('keyup','#harga, #qty, .diskon_rp, .diskon_persen',function(){
+        qty = $("#qty").val();
         harga = $('#harga').val();
-         ds_persen = $('.diskon_persen').val();
-         subtotal = qty * harga;
+        ds_persen = $('.diskon_persen').val();
+        ds_rp = $('.diskon_rp').val();
+        subtotal = qty * harga;
+        console.log(subtotal);
         subtotal = diskon_persen(subtotal, ds_persen);
-        subtotal = diskon_rp(subtotal, diskon);
-       $('#subtotal').val(subtotal);
-     });
+        subtotal = diskon_rp(subtotal, ds_rp);
+         $('#subtotal').val(subtotal);
+     })
 
      $(document).on('click','.btnDetailInsert',function () {
 
