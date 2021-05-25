@@ -242,18 +242,18 @@ class PembelianController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
-            if ($trpembelian['diskon_persen'] > 0) {
-                $diskon_persen = $trpembelian['diskon_persen'];
-                $hitung = ($diskon_persen / 100) * $total;
-                $hasil = $total - $hitung;
-            }
+            $hasil = $this->diskon_persen($hasil, $trpembelian['diskon_persen']);
             //diskon rp
-            if ($trpembelian['diskon_rp'] > 0) {
-                $diskon_rp = $trpembelian['diskon_rp'];
-                $hasil = $hasil - $diskon_rp;
-            }
+            $hasil = $this->diskon_rp($hasil, $trpembelian['diskon_rp']);
             //pajak
-            $pajak = $hasil + (($trpembelian['pajak'] / 100) * $hasil);
+            $pajak = $this->pajak($hasil, $trpembelian['pajak']);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
             $data = [
                 'transaksi' => $trpembelian['transaksi'],
                 'nomor' => $trpembelian['nomor'],
@@ -280,10 +280,33 @@ class PembelianController extends Controller
     {
 
         if (session()->has('detail_transaksi_pembelian') && session()->has('transaksi_pembelian')) {
+
+            $day = date('d');
+            $month = date('m');
+            $year = date('Y');
+
+            $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+            if ($trmutasihd) {
+                $nomor = (int) substr($trmutasihd->Nomor, 14);
+                if ($nomor != 0) {
+                    if ($nomor >= 9999) {
+                        $nomor = $nomor + 1;
+                        $formatNomor = "BE-" . date('Y-m-d') . "-" . $nomor;
+                    } else {
+                        $nomor = $nomor + 1;
+                        $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                        $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
+                    }
+                }
+            } else {
+                $nomor = 1;
+                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
+            }
             $trpembelian = session('transaksi_pembelian');
             $trmutasihd = new Trmutasihd();
             $trmutasihd->Transaksi = $trpembelian["transaksi"];
-            $trmutasihd->Nomor = $trpembelian["nomor"];
+            $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
             $trmutasihd->KodeSuppCust = $trpembelian["kode"];
             $trmutasihd->DiskonPersen = $trpembelian["diskon_persen"];
@@ -300,7 +323,7 @@ class PembelianController extends Controller
             foreach ($datadetail as $key => $value) {
                 $trmutasidt = new Trmutasidt();
                 $trmutasidt->Transaksi = 'PEMBELIAN';
-                $trmutasidt->Nomor = $trpembelian["nomor"];
+                $trmutasidt->Nomor = $formatNomor;
                 $trmutasidt->Urut = $value["urut"];
                 $trmutasidt->KodeBarang = $value["barang"];
                 $trmutasidt->Keterangan = $value["keterangan"];
@@ -430,21 +453,19 @@ class PembelianController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
-            if ($total != 0) {
-                if ($request->get('diskon_persen') > 0) {
-                    $diskon_persen = $request->get('diskon_persen');
-                    $hitung = ($diskon_persen / 100) * $total;
-                    $hasil = $total - $hitung;
-                }
-                //diskon rp
-                if ($request->get('diskon_rp') > 0) {
-                    $diskon_rp = $request->get('diskon_rp');
-                    $hasil = $hasil - $diskon_rp;
-                }
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $request->get('diskon_rp'));
+            //pajak
+            $pajak = $this->pajak($hasil, $request->get('pajak'));
+            if ($pajak <= 0) {
+                $pajak = 0;
             }
 
-            //pajak
-            $pajak = $hasil + (($request->get('pajak') / 100) * $hasil);
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
             $data = [
                 'transaksi' => $request->get('transaksi'),
                 'nomor' => $request->get('nomor'),
@@ -514,18 +535,19 @@ class PembelianController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
-            if ($trpembelian['diskon_persen'] > 0) {
-                $diskon_persen = $trpembelian['diskon_persen'];
-                $hitung = ($diskon_persen / 100) * $total;
-                $hasil = $total - $hitung;
-            }
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $trpembelian['diskon_persen']);
             //diskon rp
-            if ($trpembelian['diskon_rp'] > 0) {
-                $diskon_rp = $trpembelian['diskon_rp'];
-                $hasil = $hasil - $diskon_rp;
-            }
+            $hasil = $this->diskon_rp($hasil, $trpembelian['diskon_rp']);
             //pajak
-            $pajak = $hasil + (($trpembelian['pajak'] / 100) * $hasil);
+            $pajak = $this->pajak($hasil, $trpembelian['pajak']);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
             $data = [
                 'transaksi' => $trpembelian['transaksi'],
                 'nomor' => $trpembelian['nomor'],
@@ -582,22 +604,15 @@ class PembelianController extends Controller
             Session::put('detail_transaksi_pembelian', $arr);
             Session::save();
 
-            //hitung diskon persen
+
             $hasil = $total;
             $total_sebelum = $total;
-            if ($trpembelian['diskon_persen'] > 0) {
-                $diskon_persen = $trpembelian['diskon_persen'];
-                $hitung = ($diskon_persen / 100) * $total;
-                $hasil = $total - $hitung;
-            }
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $trpembelian['diskon_persen']);
             //diskon rp
-            if ($trpembelian['diskon_rp'] > 0) {
-                $diskon_rp = $trpembelian['diskon_rp'];
-                $hasil = $hasil - $diskon_rp;
-            }
+            $hasil = $this->diskon_rp($hasil, $trpembelian['diskon_rp']);
             //pajak
-
-            $pajak = $hasil + (($trpembelian['pajak'] / 100) * $hasil);
+            $pajak = $this->pajak($hasil, $trpembelian['pajak']);
             if ($pajak <= 0) {
                 $pajak = 0;
             }
@@ -624,6 +639,39 @@ class PembelianController extends Controller
             Session::put('transaksi_pembelian', $data);
             Session::save();
             return redirect()->route('pos.pembelian.index')->with("success", "Detail barang berhasil dihapus");
+        }
+    }
+
+    public function diskon_persen($total, $diskon)
+    {
+        if ($diskon > 0 || $diskon != '') {
+            $diskon_persen = $diskon;
+            $hitung = ($diskon_persen / 100) * $total;
+            $hasil = $total - $hitung;
+            return $hasil;
+        } else {
+            return $total;
+        }
+    }
+
+    public function diskon_rp($total, $diskon)
+    {
+        if ($diskon > 0 || $diskon != '') {
+            $diskon_rp = $diskon;
+            $hasil = $total - $diskon_rp;
+            return $hasil;
+        } else {
+            return $total;
+        }
+    }
+
+    public function pajak($total, $pajak)
+    {
+        if ($pajak > 0  || $pajak != '') {
+            $pajak = $total + (($pajak / 100) * $total);
+            return $pajak;
+        } else {
+            return $total;
         }
     }
 }

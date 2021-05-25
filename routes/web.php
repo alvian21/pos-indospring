@@ -60,6 +60,9 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::post('/detail_transaksi_penjualan', 'PenjualanController@store_detail')->name('detail_transaksi_penjualan.store');
             Route::get('/data_barang', 'PenjualanController@get_data_barang')->name('penjualan.databarang');
             Route::get('/save_transaksi_penjualan', 'PenjualanController@save_data_transaksi')->name('penjualan.save');
+            Route::post('/detail_transaksi_pembelian_update', 'PenjualanController@update_detail_barang')->name('detail_transaksi_penjualan.update');
+            Route::get('/check_session', 'PenjualanController@check_session_detail')->name('penjualan.check');
+            Route::get('/delete_detail/{id}', 'PenjualanController@delete_data');
         });
 
         Route::group(['prefix' => 'stockhilang'], function () {

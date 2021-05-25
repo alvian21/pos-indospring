@@ -9,6 +9,7 @@ use App\Trmutasihd;
 use App\Mslokasi;
 use App\Mssupplier;
 use App\Trmutasidt;
+use Illuminate\Support\Facades\Session;
 use DataTables;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +27,21 @@ class PenjualanController extends Controller
         $mslokasi = Mslokasi::all();
         $mssupplier = Mssupplier::all();
         $msbarang = Msbarang::all();
-
+        if (session()->has('transaksi_penjualan')) {
+            $trpenjualan = session('transaksi_penjualan');
+        } else {
+            $trpenjualan = [
+                'kode' => '',
+                'diskon_persen' => '0',
+                'pajak' => '10',
+                'diskon_rp' => '0',
+                'lokasi' => '0',
+                'keterangan' => '',
+                'total_harga_sebelum' => '0',
+                'total_harga' => '0',
+                'total_harga_setelah_pajak' => '0'
+            ];
+        }
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
@@ -52,7 +67,8 @@ class PenjualanController extends Controller
         return view("frontend.pos.transaksi.penjualan.index", [
             'formatNomor' => $formatNomor, 'penjualan' => $penjualan,
             'mslokasi' => $mslokasi, 'mssupplier' => $mssupplier,
-            'msbarang' => $msbarang
+            'msbarang' => $msbarang,
+            'trpenjualan' => $trpenjualan
         ]);
     }
 
@@ -124,40 +140,73 @@ class PenjualanController extends Controller
 
     public function store_transaksi(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'transaksi' => 'required',
-            'nomor' => 'required',
-            'tanggal' => 'required',
-            'supplier' => 'required',
-            'diskon_persen' => 'required',
-            'pajak' => 'required',
-            'diskon_rp' => 'required',
-            'lokasi' => 'required',
-            'keterangan' => 'nullable',
+        if ($request->ajax()) {
+            $validator = Validator::make($request->all(), [
+                'transaksi' => 'required',
+                'nomor' => 'required',
+                'tanggal' => 'required',
+                'supplier' => 'required',
+                'diskon_persen' => 'required',
+                'pajak' => 'required',
+                'diskon_rp' => 'required',
+                'lokasi' => 'required',
+                'keterangan' => 'nullable',
 
-        ]);
+            ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
-        } else {
-            $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
-            $data = [
-                'transaksi' => $request->get('transaksi'),
-                'nomor' => $request->get('nomor'),
-                'tanggal' => $request->get('tanggal'),
-                'kode' => $request->get('supplier'),
-                'supplier' => $kodesup->Nama,
-                'diskon_persen' => $request->get('diskon_persen'),
-                'pajak' => $request->get('pajak'),
-                'diskon_rp' => $request->get('diskon_rp'),
-                'lokasi' => $request->get('lokasi'),
-                'keterangan' => $request->get('keterangan'),
-                'total_harga' => 0
-            ];
+            if ($validator->fails()) {
 
-            session(['transaksi_penjualan' => $data]);
+                return response()->json($validator->errors());
+            } else {
+                $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
+                $total = 0;
+                if (session()->has('detail_transaksi_penjualan')) {
+                    $datadetail = Session::get('detail_transaksi_penjualan');
+                    foreach ($datadetail as $key => $value) {
+                        $total = $total + $value["subtotal"];
+                    }
+                }
+                //hitung diskon persen
+                $hasil = $total;
+                $total_sebelum = $total;
+                //hitung diskon persen
+                $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
+                //diskon rp
+                $hasil = $this->diskon_rp($hasil, $request->get('diskon_rp'));
+                //pajak
+                $pajak = $this->pajak($hasil, $request->get('pajak'));
+                if ($pajak <= 0) {
+                    $pajak = 0;
+                }
 
-            return redirect()->route('pos.penjualan.index')->with("success", "Transaksi penjualan berhasil ditambahkan");
+                if ($hasil <= 0) {
+                    $hasil = 0;
+                }
+                //cek session
+                $data = [
+                    'transaksi' => $request->get('transaksi'),
+                    'nomor' => $request->get('nomor'),
+                    'tanggal' => $request->get('tanggal'),
+                    'kode' => $request->get('supplier'),
+                    'supplier' => $kodesup->Nama,
+                    'diskon_persen' => $request->get('diskon_persen'),
+                    'pajak' => $request->get('pajak'),
+                    'diskon_rp' => $request->get('diskon_rp'),
+                    'lokasi' => $request->get('lokasi'),
+                    'keterangan' => $request->get('keterangan'),
+                    'total_harga_sebelum' => $total_sebelum,
+                    'total_harga' => $hasil,
+                    'total_harga_setelah_pajak' => $pajak
+                ];
+
+                session(['transaksi_penjualan' => $data]);
+                session()->save();
+
+                return response()->json([
+                    'total_harga' => $hasil,
+                    'total_harga_setelah_pajak' => $pajak
+                ]);
+            }
         }
     }
 
@@ -185,13 +234,11 @@ class PenjualanController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator->errors());
         } else {
-
-
             $arr = [];
-            $trpenjualan = session('transaksi_penjualan');
+            $trpenjualan = Session::get('transaksi_penjualan');
             $total = 0;
-            if (session()->has('detail_transaksi_penjualan')) {
-                $datadetail = session('detail_transaksi_penjualan');
+            if (Session::has('detail_transaksi_penjualan')) {
+                $datadetail = Session::get('detail_transaksi_penjualan');
                 $no = 0;
                 foreach ($datadetail as $key => $value) {
                     $total = $total + $value["subtotal"];
@@ -211,8 +258,9 @@ class PenjualanController extends Controller
                 ];
                 $total = $total + $request->get('subtotal');
                 array_push($arr, $data);
-                session(['detail_transaksi_penjualan' => $arr]);
-                session()->save();
+                Session::forget('detail_transaksi_penjualan');
+                Session::put('detail_transaksi_penjualan', $arr);
+                Session::save();
             } else {
                 $data = [
                     'urut' => 1,
@@ -227,8 +275,413 @@ class PenjualanController extends Controller
                 ];
                 $total = $total + $request->get('subtotal');
                 array_push($arr, $data);
-                session(['detail_transaksi_penjualan' => $arr]);
+                Session::forget('detail_transaksi_penjualan');
+                Session::put('detail_transaksi_penjualan', $arr);
+                Session::save();
             }
+
+            //hitung diskon persen
+            $hasil = $total;
+            $total_sebelum = $total;
+            $hasil = $this->diskon_persen($hasil, $trpenjualan['diskon_persen']);
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $trpenjualan['diskon_rp']);
+            //pajak
+            $pajak = $this->pajak($hasil, $trpenjualan['pajak']);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $total_sebelum = round($total_sebelum, 2);
+            $hasil = round($hasil, 2);
+            $pajak = round($pajak, 2);
+            $data = [
+                'transaksi' => $trpenjualan['transaksi'],
+                'nomor' => $trpenjualan['nomor'],
+                'tanggal' => $trpenjualan['tanggal'],
+                'kode' => $trpenjualan['kode'],
+                'supplier' => $trpenjualan['supplier'],
+                'diskon_persen' => $trpenjualan['diskon_persen'],
+                'pajak' => $trpenjualan['pajak'],
+                'diskon_rp' => $trpenjualan['diskon_rp'],
+                'lokasi' => $trpenjualan['lokasi'],
+                'keterangan' => $trpenjualan['keterangan'],
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ];
+            Session::forget('transaksi_penjualan');
+            Session::put('transaksi_penjualan', $data);
+            Session::save();
+
+            return response()->json([
+                'message' => 'saved',
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ]);
+        }
+    }
+
+    public function save_data_transaksi()
+    {
+
+        if (session()->has('detail_transaksi_penjualan') && session()->has('transaksi_penjualan')) {
+
+            $day = date('d');
+            $month = date('m');
+            $year = date('Y');
+
+            $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+            if ($trmutasihd) {
+                $nomor = (int) substr($trmutasihd->Nomor, 14);
+                if ($nomor != 0) {
+                    if ($nomor >= 9999) {
+                        $nomor = $nomor + 1;
+                        $formatNomor = "PE-" . date('Y-m-d') . "-" . $nomor;
+                    } else {
+                        $nomor = $nomor + 1;
+                        $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                        $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+                    }
+                }
+            } else {
+                $nomor = 1;
+                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                $formatNomor = "PE-" . date('y-m-d') . "-" . $addzero;
+            }
+            $trpenjualan = session('transaksi_penjualan');
+            $trmutasihd = new Trmutasihd();
+            $trmutasihd->Transaksi = $trpenjualan["transaksi"];
+            $trmutasihd->Nomor = $formatNomor;
+            $trmutasihd->Tanggal = date('Y-m-d H:i');
+            $trmutasihd->KodeSuppCust = $trpenjualan["kode"];
+            $trmutasihd->DiskonPersen = $trpenjualan["diskon_persen"];
+            $trmutasihd->DiskonTunai = $trpenjualan["diskon_rp"];
+            $trmutasihd->Pajak = $trpenjualan["pajak"];
+            $trmutasihd->LokasiTujuan = $trpenjualan["lokasi"];
+            $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
+            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+            $trmutasihd->StatusPesanan = "Dalam Proses";
+            $trmutasihd->TotalHargaSetelahPajak = $trpenjualan["total_harga_setelah_pajak"];
+            $trmutasihd->save();
+
+            $datadetail = session('detail_transaksi_penjualan');
+            foreach ($datadetail as $key => $value) {
+                $trmutasidt = new Trmutasidt();
+                $trmutasidt->Transaksi = 'PENJUALAN';
+                $trmutasidt->Nomor = $formatNomor;
+                $trmutasidt->Urut = $value["urut"];
+                $trmutasidt->KodeBarang = $value["barang"];
+                $trmutasidt->Keterangan = $value["keterangan"];
+                $trmutasidt->DiskonPersen = $value["diskon_persen"];
+                $trmutasidt->DiskonTunai = $value["diskon_rp"];
+                $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
+                $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                $trmutasidt->Jumlah = $value['qty'];
+                $trmutasidt->Harga = $value['subtotal'];
+                $trmutasidt->save();
+            }
+            session()->forget('detail_transaksi_penjualan');
+            session()->forget('transaksi_penjualan');
+            session()->save();
+            return redirect()->route('pos.penjualan.index')->with("success", "Detail dan data transaksi penjualan berhasil disimpan");
+        }
+    }
+
+    public function getDataDetail(Request $request)
+    {
+        if ($request->ajax()) {
+            $datadetail = session('detail_transaksi_penjualan');
+            $data2 = array();
+            if ($datadetail != null) {
+                $count = count($datadetail);
+                $no = 1;
+                foreach ($datadetail as $row) {
+                    $sub = array();
+                    $sub["urut"] = $row['urut'];
+                    $sub["barang"] = $row['barang'];
+                    $sub["nama_barang"] = $row['nama_barang'];
+                    $sub["harga"] = $row['harga'];
+                    $sub["qty"] = $row['qty'];
+                    $sub["diskon_persen"] = $row['diskon_persen'];
+                    $sub["subtotal"] = $row['subtotal'];
+                    $sub["diskon_rp"] = $row['diskon_rp'];
+                    $sub["keterangan"] = $row['keterangan'];
+                    $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button data-urut="' . $row['urut'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
+        }
+    }
+
+
+    public function getDataPenjualan(Request $request)
+    {
+        if ($request->ajax()) {
+            $datapembelian = [];
+            $data2 = array();
+            if (session()->has('transaksi_penjualan')) {
+                $pembelian = session('transaksi_penjualan');
+                array_push($datapembelian, $pembelian);
+
+                $count = count($datapembelian);
+                $no = 1;
+                foreach ($datapembelian as $row) {
+                    $sub = array();
+                    $sub["transaksi"] = $row['transaksi'];
+                    $sub["nomor"] = $row['nomor'];
+                    $sub["tanggal"] = $row['tanggal'];
+                    $sub["kode"] = $row['kode'];
+                    $sub["supplier"] = $row['supplier'];
+                    $sub["diskon_persen"] = $row['diskon_persen'];
+                    $sub["pajak"] = $row['pajak'];
+                    $sub["diskon_rp"] = $row['diskon_rp'];
+                    $sub["lokasi"] = $row['lokasi'];
+                    $sub["keterangan"] = $row['keterangan'];
+                    $sub["total_harga_sebelum"] = $row['total_harga_sebelum'];
+                    $sub["total_harga"] = $row['total_harga'];
+                    $sub["total_harga_setelah_pajak"] = $row['total_harga_setelah_pajak'];
+                    $sub["action"] = '<button class="edit btn btn-warning btnedittr">Edit</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
+        }
+    }
+
+    public function update_transaksi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'transaksi' => 'required',
+            'nomor' => 'required',
+            'tanggal' => 'required',
+            'supplier' => 'required',
+            'diskon_persen' => 'required',
+            'pajak' => 'required',
+            'diskon_rp' => 'required',
+            'lokasi' => 'required',
+            'keterangan' => 'nullable',
+
+        ]);
+
+        if ($validator->fails()) {
+
+            return redirect()->back()->withErrors($validator->errors());
+        } else {
+            $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
+            $trpenjualan = Session::get('transaksi_penjualan');
+            $total = 0;
+            if (session()->has('detail_transaksi_penjualan')) {
+                $datadetail = Session::get('detail_transaksi_penjualan');
+                foreach ($datadetail as $key => $value) {
+                    $total = $total + $value["subtotal"];
+                }
+            }
+
+
+            //hitung diskon persen
+            $hasil = $total;
+            $total_sebelum = $total;
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $request->get('diskon_rp'));
+            //pajak
+            $pajak = $this->pajak($hasil, $request->get('pajak'));
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $total_sebelum = round($total_sebelum, 2);
+            $hasil = round($hasil, 2);
+            $pajak = round($pajak, 2);
+            $data = [
+                'transaksi' => $request->get('transaksi'),
+                'nomor' => $request->get('nomor'),
+                'tanggal' => $request->get('tanggal'),
+                'kode' => $request->get('supplier'),
+                'supplier' => $kodesup->Nama,
+                'diskon_persen' => $request->get('diskon_persen'),
+                'pajak' => $request->get('pajak'),
+                'diskon_rp' => $request->get('diskon_rp'),
+                'lokasi' => $request->get('lokasi'),
+                'keterangan' => $request->get('keterangan'),
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ];
+            session(['transaksi_penjualan' => $data]);
+
+            return redirect()->route('pos.pembelian.index')->with("success", "Transaksi pembelian berhasil diupdate");
+        }
+    }
+
+    public function update_detail_barang(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_urut' => 'required',
+            'barang' => 'required',
+            'nama_barang' => 'required',
+            'harga' => 'required',
+            'qty' => 'required',
+            'diskon_persen' => 'nullable',
+            'subtotal' => 'required',
+            'diskon_rp' => 'nullable',
+            'keterangan' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        } else {
+            $arr = [];
+            $trpenjualan = Session::get('transaksi_penjualan');
+            $total = 0;
+            if (Session::has('detail_transaksi_penjualan')) {
+                $datadetail = Session::get('detail_transaksi_penjualan');
+                foreach ($datadetail as $key => $value) {
+                    if ($value["urut"] == $request->get('id_urut')) {
+                        $value["urut"] = $value["urut"];
+                        $value["barang"] = $request->get("barang");
+                        $value["nama_barang"] = $request->get("nama_barang");
+                        $value["qty"] = $request->get("qty");
+                        $value["diskon_persen"] = $request->get("diskon_persen");
+                        $value["subtotal"] = $request->get('subtotal');
+                        $value["diskon_rp"] = $request->get("diskon_rp");
+                        $value["harga"] = $request->get("harga");
+                        $value["keterangan"] = $request->get("keterangan");
+                        $total = $total + $request->get('subtotal');
+                        array_push($arr, $value);
+                    } else {
+                        $total = $total + $value["subtotal"];
+                        array_push($arr, $value);
+                    }
+                }
+                Session::forget('detail_transaksi_penjualan');
+                Session::put('detail_transaksi_penjualan', $arr);
+                Session::save();
+            }
+
+            //hitung diskon persen
+            $hasil = $total;
+            $total_sebelum = $total;
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $trpenjualan['diskon_persen']);
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $trpenjualan['diskon_rp']);
+            //pajak
+            $pajak = $this->pajak($hasil, $trpenjualan['pajak']);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $total_sebelum = round($total_sebelum, 2);
+            $hasil = round($hasil, 2);
+            $pajak = round($pajak, 2);
+            $data = [
+                'transaksi' => $trpenjualan['transaksi'],
+                'nomor' => $trpenjualan['nomor'],
+                'tanggal' => $trpenjualan['tanggal'],
+                'kode' => $trpenjualan['kode'],
+                'supplier' => $trpenjualan['supplier'],
+                'diskon_persen' => $trpenjualan['diskon_persen'],
+                'pajak' => $trpenjualan['pajak'],
+                'diskon_rp' => $trpenjualan['diskon_rp'],
+                'lokasi' => $trpenjualan['lokasi'],
+                'keterangan' => $trpenjualan['keterangan'],
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ];
+            Session::forget('transaksi_penjualan');
+            Session::put('transaksi_penjualan', $data);
+            Session::save();
+            return response()->json([
+                'message' => 'saved',
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ]);
+        }
+    }
+
+    public function check_session_detail(Request $request)
+    {
+        if ($request->ajax()) {
+            $message = "";
+            if (Session::has('detail_transaksi_penjualan')) {
+                $message = "true";
+            } else {
+                $message = "false";
+            }
+
+            return response()->json([
+                'message' => $message
+            ]);
+        }
+    }
+
+    public function delete_data($id)
+    {
+        if (session()->has('detail_transaksi_penjualan')) {
+            $datadetail = Session::get('detail_transaksi_penjualan');
+            $arr = [];
+            $total  = 0;
+            $trpenjualan = Session::get('transaksi_penjualan');
+            foreach ($datadetail as $key => $value) {
+                if ($value["urut"] != $id) {
+                    $total = $total + $value["subtotal"];
+                    array_push($arr, $value);
+                }
+            }
+
+            Session::forget('detail_transaksi_penjualan');
+            Session::put('detail_transaksi_penjualan', $arr);
+            Session::save();
+
+
+            $hasil = $total;
+            $total_sebelum = $total;
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $trpenjualan['diskon_persen']);
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $trpenjualan['diskon_rp']);
+            //pajak
+            $pajak = $this->pajak($hasil, $trpenjualan['pajak']);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $total_sebelum = round($total_sebelum, 2);
+            $hasil = round($hasil, 2);
+            $pajak = round($pajak, 2);
 
             $data = [
                 'transaksi' => $trpenjualan['transaksi'],
@@ -241,102 +694,47 @@ class PenjualanController extends Controller
                 'diskon_rp' => $trpenjualan['diskon_rp'],
                 'lokasi' => $trpenjualan['lokasi'],
                 'keterangan' => $trpenjualan['keterangan'],
-                'total_harga' => $total
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
             ];
-
-            session(['transaksi_penjualan' => $data]);
-            session()->save();
-            return response()->json(['message' => 'saved']);
+            Session::forget('transaksi_penjualan');
+            Session::put('transaksi_penjualan', $data);
+            Session::save();
+            return redirect()->route('pos.penjualan.index')->with("success", "Detail barang berhasil dihapus");
         }
     }
 
-    public function save_data_transaksi()
+    public function diskon_persen($total, $diskon)
     {
-
-        if (session()->has('detail_transaksi_penjualan') && session()->has('transaksi_penjualan')) {
-            $trpenjualan = session('transaksi_penjualan');
-            $trmutasihd = new Trmutasihd();
-            $trmutasihd->Transaksi = $trpenjualan["transaksi"];
-            $trmutasihd->Nomor = $trpenjualan["nomor"];
-            $trmutasihd->Tanggal = date('Y-m-d H:i');
-            $trmutasihd->KodeSuppCust = $trpenjualan["kode"];
-            $trmutasihd->DiskonPersen = $trpenjualan["diskon_persen"];
-            $trmutasihd->DiskonTunai = $trpenjualan["diskon_rp"];
-            $trmutasihd->Pajak = $trpenjualan["pajak"];
-            $trmutasihd->LokasiTujuan = $trpenjualan["lokasi"];
-            $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
-            $trmutasihd->StatusPesanan = "Dalam Proses";
-            $trmutasihd->save();
-
-            $datadetail = session('detail_transaksi_penjualan');
-            foreach ($datadetail as $key => $value) {
-                $trmutasidt = new Trmutasidt();
-                $trmutasidt->Transaksi = 'PENJUALAN';
-                $trmutasidt->Nomor = $trpenjualan["nomor"];
-                $trmutasidt->Urut = $value["urut"];
-                $trmutasidt->KodeBarang = $value["barang"];
-                $trmutasidt->Keterangan = $value["keterangan"];
-                $trmutasidt->DiskonPersen = $value["diskon_persen"];
-                $trmutasidt->DiskonTunai = $value["diskon_rp"];
-                $trmutasidt->UserUpdate = "Super User";
-                $trmutasidt->LastUpdate = date('Y-m-d H:i');
-                $trmutasidt->Jumlah = $value['qty'];
-                $trmutasidt->Harga = $value['subtotal'];
-                $trmutasidt->save();
-            }
-            session()->forget('detail_transaksi_penjualan');
-            session()->forget('transaksi_penjualan');
-            return redirect()->route('pos.penjualan.index')->with("success", "Detail dan data transaksi penjualan berhasil disimpan");
+        if ($diskon > 0 || $diskon != '') {
+            $diskon_persen = $diskon;
+            $hitung = ($diskon_persen / 100) * $total;
+            $hasil = $total - $hitung;
+            return $hasil;
+        } else {
+            return $total;
         }
     }
 
-    public function getDataDetail(Request $request)
+    public function diskon_rp($total, $diskon)
     {
-        if ($request->ajax()) {
-            if (session()->has('detail_transaksi_penjualan')) {
-                $datadetail = session('detail_transaksi_penjualan');
-            } else {
-                $datadetail = [[
-                    'urut' => '',
-                    'barang' => '',
-                    'nama_barang' => '',
-                    'diskon_persen' => '',
-                    'diskon_rp' => '',
-                    'harga' => '',
-                    'subtotal' => '',
-                    'keterangan' => '',
-                ]];
-            }
-
-            return Datatables::of($datadetail)->make(true);
+        if ($diskon > 0 || $diskon != '') {
+            $diskon_rp = $diskon;
+            $hasil = $total - $diskon_rp;
+            return $hasil;
+        } else {
+            return $total;
         }
     }
 
-
-    public function getDataPenjualan(Request $request)
+    public function pajak($total, $pajak)
     {
-        if ($request->ajax()) {
-            $datapenjualan = [];
-            if (session()->has('transaksi_penjualan')) {
-                $penjualan = session('transaksi_penjualan');
-            } else {
-                $penjualan = [
-                    'transaksi' => '',
-                    'nomor' => '',
-                    'tanggal' => '',
-                    'kode' => '',
-                    'supplier' => '',
-                    'diskon_persen' => '',
-                    'diskon_rp' => '',
-                    'pajak' => '',
-                    'total_harga' => '',
-                    'keterangan' => '',
-                ];
-            }
-
-            array_push($datapenjualan, $penjualan);
-
-            return Datatables::of($datapenjualan)->make(true);
+        if ($pajak > 0  || $pajak != '') {
+            $pajak = $total + (($pajak / 100) * $total);
+            return $pajak;
+        } else {
+            return $total;
         }
     }
 }
