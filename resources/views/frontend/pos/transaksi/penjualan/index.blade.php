@@ -695,7 +695,7 @@
             })
             .then((willDelete) => {
             if (willDelete) {
-               window.location.href="/admin/pos/penjualan/delete_detail/"+urut;
+               window.location.href="{{url('/admin/pos/penjualan/delete_detail/')}}/"+urut;
             } else {
                 swal("Your imaginary file is safe!");
             }

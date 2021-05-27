@@ -574,39 +574,6 @@
 
      }
 
-    //  $('#qty').on('keyup keydown keypress', function(){
-    //       qty = $(this).val();
-    //       harga = $('#harga').val();
-    //       ds_persen = $('.diskon_persen').val();
-    //         ds_rp = $('.diskon_rp').val();
-    //         subtotal = qty * harga;
-    //         subtotal = diskon_persen(subtotal, ds_persen);
-    //         subtotal = diskon_rp(subtotal, ds_rp);
-    //      $('#subtotal').val(subtotal);
-    //  });
-
-    //  $(' .diskon_persen').on('keyup keydown', function(){
-    //      var diskon = $(this).val();
-    //         qty = $("#qty").val();
-    //         harga = $('#harga').val();
-    //         ds_rp = $('.diskon_rp').val();
-    //         subtotal = qty * harga;
-    //         subtotal = diskon_persen(subtotal, diskon);
-    //         subtotal = diskon_rp(subtotal, ds_rp);
-    //         $('#subtotal').val(subtotal);
-
-    //  });
-
-    //  $('.diskon_rp').on('keyup keydown keypress', function(){
-    //      var diskon = $(this).val();
-    //      qty = $("#qty").val();
-    //     harga = $('#harga').val();
-    //      ds_persen = $('.diskon_persen').val();
-    //      subtotal = qty * harga;
-    //     subtotal = diskon_persen(subtotal, ds_persen);
-    //     subtotal = diskon_rp(subtotal, diskon);
-    //    $('#subtotal').val(subtotal);
-    //  });
 
      $(document).on('keyup','#harga, #qty, .diskon_rp, .diskon_persen',function(){
         qty = $("#qty").val();
@@ -809,7 +776,7 @@
             })
             .then((willDelete) => {
             if (willDelete) {
-               window.location.href="/admin/pos/pembelian/delete_detail/"+urut;
+               window.location.href="{{url('/admin/pos/pembelian/delete_detail/')}}/"+urut;
             } else {
                 swal("Your imaginary file is safe!");
             }
