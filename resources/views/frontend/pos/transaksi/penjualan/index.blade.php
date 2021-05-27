@@ -21,21 +21,21 @@
                         @include('frontend.include.alert')
                         <form action="" method="post" id="formTransaksi">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="transaksi">Transaksi</label>
                                         <input type="text" class="form-control" id="transaksi" name="transaksi" readonly
                                             value="PENJUALAN">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="nomor">Nomor</label>
                                         <input type="text" class="form-control" id="nomor" name="nomor"
                                             value="{{$formatNomor}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tanggal">Tanggal</label>
                                         <input type="text" class="form-control" id="tanggal" name="tanggal" readonly
@@ -43,49 +43,61 @@
                                     </div>
 
                                 </div>
-                            </div>
-                            <div class="row">
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="supplier">Supplier</label>
-                                        <select class="form-control js-example-basic-single" id="supplier"
-                                            name="supplier">
-                                            @forelse ($mssupplier as $item)
-                                            <option value="{{$item->Kode}}" @if($trpenjualan["kode"]==$item->Kode) selected @endif>{{$item->Kode}} | {{$item->Nama}}</option>
-                                            @empty
-                                            <option value="">not found</option>
-                                            @endforelse
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="diskon_persen">Diskon (%)</label>
-                                        <input type="number" class="form-control" id="diskon_persen" min="0" value="{{$trpenjualan["diskon_persen"]}}"
-                                            name="diskon_persen" required>
-                                    </div>
-
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="diskon_rp">Diskon (Rp)</label>
-                                        <input type="number" class="form-control" id="diskon_rp" min="0" value="{{$trpenjualan["diskon_rp"]}}"
-                                            name="diskon_rp" required>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="row">
-
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="lokasi">Lokasi</label>
                                         <input type="text" class="form-control" id="lokasi" name="lokasi"
                                             value="{{auth()->user()->KodeLokasi}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+
+                            </div>
+                            <div class="row">
+
+
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="diskon_persen">Diskon (%)</label>
+                                        <input type="number" class="form-control" id="diskon_persen" min="0"
+                                            value="{{$trpenjualan["diskon_persen"]}}" name="diskon_persen" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="diskon_rp">Diskon (Rp)</label>
+                                        <input type="number" class="form-control" id="diskon_rp" min="0"
+                                            value="{{$trpenjualan["diskon_rp"]}}" name="diskon_rp" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="pajak">Pajak</label>
+                                        <input type="number" class="form-control" id="pajak" name="pajak" min="10"
+                                            value="{{$trpenjualan["pajak"]}}" required>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="ttl_harga">Total Harga</label>
+                                        <input type="text" class="form-control" id="ttl_harga"
+                                            value="{{$trpenjualan["total_harga"]}}" name="ttl_harga" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="ttl_harga_pajak">Total Harga + Pajak</label>
+                                        <input type="text" class="form-control" id="ttl_harga_pajak"
+                                            value="{{$trpenjualan["total_harga_setelah_pajak"]}}" name="ttl_harga_pajak"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="keterangan">keterangan</label>
                                         <textarea class="form-control" id="keterangan" name="keterangan"
@@ -93,30 +105,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="pajak">Pajak</label>
-                                        <input type="number" class="form-control" id="pajak"  name="pajak" min="10" value="{{$trpenjualan["pajak"]}}"
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="ttl_harga">Total Harga</label>
-                                        <input type="text" class="form-control" id="ttl_harga" value="{{$trpenjualan["total_harga"]}}" name="ttl_harga" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="ttl_harga_pajak">Total Harga + Pajak</label>
-                                        <input type="text" class="form-control" id="ttl_harga_pajak"  value="{{$trpenjualan["total_harga_setelah_pajak"]}}" name="ttl_harga_pajak"
-                                            readonly>
-                                    </div>
-                                </div>
-                            </div>
-
                         </form>
                     </div>
                 </div>
@@ -219,7 +207,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="harga">Harga</label>
-                                <input type="number" class="form-control" name="harga" id="harga">
+                                <input type="number" class="form-control" name="harga" readonly id="harga">
                             </div>
                         </div>
 
@@ -235,16 +223,14 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="number" class="form-control diskon_persen" name="diskon_persen"
-                                    id="diskon_persen" value="0">
+                                <input type="number" class="form-control diskon_persen" name="diskon_persen" value="0">
                             </div>
 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp)</label>
-                                <input type="number" class="form-control diskon_rp" name="diskon_rp" id="diskon_rp"
-                                    value="0">
+                                <input type="number" class="form-control diskon_rp" name="diskon_rp" value="0">
                             </div>
                         </div>
 
@@ -273,6 +259,97 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btnBarangModal">Insert</button>
+                    {{-- <input type="submit" value="submit" class="btn btn-primary" name="submit"> --}}
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- modal total --}}
+<div class="modal fade " id="totalModal" tabindex="-1" role="dialog" aria-labelledby="totalModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="totalModalLabel">Total Belanja</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formDetail">
+                <input type="hidden" name="id_urut" id="id_urut">
+                <div class="modal-body">
+                    <div id="alert-total">
+                        <div class="alert alert-danger" role="alert">
+
+                        </div>
+                        <div class="alert alert-success" role="alert">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="total_belanja">Total Belanja</label>
+                                <input type="number" class="form-control" name="total_belanja" id="total_belanja"
+                                   readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="barcode_cust">Customer (Tempelkan Ekop/ scan ID Barcode)</label>
+                                <select class="form-control" id="barcode_cust" name="barcode_cust">
+                                    <option>Pilih Customer</option>
+                                  @foreach ($msanggota as $item)
+                                  <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
+                                  @endforeach
+
+                                  </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="pembayaran_ekop">Pembayaran Ekop</label>
+                                <input type="text" class="form-control" name="pembayaran_ekop" id="pembayaran_ekop"
+                                   >
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="saldo_ekop">Saldo Ekop</label>
+                                <input type="text" class="form-control" readonly name="saldo_ekop" id="saldo_ekop"
+                                   >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="pembayaran_tunai">Pembayaran Tunai</label>
+                                <input type="text" class="form-control" name="pembayaran_tunai" id="pembayaran_tunai"
+                                   >
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="kembalian">Kembalian</label>
+                                <input type="text" class="form-control" readonly name="kembalian" id="kembalian"
+                                   >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btnBarangModal">Ok</button>
                     {{-- <input type="submit" value="submit" class="btn btn-primary" name="submit"> --}}
 
                 </div>
@@ -316,6 +393,7 @@
     });
 
     $('.js-example-basic-single').select2();
+    $('#barcode_cust').select2();
 
     // transaksi post
     $(document).on('change keyup','#supplier, #diskon_persen, #diskon_rp, #pajak, #lokasi, #keterangan', function(){
@@ -326,6 +404,7 @@
             method:"post",
             data:form,
             success:function(data){
+                console.log(data)
              $("#ttl_harga").val(data['total_harga']);
              $("#ttl_harga_pajak").val(data['total_harga_pajak']);
             }
@@ -354,7 +433,7 @@
             },
             success:function(data){
                 $('#nama_barang').val(data["Nama"])
-
+                $('#harga').val(data["HargaJual"])
             }
         })
         }
@@ -555,31 +634,55 @@
           $('#barangModal').modal('show')
       })
 
+    //   $(document).on('change keyup', '#barcode_cust', function(){
+    //         var kode = $(this).val();
+
+    //         $.ajax({
+    //             url:"",
+    //             method:"",
+    //             data:{
+    //                 'kode':kode
+    //             },success:function(data){
+    //                 console.log(data);
+    //             }
+    //         })
+    //   })
+
     $('.btnsimpan').on('click', function(){
-
-
+        var ttl_belanja = $("#ttl_harga_pajak").val();
+        $("#total_belanja").val(ttl_belanja);
+        var cek = "";
         $.ajax({
             url:"{{route('pos.penjualan.check')}}",
+            async:false,
             method:"GET",
             success:function(data){
                 if(data['message']=='true'){
-                    swal({
-                        title: "Apa anda yakin menyimpan data transaksi ini?",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                        })
-                        .then((willSave) => {
-                        if (willSave) {
-                            window.location.href = "{{route('pos.penjualan.save')}}"
-                        }
-                        });
+                    cek = true;
+                    // swal({
+                    //     title: "Apa anda yakin menyimpan data transaksi ini?",
+                    //     icon: "warning",
+                    //     buttons: true,
+                    //     dangerMode: true,
+                    //     })
+                    //     .then((willSave) => {
+                    //     if (willSave) {
+                    //         window.location.href = "{{route('pos.penjualan.save')}}"
+                    //     }
+                    //     });
                 }else{
-                    swal("Detail Belum Diisi!");
+                    cek = false;
+
                 }
             }
         })
-
+        console.log(true)
+        if(cek){
+            $('#alert-total').hide()
+             $('#totalModal').modal('show');
+        }else{
+            swal("Detail Belum Diisi!");
+        }
 
     })
 

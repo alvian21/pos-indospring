@@ -7,6 +7,7 @@ use App\Msbarang;
 use Illuminate\Http\Request;
 use App\Trmutasihd;
 use App\Mslokasi;
+use App\Msanggota;
 use App\Mssupplier;
 use App\Trmutasidt;
 use Illuminate\Support\Facades\Session;
@@ -25,23 +26,8 @@ class PenjualanController extends Controller
         $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->OrderBy('Tanggal', 'DESC')->first();
         $penjualan = Trmutasihd::where('Transaksi', 'PENJUALAN')->get();
         $mslokasi = Mslokasi::all();
-        $mssupplier = Mssupplier::all();
         $msbarang = Msbarang::all();
-        if (session()->has('transaksi_penjualan')) {
-            $trpenjualan = session('transaksi_penjualan');
-        } else {
-            $trpenjualan = [
-                'kode' => '',
-                'diskon_persen' => '0',
-                'pajak' => '10',
-                'diskon_rp' => '0',
-                'lokasi' => '0',
-                'keterangan' => '',
-                'total_harga_sebelum' => '0',
-                'total_harga' => '0',
-                'total_harga_setelah_pajak' => '0'
-            ];
-        }
+        $msanggota = Msanggota::all();
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
@@ -57,7 +43,27 @@ class PenjualanController extends Controller
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "PE-" . date('y-m-d') . "-" . $addzero;
+            $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+        }
+
+        if (session()->has('transaksi_penjualan')) {
+            $trpenjualan = session('transaksi_penjualan');
+        } else {
+            $data = [
+                'transaksi' => 'PENJUALAN',
+                'nomor' => $formatNomor,
+                'tanggal' => date('d M y H:i'),
+                'diskon_persen' => '0',
+                'pajak' => '10',
+                'diskon_rp' => '0',
+                'lokasi' => auth()->user()->KodeLokasi,
+                'keterangan' => '',
+                'total_harga_sebelum' => 0,
+                'total_harga' => 0,
+                'total_harga_setelah_pajak' => 0
+            ];
+            $trpenjualan = session(['transaksi_penjualan' => $data]);
+            $trpenjualan = session('transaksi_penjualan');
         }
         // session()->forget('detail_transaksi_penjualan');
         // session()->forget('transaksi_penjualan');
@@ -66,9 +72,10 @@ class PenjualanController extends Controller
 
         return view("frontend.pos.transaksi.penjualan.index", [
             'formatNomor' => $formatNomor, 'penjualan' => $penjualan,
-            'mslokasi' => $mslokasi, 'mssupplier' => $mssupplier,
+            'mslokasi' => $mslokasi,
             'msbarang' => $msbarang,
-            'trpenjualan' => $trpenjualan
+            'trpenjualan' => $trpenjualan,
+            'msanggota' => $msanggota
         ]);
     }
 
@@ -145,7 +152,6 @@ class PenjualanController extends Controller
                 'transaksi' => 'required',
                 'nomor' => 'required',
                 'tanggal' => 'required',
-                'supplier' => 'required',
                 'diskon_persen' => 'required',
                 'pajak' => 'required',
                 'diskon_rp' => 'required',
@@ -158,7 +164,6 @@ class PenjualanController extends Controller
 
                 return response()->json($validator->errors());
             } else {
-                $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
                 $total = 0;
                 if (session()->has('detail_transaksi_penjualan')) {
                     $datadetail = Session::get('detail_transaksi_penjualan');
@@ -187,8 +192,6 @@ class PenjualanController extends Controller
                     'transaksi' => $request->get('transaksi'),
                     'nomor' => $request->get('nomor'),
                     'tanggal' => $request->get('tanggal'),
-                    'kode' => $request->get('supplier'),
-                    'supplier' => $kodesup->Nama,
                     'diskon_persen' => $request->get('diskon_persen'),
                     'pajak' => $request->get('pajak'),
                     'diskon_rp' => $request->get('diskon_rp'),
@@ -302,8 +305,6 @@ class PenjualanController extends Controller
                 'transaksi' => $trpenjualan['transaksi'],
                 'nomor' => $trpenjualan['nomor'],
                 'tanggal' => $trpenjualan['tanggal'],
-                'kode' => $trpenjualan['kode'],
-                'supplier' => $trpenjualan['supplier'],
                 'diskon_persen' => $trpenjualan['diskon_persen'],
                 'pajak' => $trpenjualan['pajak'],
                 'diskon_rp' => $trpenjualan['diskon_rp'],
@@ -443,8 +444,6 @@ class PenjualanController extends Controller
                     $sub["transaksi"] = $row['transaksi'];
                     $sub["nomor"] = $row['nomor'];
                     $sub["tanggal"] = $row['tanggal'];
-                    $sub["kode"] = $row['kode'];
-                    $sub["supplier"] = $row['supplier'];
                     $sub["diskon_persen"] = $row['diskon_persen'];
                     $sub["pajak"] = $row['pajak'];
                     $sub["diskon_rp"] = $row['diskon_rp'];
@@ -475,7 +474,6 @@ class PenjualanController extends Controller
             'transaksi' => 'required',
             'nomor' => 'required',
             'tanggal' => 'required',
-            'supplier' => 'required',
             'diskon_persen' => 'required',
             'pajak' => 'required',
             'diskon_rp' => 'required',
@@ -488,7 +486,7 @@ class PenjualanController extends Controller
 
             return redirect()->back()->withErrors($validator->errors());
         } else {
-            $kodesup = Mssupplier::where("Kode", $request->get('supplier'))->first();
+
             $trpenjualan = Session::get('transaksi_penjualan');
             $total = 0;
             if (session()->has('detail_transaksi_penjualan')) {
@@ -522,8 +520,6 @@ class PenjualanController extends Controller
                 'transaksi' => $request->get('transaksi'),
                 'nomor' => $request->get('nomor'),
                 'tanggal' => $request->get('tanggal'),
-                'kode' => $request->get('supplier'),
-                'supplier' => $kodesup->Nama,
                 'diskon_persen' => $request->get('diskon_persen'),
                 'pajak' => $request->get('pajak'),
                 'diskon_rp' => $request->get('diskon_rp'),
@@ -607,8 +603,6 @@ class PenjualanController extends Controller
                 'transaksi' => $trpenjualan['transaksi'],
                 'nomor' => $trpenjualan['nomor'],
                 'tanggal' => $trpenjualan['tanggal'],
-                'kode' => $trpenjualan['kode'],
-                'supplier' => $trpenjualan['supplier'],
                 'diskon_persen' => $trpenjualan['diskon_persen'],
                 'pajak' => $trpenjualan['pajak'],
                 'diskon_rp' => $trpenjualan['diskon_rp'],
@@ -659,9 +653,14 @@ class PenjualanController extends Controller
                 }
             }
 
-            Session::forget('detail_transaksi_penjualan');
-            Session::put('detail_transaksi_penjualan', $arr);
-            Session::save();
+
+            if ($total == 0) {
+                Session::forget('detail_transaksi_penjualan');
+            } else {
+                Session::put('detail_transaksi_penjualan', $arr);
+                Session::save();
+            }
+
 
 
             $hasil = $total;
@@ -687,8 +686,6 @@ class PenjualanController extends Controller
                 'transaksi' => $trpenjualan['transaksi'],
                 'nomor' => $trpenjualan['nomor'],
                 'tanggal' => $trpenjualan['tanggal'],
-                'kode' => $trpenjualan['kode'],
-                'supplier' => $trpenjualan['supplier'],
                 'diskon_persen' => $trpenjualan['diskon_persen'],
                 'pajak' => $trpenjualan['pajak'],
                 'diskon_rp' => $trpenjualan['diskon_rp'],
