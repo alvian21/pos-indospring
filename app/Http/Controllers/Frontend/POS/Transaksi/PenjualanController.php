@@ -205,10 +205,7 @@ class PenjualanController extends Controller
                 session(['transaksi_penjualan' => $data]);
                 session()->save();
 
-                return response()->json([
-                    'total_harga' => $hasil,
-                    'total_harga_setelah_pajak' => $pajak
-                ]);
+                return response()->json($data);
             }
         }
     }
@@ -678,10 +675,6 @@ class PenjualanController extends Controller
             if ($hasil <= 0) {
                 $hasil = 0;
             }
-            $total_sebelum = round($total_sebelum, 2);
-            $hasil = round($hasil, 2);
-            $pajak = round($pajak, 2);
-
             $data = [
                 'transaksi' => $trpenjualan['transaksi'],
                 'nomor' => $trpenjualan['nomor'],
@@ -708,7 +701,7 @@ class PenjualanController extends Controller
             $diskon_persen = $diskon;
             $hitung = ($diskon_persen / 100) * $total;
             $hasil = $total - $hitung;
-            return $hasil;
+            return round($hasil,2);
         } else {
             return $total;
         }
@@ -719,7 +712,7 @@ class PenjualanController extends Controller
         if ($diskon > 0 || $diskon != '') {
             $diskon_rp = $diskon;
             $hasil = $total - $diskon_rp;
-            return $hasil;
+            return round($hasil,2);
         } else {
             return $total;
         }
@@ -729,7 +722,7 @@ class PenjualanController extends Controller
     {
         if ($pajak > 0  || $pajak != '') {
             $pajak = $total + (($pajak / 100) * $total);
-            return $pajak;
+            return round($pajak,2);
         } else {
             return $total;
         }

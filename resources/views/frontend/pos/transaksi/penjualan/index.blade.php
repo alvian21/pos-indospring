@@ -88,7 +88,7 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="ttl_harga_pajak">Total Harga + Pajak</label>
-                                        <input type="text" class="form-control" id="ttl_harga_pajak"
+                                        <input type="text" class="form-control ttl_harga_pajak" id="ttl_harga_pajak"
                                             value="{{$trpenjualan["total_harga_setelah_pajak"]}}" name="ttl_harga_pajak"
                                             readonly>
                                     </div>
@@ -396,19 +396,16 @@
     $('#barcode_cust').select2();
 
     // transaksi post
-    $(document).on('change keyup','#supplier, #diskon_persen, #diskon_rp, #pajak, #lokasi, #keterangan', function(){
+    $(document).on('keyup keydown','#supplier, #diskon_persen, #diskon_rp, #pajak, #lokasi, #keterangan', async function(){
         var form = $('#formTransaksi').serialize();
         csrf_ajax();
-        $.ajax({
+       const result = await  $.ajax({
             url:"{{route('pos.transaksi_penjualan.store')}}",
             method:"post",
-            data:form,
-            success:function(data){
-                console.log(data)
-             $("#ttl_harga").val(data['total_harga']);
-             $("#ttl_harga_pajak").val(data['total_harga_pajak']);
-            }
-        })
+            data:form
+        });
+      $('#ttl_harga').val(result['total_harga']);
+      $('#ttl_harga_pajak').val(result['total_harga_setelah_pajak']);
     })
 
     $('.addTransaksi').on('click',function () {
