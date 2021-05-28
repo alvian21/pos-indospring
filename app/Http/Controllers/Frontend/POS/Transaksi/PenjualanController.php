@@ -380,7 +380,7 @@ class PenjualanController extends Controller
             $trmutasihd->LokasiTujuan = $trpenjualan["lokasi"];
             $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            if($pembayaran_tunai != '' || $pembayaran_tunai > 0){
+            if(($pembayaran_tunai != '' || $pembayaran_tunai > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]){
                 $trmutasihd->PembayaranTunai = $pembayaran_tunai;
             }
             if($pembayaran_ekop != '' || $pembayaran_ekop > 0){

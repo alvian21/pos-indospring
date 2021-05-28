@@ -282,10 +282,10 @@
                 @csrf
                 <div class="modal-body">
                     <div id="alert-total">
-                        <div class="alert alert-danger" role="alert">
+                        <div class="alert alert-danger alertdangertotal" role="alert">
 
                         </div>
-                        <div class="alert alert-success" role="alert">
+                        <div class="alert alert-success alertsuccesstotal" role="alert">
                         </div>
                     </div>
 
@@ -332,13 +332,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="pembayaran_tunai">Pembayaran Tunai</label>
-                                <input type="text" class="form-control" name="pembayaran_tunai" id="pembayaran_tunai">
+                                <input type="text" class="form-control" name="pembayaran_tunai" value="0" id="pembayaran_tunai">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="kembalian">Kembalian</label>
-                                <input type="text" class="form-control" readonly name="kembalian" id="kembalian">
+                                <input type="text" class="form-control" readonly name="kembalian" value="0" id="kembalian">
                             </div>
                         </div>
                     </div>
@@ -430,8 +430,8 @@
             method:"post",
             data:form
         });
-      $('#ttl_harga').val(result['total_harga']);
-      $('#ttl_harga_pajak').val(result['total_harga_setelah_pajak']);
+      $('#ttl_harga').val(convertToRupiah(result['total_harga']));
+      $('#ttl_harga_pajak').val(convertToRupiah(result['total_harga_setelah_pajak']));
     })
 
     $('.addTransaksi').on('click',function () {
@@ -503,7 +503,6 @@
 
      function convertToRupiah(angka) {
         var rupiah = '';
-        console.log(angka)
         var angkarev = angka.toString().split('').reverse().join('');
         for (var i = 0; i < angkarev.length; i++) {
             if (i%3 == 0) {
@@ -514,21 +513,25 @@
         }
 
      $(document).on('keyup','#harga, #qty, .diskon_rp, .diskon_persen',function(){
-        qty = $("#qty").val();
-        harga = $('#harga').val();
-        ds_persen = $('.diskon_persen').val();
-        ds_rp = $('.diskon_rp').val();
-        ds_rp = ds_rp.replace('.','');
-        harga = harga.replace('.','');
-        subtotal = qty * harga;
-        console.log(subtotal);
-        subtotal = diskon_persen(subtotal, ds_persen);
-        subtotal = diskon_rp(subtotal, ds_rp);
-        if(subtotal <=0){
-            subtotal = 0;
-        }
-        subtotal = convertToRupiah(subtotal)
-         $('#subtotal').val(subtotal);
+         var barang = $('#barang').val();
+         if(barang != 0){
+            qty = $("#qty").val();
+            harga = $('#harga').val();
+            ds_persen = $('.diskon_persen').val();
+            ds_rp = $('.diskon_rp').val();
+            ds_rp = ds_rp.replace('.','');
+            harga = harga.replace('.','');
+            subtotal = qty * harga;
+            console.log(subtotal);
+            subtotal = diskon_persen(subtotal, ds_persen);
+            subtotal = diskon_rp(subtotal, ds_rp);
+            if(subtotal <=0){
+                subtotal = 0;
+            }
+            subtotal = convertToRupiah(subtotal)
+            $('#subtotal').val(subtotal);
+         }
+
      })
 
      $(document).on('click','.btnDetailInsert',function () {
@@ -676,7 +679,7 @@
             }
         })
         if(cek){
-            $('#alert-total').hide()
+            $('#alert-total').hide();
              $('#totalModal').modal('show');
         }else{
             swal("Detail Belum Diisi!");
@@ -708,6 +711,7 @@
          var ttl_belanja=$('#total_belanja').val();
          ttl_belanja = ttl_belanja.replace('.','');
          if(kode != 0){
+            $('#alert-total').hide();
             $.ajax({
              url:"{{route('pos.penjualan.ceksaldo')}}",
              method:'GET',
@@ -733,8 +737,22 @@
          ekop = ekop.replace('.','');
          var ttl_belanja=$('#total_belanja').val();
          ttl_belanja = ttl_belanja.replace('.','');
+         var hasil_total_belanja ;
+        if(ttl_belanja != ekop){
+            hasil_total_belanja = parseInt(ttl_belanja)-parseInt(ekop);
+        }else{
+            hasil_total_belanja = ttl_belanja;
+        }
 
-         var hasil_total_belanja = ttl_belanja-ekop;
+        var saldo_ekop = $('#saldo_ekop').val();
+        saldo_ekop = saldo_ekop.replace('.','');
+        if(ekop > saldo_ekop ){
+            $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
+            $('.alertsuccesstotal').hide();
+            $('#alert-total').show();
+            return false;
+        }
+
          if(tunai >= hasil_total_belanja){
             var last_result = tunai-hasil_total_belanja;
             $('#kembalian').val(convertToRupiah(last_result));
@@ -742,8 +760,131 @@
 
      });
 
+
+     function replace_titik(cek){
+         if(cek!=undefined){
+            var datacek = cek.replace('.','');
+            return datacek;
+         }
+
+     }
+
+
+     $(document).on('keyup', '#pembayaran_ekop, #pembayaran_tunai', function(){
+         var ekop = $('#pembayaran_ekop').val();
+         var ttl_belanja=$('#total_belanja').val();
+         var tunai = $("#pembayaran_tunai").val();
+        var saldo_ekop = $('#saldo_ekop').val();
+        var barcode_cust = $('#barcode_cust').val();
+        if(barcode_cust == '0'){
+            $('.alertdangertotal').text('Pilih customer terlebih dahulu');
+            $('.alertsuccesstotal').hide();
+            $('#alert-total').show();
+            return false;
+        }else if(parseInt(ekop.replace('.','')) > parseInt(ttl_belanja.replace('.',''))){
+            $('.alertdangertotal').text('Maaf pembayaran maksimal adalah '+ttl_belanja);
+            $('.alertsuccesstotal').hide();
+            $('#alert-total').show();
+            return false;
+        }else{
+            $('#alert-total').hide();
+            ekop = replace_titik(ekop);
+
+            ttl_belanja = replace_titik(ttl_belanja);
+            tunai = replace_titik(tunai);
+            saldo_ekop = replace_titik(saldo_ekop);
+            var hasil_total = 0;
+
+            if(parseInt(ekop) > parseInt(saldo_ekop) ){
+                $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
+                $('.alertsuccesstotal').hide();
+                $('#alert-total').show();
+                return false;
+            }else{
+                //tunai
+                if(ekop == ttl_belanja){
+                    $('#kembalian').val(0);
+                    hasil_total = 0;
+                }else if(ekop > 0 && tunai > 0 ){
+                    hasil_total = ttl_belanja - ekop;
+                    hasil_total = tunai - hasil_total;
+                }else if((ekop == 0 || ekop ==  '') && tunai > 0){
+                    hasil_total = tunai - ttl_belanja;
+                }
+                if(hasil_total >= 0){
+                    $('#kembalian').val(convertToRupiah(hasil_total));
+                }
+
+
+            }
+
+        }
+
+
+     });
+
+
      $(document).on('click','.btnTotalModal', function(){
-        $('#formTotal').submit();
+
+        var ekop = $('#pembayaran_ekop').val();
+         var ttl_belanja=$('#total_belanja').val();
+         var tunai = $("#pembayaran_tunai").val();
+        var saldo_ekop = $('#saldo_ekop').val();
+        var barcode_cust = $('#barcode_cust').val();
+        if(barcode_cust == '0'){
+            $('.alertdangertotal').text('Pilih customer terlebih dahulu');
+            $('.alertsuccesstotal').hide();
+            $('#alert-total').show();
+            return false;
+        }else if(parseInt(ekop.replace('.','')) > parseInt(ttl_belanja.replace('.',''))){
+            $('.alertdangertotal').text('Maaf pembayaran maksimal adalah '+ttl_belanja);
+            $('.alertsuccesstotal').hide();
+            $('#alert-total').show();
+            return false;
+        }else{
+            $('#alert-total').hide();
+            ekop = replace_titik(ekop);
+
+            ttl_belanja = replace_titik(ttl_belanja);
+            tunai = replace_titik(tunai);
+            saldo_ekop = replace_titik(saldo_ekop);
+            var hasil_total = 0;
+
+            if(parseInt(ekop) > parseInt(saldo_ekop) ){
+                $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
+                $('.alertsuccesstotal').hide();
+                $('#alert-total').show();
+                return false;
+            }else if((tunai == 0 || tunai == '') && ekop < ttl_belanja){
+                $('.alertdangertotal').text('Maaf pembayaran ekop kurang');
+                $('.alertsuccesstotal').hide();
+                $('#alert-total').show();
+                return false;
+
+            }else if((ekop == 0 || ekop == '') && tunai < ttl_belanja){
+                $('.alertdangertotal').text('Maaf pembayaran tunai kurang');
+                $('.alertsuccesstotal').hide();
+                $('#alert-total').show();
+                return false;
+            }else if(ekop > 0 && tunai > 0){
+               hasil_total = parseInt(tunai) + parseInt(ekop);
+                if(hasil_total < ttl_belanja){
+                    $('.alertdangertotal').text('Maaf pembayaran tunai dan ekop kurang');
+                    $('.alertsuccesstotal').hide();
+                    $('#alert-total').show();
+                    return false;
+                }else{
+                    $('#formTotal').submit();
+                    return true
+                }
+            }
+            else{
+                $('#formTotal').submit();
+                return true
+            }
+
+        }
+
 
      })
 
