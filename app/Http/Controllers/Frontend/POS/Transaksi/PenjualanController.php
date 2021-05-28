@@ -10,9 +10,11 @@ use App\Mslokasi;
 use App\Msanggota;
 use App\Mssupplier;
 use App\Trmutasidt;
+use App\Trsaldoekop;
 use Illuminate\Support\Facades\Session;
 use DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class PenjualanController extends Controller
 {
@@ -23,11 +25,15 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->OrderBy('Tanggal', 'DESC')->first();
+        $day = date('d');
+        $month = date('m');
+        $year = date('Y');
+
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
         $penjualan = Trmutasihd::where('Transaksi', 'PENJUALAN')->get();
         $mslokasi = Mslokasi::all();
         $msbarang = Msbarang::all();
-        $msanggota = Msanggota::all();
+        $msanggota = DB::table('msanggota')->leftJoin('traktifasi','msanggota.Kode','traktifasi.Kode')->where('traktifasi.Status','aktif')->get();
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
@@ -174,6 +180,8 @@ class PenjualanController extends Controller
                 //hitung diskon persen
                 $hasil = $total;
                 $total_sebelum = $total;
+                $diskon_rp = $request->get('diskon_rp');
+                $diskon_rp = str_replace(".","",$diskon_rp);
                 //hitung diskon persen
                 $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
                 //diskon rp
@@ -237,6 +245,12 @@ class PenjualanController extends Controller
             $arr = [];
             $trpenjualan = Session::get('transaksi_penjualan');
             $total = 0;
+            $diskon_rp = $request->get('diskon_rp');
+            $diskon_rp = str_replace('.','',$diskon_rp);
+            $harga = $request->get('harga');
+            $harga = str_replace('.','',$harga);
+            $subtotal = $request->get('subtotal');
+            $subtotal = str_replace('.','',$subtotal);
             if (Session::has('detail_transaksi_penjualan')) {
                 $datadetail = Session::get('detail_transaksi_penjualan');
                 $no = 0;
@@ -249,14 +263,14 @@ class PenjualanController extends Controller
                     'urut' => $no + 1,
                     'barang' => $request->get('barang'),
                     'nama_barang' => $request->get('nama_barang'),
-                    'harga' => $request->get('harga'),
+                    'harga' => $harga,
                     'qty' => $request->get('qty'),
                     'diskon_persen' => $request->get('diskon_persen'),
-                    'subtotal' => $request->get('subtotal'),
-                    'diskon_rp' => $request->get('diskon_rp'),
+                    'subtotal' => $subtotal,
+                    'diskon_rp' =>  $diskon_rp,
                     'keterangan' => $request->get('keterangan'),
                 ];
-                $total = $total + $request->get('subtotal');
+                $total = $total + $subtotal;
                 array_push($arr, $data);
                 Session::forget('detail_transaksi_penjualan');
                 Session::put('detail_transaksi_penjualan', $arr);
@@ -266,14 +280,14 @@ class PenjualanController extends Controller
                     'urut' => 1,
                     'barang' => $request->get('barang'),
                     'nama_barang' => $request->get('nama_barang'),
-                    'harga' => $request->get('harga'),
+                    'harga' => $harga,
                     'qty' => $request->get('qty'),
                     'diskon_persen' => $request->get('diskon_persen'),
-                    'subtotal' => $request->get('subtotal'),
-                    'diskon_rp' => $request->get('diskon_rp'),
+                    'subtotal' => $subtotal,
+                    'diskon_rp' =>  $diskon_rp,
                     'keterangan' => $request->get('keterangan'),
                 ];
-                $total = $total + $request->get('subtotal');
+                $total = $total + $subtotal;
                 array_push($arr, $data);
                 Session::forget('detail_transaksi_penjualan');
                 Session::put('detail_transaksi_penjualan', $arr);
@@ -295,9 +309,9 @@ class PenjualanController extends Controller
             if ($hasil <= 0) {
                 $hasil = 0;
             }
-            $total_sebelum = round($total_sebelum, 2);
-            $hasil = round($hasil, 2);
-            $pajak = round($pajak, 2);
+            $total_sebelum = round($total_sebelum);
+            $hasil = round($hasil);
+            $pajak = round($pajak);
             $data = [
                 'transaksi' => $trpenjualan['transaksi'],
                 'nomor' => $trpenjualan['nomor'],
@@ -323,7 +337,7 @@ class PenjualanController extends Controller
         }
     }
 
-    public function save_data_transaksi()
+    public function save_data_transaksi(Request $request)
     {
 
         if (session()->has('detail_transaksi_penjualan') && session()->has('transaksi_penjualan')) {
@@ -331,7 +345,11 @@ class PenjualanController extends Controller
             $day = date('d');
             $month = date('m');
             $year = date('Y');
-
+            $pembayaran_ekop = $request->get('pembayaran_ekop');
+            $pembayaran_ekop = str_replace('.','',$pembayaran_ekop);
+            $pembayaran_tunai = $request->get('pembayaran_tunai');
+            $pembayaran_tunai = str_replace('.','',$pembayaran_tunai);
+            $barcode_cust = $request->get('barcode_cust');
             $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
             if ($trmutasihd) {
                 $nomor = (int) substr($trmutasihd->Nomor, 14);
@@ -355,14 +373,29 @@ class PenjualanController extends Controller
             $trmutasihd->Transaksi = $trpenjualan["transaksi"];
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
-            $trmutasihd->KodeSuppCust = $trpenjualan["kode"];
+            $trmutasihd->KodeSuppCust = $barcode_cust;
             $trmutasihd->DiskonPersen = $trpenjualan["diskon_persen"];
             $trmutasihd->DiskonTunai = $trpenjualan["diskon_rp"];
             $trmutasihd->Pajak = $trpenjualan["pajak"];
             $trmutasihd->LokasiTujuan = $trpenjualan["lokasi"];
             $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+            if($pembayaran_tunai != '' || $pembayaran_tunai > 0){
+                $trmutasihd->PembayaranTunai = $pembayaran_tunai;
+            }
+            if($pembayaran_ekop != '' || $pembayaran_ekop > 0){
+                $cek = DB::select('call CEKSALDOEKOP(?)', [
+                    $barcode_cust
+                ]);
+                $trmutasihd->PembayaranEkop = $pembayaran_ekop;
+                $trsaldoekop = new Trsaldoekop();
+                $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                $trsaldoekop->KodeUser = $barcode_cust;
+                $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
+                $trsaldoekop->save();
+            }
             $trmutasihd->StatusPesanan = "Dalam Proses";
+            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->TotalHargaSetelahPajak = $trpenjualan["total_harga_setelah_pajak"];
             $trmutasihd->save();
 
@@ -497,10 +530,12 @@ class PenjualanController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
+            $diskon_rp = $request->get('diskon_rp');
+            $diskon_rp = str_replace('.','',$diskon_rp);
             //hitung diskon persen
             $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
             //diskon rp
-            $hasil = $this->diskon_rp($hasil, $request->get('diskon_rp'));
+            $hasil = $this->diskon_rp($hasil, $diskon_rp);
             //pajak
             $pajak = $this->pajak($hasil, $request->get('pajak'));
             if ($pajak <= 0) {
@@ -510,9 +545,9 @@ class PenjualanController extends Controller
             if ($hasil <= 0) {
                 $hasil = 0;
             }
-            $total_sebelum = round($total_sebelum, 2);
-            $hasil = round($hasil, 2);
-            $pajak = round($pajak, 2);
+            $total_sebelum = round($total_sebelum);
+            $hasil = round($hasil);
+            $pajak = round($pajak);
             $data = [
                 'transaksi' => $request->get('transaksi'),
                 'nomor' => $request->get('nomor'),
@@ -552,6 +587,12 @@ class PenjualanController extends Controller
             $arr = [];
             $trpenjualan = Session::get('transaksi_penjualan');
             $total = 0;
+            $diskon_rp = $request->get('diskon_rp');
+            $diskon_rp = str_replace('.','',$diskon_rp);
+            $harga = $request->get('harga');
+            $harga = str_replace('.','',$harga);
+            $subtotal = $request->get('subtotal');
+            $subtotal = str_replace('.','',$subtotal);
             if (Session::has('detail_transaksi_penjualan')) {
                 $datadetail = Session::get('detail_transaksi_penjualan');
                 foreach ($datadetail as $key => $value) {
@@ -561,11 +602,11 @@ class PenjualanController extends Controller
                         $value["nama_barang"] = $request->get("nama_barang");
                         $value["qty"] = $request->get("qty");
                         $value["diskon_persen"] = $request->get("diskon_persen");
-                        $value["subtotal"] = $request->get('subtotal');
-                        $value["diskon_rp"] = $request->get("diskon_rp");
-                        $value["harga"] = $request->get("harga");
+                        $value["subtotal"] = $subtotal;
+                        $value["diskon_rp"] = $diskon_rp;
+                        $value["harga"] = $harga;
                         $value["keterangan"] = $request->get("keterangan");
-                        $total = $total + $request->get('subtotal');
+                        $total = $total + $subtotal;
                         array_push($arr, $value);
                     } else {
                         $total = $total + $value["subtotal"];
@@ -593,9 +634,9 @@ class PenjualanController extends Controller
             if ($hasil <= 0) {
                 $hasil = 0;
             }
-            $total_sebelum = round($total_sebelum, 2);
-            $hasil = round($hasil, 2);
-            $pajak = round($pajak, 2);
+            $total_sebelum = round($total_sebelum);
+            $hasil = round($hasil);
+            $pajak = round($pajak);
             $data = [
                 'transaksi' => $trpenjualan['transaksi'],
                 'nomor' => $trpenjualan['nomor'],
@@ -650,15 +691,12 @@ class PenjualanController extends Controller
                 }
             }
 
-
             if ($total == 0) {
                 Session::forget('detail_transaksi_penjualan');
             } else {
                 Session::put('detail_transaksi_penjualan', $arr);
                 Session::save();
             }
-
-
 
             $hasil = $total;
             $total_sebelum = $total;
@@ -701,7 +739,7 @@ class PenjualanController extends Controller
             $diskon_persen = $diskon;
             $hitung = ($diskon_persen / 100) * $total;
             $hasil = $total - $hitung;
-            return round($hasil,2);
+            return round($hasil);
         } else {
             return $total;
         }
@@ -712,7 +750,7 @@ class PenjualanController extends Controller
         if ($diskon > 0 || $diskon != '') {
             $diskon_rp = $diskon;
             $hasil = $total - $diskon_rp;
-            return round($hasil,2);
+            return round($hasil);
         } else {
             return $total;
         }
@@ -722,9 +760,20 @@ class PenjualanController extends Controller
     {
         if ($pajak > 0  || $pajak != '') {
             $pajak = $total + (($pajak / 100) * $total);
-            return round($pajak,2);
+            return round($pajak);
         } else {
             return $total;
         }
+    }
+
+    public function CekSaldoEkop(Request $request)
+    {
+
+        $kode = $request->get('kode');
+        $cek = DB::select('call CEKSALDOEKOP(?)', [
+            $kode
+        ]);
+
+        return response()->json($cek[0]);
     }
 }
