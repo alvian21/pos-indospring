@@ -423,7 +423,7 @@
     // transaksi post
     $(document).on('keyup keydown','#supplier, #diskon_persen, #diskon_rp, #pajak, #lokasi, #keterangan', async function(){
         var form = $('#formTransaksi').serialize();
-        console.log(form);
+
         csrf_ajax();
        const result = await  $.ajax({
             url:"{{route('pos.transaksi_penjualan.store')}}",
@@ -522,7 +522,7 @@
             ds_rp = ds_rp.replace('.','');
             harga = harga.replace('.','');
             subtotal = qty * harga;
-            console.log(subtotal);
+
             subtotal = diskon_persen(subtotal, ds_persen);
             subtotal = diskon_rp(subtotal, ds_rp);
             if(subtotal <=0){
@@ -553,7 +553,6 @@
                    method: "POST",
                    data: $('#formDetail').serialize(),
                    success:function(data){
-                       console.log(data);
                        $('.alert-success').text('Data berhasil di tambahkan')
                        $('.alert-danger').hide()
                        $('[id=barang]').val('0').trigger('change');
