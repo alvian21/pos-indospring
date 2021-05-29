@@ -213,28 +213,33 @@
 
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="stok">Stok</label>
+                                <input type="number" class="form-control" readonly name="stok" id="stok">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="qty">Qty</label>
                                 <input type="number" class="form-control" name="qty" id="qty" value="1">
                             </div>
-
                         </div>
-                        <div class="col-md-4">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
                                 <input type="number" class="form-control diskon_persen" name="diskon_persen" value="0">
                             </div>
 
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp)</label>
                                 <input type="number" class="form-control diskon_rp" name="diskon_rp" value="0">
                             </div>
                         </div>
-
-
                     </div>
 
                     <div class="row">
@@ -305,7 +310,8 @@
                                 <select class="form-control" id="barcode_cust" name="barcode_cust">
                                     <option value="0">Pilih Customer</option>
                                     @foreach ($msanggota as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}} | {{$item->NoEkop}}</option>
+                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}} |
+                                        {{$item->NoEkop}}</option>
                                     @endforeach
 
                                 </select>
@@ -332,13 +338,15 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="pembayaran_tunai">Pembayaran Tunai</label>
-                                <input type="text" class="form-control" name="pembayaran_tunai" value="0" id="pembayaran_tunai">
+                                <input type="text" class="form-control" name="pembayaran_tunai" value="0"
+                                    id="pembayaran_tunai">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="kembalian">Kembalian</label>
-                                <input type="text" class="form-control" readonly name="kembalian" value="0" id="kembalian">
+                                <input type="text" class="form-control" readonly name="kembalian" value="0"
+                                    id="kembalian">
                             </div>
                         </div>
                     </div>
@@ -456,6 +464,7 @@
             },
             success:function(data){
                 $('#nama_barang').val(data["Nama"])
+                $('#stok').val(data["Saldo"]);
                 var harga = convertToRupiah(data["HargaJual"]);
 
                 $('#harga').val(harga);
@@ -530,6 +539,10 @@
             }
             subtotal = convertToRupiah(subtotal)
             $('#subtotal').val(subtotal);
+         }else{
+            $('.alert-danger').text('pilih barang terlebih dahulu')
+                $('#alert-detail').show();
+                $('.alert-success').hide();
          }
 
      })
@@ -537,6 +550,7 @@
      $(document).on('click','.btnDetailInsert',function () {
 
         var barang = $('#barang').val();
+        var stok = $('#stok').val();
         var qty = $('#qty').val();
             if(barang == '0'){
                $('.alert-danger').text('pilih barang terlebih dahulu')
@@ -546,7 +560,12 @@
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
-            }else{
+            }else if(parseInt(qty) > parseInt(stok)){
+                $('.alert-danger').text('maksimal qty adalah '+stok)
+                $('#alert-detail').show();
+                $('.alert-success').hide();
+            }
+            else{
                 csrf_ajax();
                $.ajax({
                    url:"{{route('pos.detail_transaksi_penjualan.store')}}",
@@ -574,6 +593,7 @@
 
       $(document).on('click','.btnDetailUpdate',function () {
         var barang = $('#barang').val();
+        var stok = $('#stok').val();
         var qty = $('#qty').val();
             if(barang == '0'){
             $('.alert-danger').text('pilih barang terlebih dahulu')
@@ -582,6 +602,10 @@
 
             }else if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
+                $('#alert-detail').show();
+                $('.alert-success').hide();
+            }else if(parseInt(qty) > parseInt(stok)){
+                $('.alert-danger').text('maksimal qty adalah '+stok)
                 $('#alert-detail').show();
                 $('.alert-success').hide();
             }else{

@@ -13,6 +13,9 @@ use App\Trmutasidt;
 use App\Trsaldoekop;
 use Illuminate\Support\Facades\Session;
 use DataTables;
+use App\Trsaldobarang;
+use App\Trsaldototalbelanja;
+use App\Trsaldototalbelanjatunai;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -33,7 +36,7 @@ class PenjualanController extends Controller
         $penjualan = Trmutasihd::where('Transaksi', 'PENJUALAN')->get();
         $mslokasi = Mslokasi::all();
         $msbarang = Msbarang::all();
-        $msanggota = DB::table('msanggota')->leftJoin('traktifasi','msanggota.Kode','traktifasi.Kode')->where('traktifasi.Status','aktif')->get();
+        $msanggota = DB::table('msanggota')->leftJoin('traktifasi', 'msanggota.Kode', 'traktifasi.Kode')->where('traktifasi.Status', 'aktif')->get();
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
@@ -181,7 +184,7 @@ class PenjualanController extends Controller
                 $hasil = $total;
                 $total_sebelum = $total;
                 $diskon_rp = $request->get('diskon_rp');
-                $diskon_rp = str_replace(".","",$diskon_rp);
+                $diskon_rp = str_replace(".", "", $diskon_rp);
                 //hitung diskon persen
                 $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
                 //diskon rp
@@ -222,7 +225,13 @@ class PenjualanController extends Controller
     {
         if ($request->ajax()) {
             $msbarang = Msbarang::where('Kode', $request->kode_barang)->first();
-            return response()->json($msbarang);
+            $trsaldobarang = Trsaldobarang::where('KodeBarang', $request->kode_barang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+            $data = [
+                'Nama' => $msbarang->Nama,
+                'HargaJual' => $msbarang->HargaJual,
+                'Saldo' => $trsaldobarang->Saldo
+            ];
+            return response()->json($data);
         }
     }
 
@@ -243,14 +252,17 @@ class PenjualanController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         } else {
             $arr = [];
+
+            //cek sisa barang
+
             $trpenjualan = Session::get('transaksi_penjualan');
             $total = 0;
             $diskon_rp = $request->get('diskon_rp');
-            $diskon_rp = str_replace('.','',$diskon_rp);
+            $diskon_rp = str_replace('.', '', $diskon_rp);
             $harga = $request->get('harga');
-            $harga = str_replace('.','',$harga);
+            $harga = str_replace('.', '', $harga);
             $subtotal = $request->get('subtotal');
-            $subtotal = str_replace('.','',$subtotal);
+            $subtotal = str_replace('.', '', $subtotal);
             if (Session::has('detail_transaksi_penjualan')) {
                 $datadetail = Session::get('detail_transaksi_penjualan');
                 $no = 0;
@@ -346,9 +358,9 @@ class PenjualanController extends Controller
             $month = date('m');
             $year = date('Y');
             $pembayaran_ekop = $request->get('pembayaran_ekop');
-            $pembayaran_ekop = str_replace('.','',$pembayaran_ekop);
+            $pembayaran_ekop = str_replace('.', '', $pembayaran_ekop);
             $pembayaran_tunai = $request->get('pembayaran_tunai');
-            $pembayaran_tunai = str_replace('.','',$pembayaran_tunai);
+            $pembayaran_tunai = str_replace('.', '', $pembayaran_tunai);
             $barcode_cust = $request->get('barcode_cust');
             $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
             if ($trmutasihd) {
@@ -380,10 +392,17 @@ class PenjualanController extends Controller
             $trmutasihd->LokasiTujuan = $trpenjualan["lokasi"];
             $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            if(($pembayaran_tunai != '' || $pembayaran_tunai > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]){
+            if (($pembayaran_tunai != '' || $pembayaran_tunai > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]) {
                 $trmutasihd->PembayaranTunai = $pembayaran_tunai;
+
+                //saldototalbelanjatunai
+                $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
+                $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
+                $trsaldobelanjatunai->KodeUser = $barcode_cust;
+                $trsaldobelanjatunai->Saldo = $pembayaran_tunai;
+                $trsaldobelanjatunai->save();
             }
-            if($pembayaran_ekop != '' || $pembayaran_ekop > 0){
+            if ($pembayaran_ekop != '' || $pembayaran_ekop > 0) {
                 $cek = DB::select('call CEKSALDOEKOP(?)', [
                     $barcode_cust
                 ]);
@@ -398,6 +417,14 @@ class PenjualanController extends Controller
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->TotalHargaSetelahPajak = $trpenjualan["total_harga_setelah_pajak"];
             $trmutasihd->save();
+
+            //trsaldototalbelanja
+            $trsaldototalbelanja = new Trsaldototalbelanja();
+            $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
+            $trsaldototalbelanja->KodeUser = $barcode_cust;
+            $trsaldototalbelanja->Saldo = $trpenjualan["total_harga_setelah_pajak"];
+            $trsaldototalbelanja->save();
+
 
             $datadetail = session('detail_transaksi_penjualan');
             foreach ($datadetail as $key => $value) {
@@ -414,6 +441,13 @@ class PenjualanController extends Controller
                 $trmutasidt->Jumlah = $value['qty'];
                 $trmutasidt->Harga = $value['subtotal'];
                 $trmutasidt->save();
+                $getstok = Trsaldobarang::where('KodeBarang', $value["barang"])->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+                $trsaldobarang = new Trsaldobarang();
+                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                $trsaldobarang->KodeBarang = $value["barang"];
+                $trsaldobarang->Saldo = $getstok->Saldo - $value["qty"];
+                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                $trsaldobarang->save();
             }
             session()->forget('detail_transaksi_penjualan');
             session()->forget('transaksi_penjualan');
@@ -531,7 +565,7 @@ class PenjualanController extends Controller
             $hasil = $total;
             $total_sebelum = $total;
             $diskon_rp = $request->get('diskon_rp');
-            $diskon_rp = str_replace('.','',$diskon_rp);
+            $diskon_rp = str_replace('.', '', $diskon_rp);
             //hitung diskon persen
             $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
             //diskon rp
@@ -588,11 +622,11 @@ class PenjualanController extends Controller
             $trpenjualan = Session::get('transaksi_penjualan');
             $total = 0;
             $diskon_rp = $request->get('diskon_rp');
-            $diskon_rp = str_replace('.','',$diskon_rp);
+            $diskon_rp = str_replace('.', '', $diskon_rp);
             $harga = $request->get('harga');
-            $harga = str_replace('.','',$harga);
+            $harga = str_replace('.', '', $harga);
             $subtotal = $request->get('subtotal');
-            $subtotal = str_replace('.','',$subtotal);
+            $subtotal = str_replace('.', '', $subtotal);
             if (Session::has('detail_transaksi_penjualan')) {
                 $datadetail = Session::get('detail_transaksi_penjualan');
                 foreach ($datadetail as $key => $value) {
