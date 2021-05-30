@@ -832,6 +832,12 @@ class PenjualanController extends Controller
             $kode
         ]);
 
-        return response()->json($cek[0]);
+        if (isset($cek[0])) {
+            return response()->json($cek[0]);
+        } else {
+            return response()->json([
+                'Saldo' => 0
+            ]);
+        }
     }
 }
