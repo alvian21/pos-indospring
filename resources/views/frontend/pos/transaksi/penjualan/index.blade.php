@@ -904,18 +904,18 @@
                 $('.alertsuccesstotal').hide();
                 $('#alert-total').show();
                 return false;
-            }else if((tunai == 0 || tunai == '') && ekop < ttl_belanja){
+            }else if((parseInt(tunai) == 0 || tunai == '') && parseInt(ekop) < parseInt(ttl_belanja)){
                 $('.alertdangertotal').text('Maaf pembayaran ekop kurang');
                 $('.alertsuccesstotal').hide();
                 $('#alert-total').show();
                 return false;
 
-            }else if((ekop == 0 || ekop == '') && tunai < ttl_belanja){
+            }else if((parseInt(ekop) == 0 || ekop == '') && parseInt(tunai) < parseInt(ttl_belanja)){
                 $('.alertdangertotal').text('Maaf pembayaran tunai kurang');
                 $('.alertsuccesstotal').hide();
                 $('#alert-total').show();
                 return false;
-            }else if(ekop > 0 && tunai > 0){
+            }else if(parseInt(ekop) > 0 && parseInt(tunai) > 0){
                hasil_total = parseInt(tunai) + parseInt(ekop);
                 if(hasil_total < ttl_belanja){
                     $('.alertdangertotal').text('Maaf pembayaran tunai dan ekop kurang');
