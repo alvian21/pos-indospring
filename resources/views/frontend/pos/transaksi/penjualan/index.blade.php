@@ -767,6 +767,7 @@
                         $('#pembayaran_tunai').val(0);
                         $('#pembayaran_ekop').val(convertToRupiah(replace_titik(ttl_belanja)));
                     }else{
+                        $('#ttl_pembayaran_tunai').val(ttl_belanja);
                         $('#pembayaran_ekop').val(0);
                     }
                     $('#saldo_ekop').val(convertToRupiah(data['Saldo']));
