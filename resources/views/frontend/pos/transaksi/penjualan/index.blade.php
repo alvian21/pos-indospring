@@ -765,6 +765,7 @@
                     var pembayaran_tunai  = 0;
                     if(parseInt(saldo) > parseInt(replace_titik(ttl_belanja))){
                         $('#pembayaran_tunai').val(0);
+                        $('#ttl_pembayaran_tunai').val(0);
                         $('#pembayaran_ekop').val(convertToRupiah(replace_titik(ttl_belanja)));
                     }else{
                         $('#ttl_pembayaran_tunai').val(ttl_belanja);
