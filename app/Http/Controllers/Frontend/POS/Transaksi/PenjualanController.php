@@ -409,7 +409,7 @@ class PenjualanController extends Controller
 
                 $trsaldobelanjatunai->save();
             }
-            if ($pembayaran_ekop != '' || $pembayaran_ekop > 0) {
+            if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
                 $cek = DB::select('call CEKSALDOEKOP(?)', [
                     $barcode_cust
                 ]);
