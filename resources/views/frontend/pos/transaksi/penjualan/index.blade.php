@@ -335,6 +335,16 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="ttl_pembayaran_tunai">Total Pembayaran Tunai</label>
+                                <input type="text" class="form-control" readonly name="ttl_pembayaran_tunai" value="0"
+                                    id="ttl_pembayaran_tunai">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="pembayaran_tunai">Pembayaran Tunai</label>
@@ -425,7 +435,7 @@
         }
     });
 
-    $('.js-example-basic-single').select2();
+    // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
 
     // transaksi post
@@ -445,8 +455,11 @@
     $('.addTransaksi').on('click',function () {
         $('#transaksiModal').modal('show');
     })
+    var select2=  $('#barang').select2();
+
     $('.btnDetailBarang').on('click',function () {
         $('#barangModal').modal('show');
+        setTimeout(function(){ $('#barang').select2('open');},500)
         ds_persen = $('.diskon_persen').val();
         ds_rp = $('.diskon_rp').val();
         $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
@@ -643,6 +656,10 @@
                 $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
             });
 
+    $('#totalModal').on('hidden.bs.modal', function() {
+        $(this).find('form').trigger('reset');
+        $('[id=barcode_cust]').val('0').trigger('change');
+    });
 
 
 
@@ -671,6 +688,7 @@
           var harga = convertToRupiah(data['harga']);
           var diskon_rp = convertToRupiah(data['diskon_rp']);
           var subtotal = convertToRupiah(data['subtotal']);
+          setTimeout(function(){ $('#barang').select2('open');},500)
           $('#harga').val(harga);
           $('.btnBarangModal').text('update');
           $('.keterangan').val(data['keterangan']);
@@ -742,8 +760,14 @@
                  'kode':kode
              }, success:function(data){
                     var saldo = data['Saldo'];
-                    if(saldo > ttl_belanja){
-                        $('#pembayaran_ekop').val(convertToRupiah(ttl_belanja));
+                    var ekop = 0;
+                    var ttl_belanja=$('#total_belanja').val();
+                    var pembayaran_tunai  = 0;
+                    if(parseInt(saldo) > parseInt(replace_titik(ttl_belanja))){
+                        $('#pembayaran_tunai').val(0);
+                        $('#pembayaran_ekop').val(convertToRupiah(replace_titik(ttl_belanja)));
+                    }else{
+                        $('#pembayaran_ekop').val(0);
                     }
                     $('#saldo_ekop').val(convertToRupiah(data['Saldo']));
 
@@ -753,35 +777,35 @@
 
      })
 
-     $(document).on('keyup', '#pembayaran_tunai', function(){
-         var tunai = $(this).val();
-         tunai = tunai.replace('.','');
-         var ekop = $('#pembayaran_ekop').val();
-         ekop = ekop.replace('.','');
-         var ttl_belanja=$('#total_belanja').val();
-         ttl_belanja = ttl_belanja.replace('.','');
-         var hasil_total_belanja ;
-        if(ttl_belanja != ekop){
-            hasil_total_belanja = parseInt(ttl_belanja)-parseInt(ekop);
-        }else{
-            hasil_total_belanja = ttl_belanja;
-        }
+    //  $(document).on('keyup', '#pembayaran_tunai', function(){
+    //      var tunai = $(this).val();
+    //      tunai = tunai.replace('.','');
+    //      var ekop = $('#pembayaran_ekop').val();
+    //      ekop = ekop.replace('.','');
+    //      var ttl_belanja=$('#total_belanja').val();
+    //      ttl_belanja = ttl_belanja.replace('.','');
+    //      var hasil_total_belanja ;
+    //     if(ttl_belanja != ekop){
+    //         hasil_total_belanja = parseInt(ttl_belanja)-parseInt(ekop);
+    //     }else{
+    //         hasil_total_belanja = ttl_belanja;
+    //     }
 
-        var saldo_ekop = $('#saldo_ekop').val();
-        saldo_ekop = saldo_ekop.replace('.','');
-        if(ekop > saldo_ekop ){
-            $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
-            $('.alertsuccesstotal').hide();
-            $('#alert-total').show();
-            return false;
-        }
+    //     var saldo_ekop = $('#saldo_ekop').val();
+    //     saldo_ekop = saldo_ekop.replace('.','');
+    //     if(ekop > saldo_ekop ){
+    //         $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
+    //         $('.alertsuccesstotal').hide();
+    //         $('#alert-total').show();
+    //         return false;
+    //     }
 
-         if(tunai >= hasil_total_belanja){
-            var last_result = tunai-hasil_total_belanja;
-            $('#kembalian').val(convertToRupiah(last_result));
-         }
+    //      if(tunai >= hasil_total_belanja){
+    //         var last_result = tunai-hasil_total_belanja;
+    //         $('#kembalian').val(convertToRupiah(last_result));
+    //      }
 
-     });
+    //  });
 
 
      function replace_titik(cek){
@@ -793,7 +817,7 @@
      }
 
 
-     $(document).on('keyup', '#pembayaran_ekop, #pembayaran_tunai', function(){
+     $(document).on('keyup change', '#pembayaran_ekop, #pembayaran_tunai', function(){
          var ekop = $('#pembayaran_ekop').val();
          var ttl_belanja=$('#total_belanja').val();
          var tunai = $("#pembayaran_tunai").val();
@@ -828,9 +852,11 @@
                 if(ekop == ttl_belanja){
                     $('#kembalian').val(0);
                     hasil_total = 0;
-                }else if(ekop > 0 && tunai > 0 ){
+                }else if(ekop > 0 && ekop < ttl_belanja  ){
                     hasil_total = ttl_belanja - ekop;
+                    $('#ttl_pembayaran_tunai').val(convertToRupiah(hasil_total))
                     hasil_total = tunai - hasil_total;
+
                 }else if((ekop == 0 || ekop ==  '') && tunai > 0){
                     hasil_total = tunai - ttl_belanja;
                 }
