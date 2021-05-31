@@ -26,6 +26,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::get('penjualanoffline','DashboardController@PenjualanOffline')->name('penjualanoffline');
         Route::get('penjualanonline','DashboardController@PenjualanOnline')->name('penjualanonline');
         Route::get('statuspesanan','DashboardController@StatusPesanan')->name('statuspesanan');
+        Route::get('emailstatus','DashboardController@EmailStatus')->name('emailstatus');
+        Route::get('emailstatuswithout','DashboardController@EmailStatusWithout')->name('emailstatuswithout');
+        Route::get('barangpictures','DashboardController@BarangPictures')->name('barangpictures');
+        Route::get('barangbarcode','DashboardController@BarangBarcode')->name('barangbarcode');
     });
     Route::resource('dashboard', 'DashboardController');
     //saldo

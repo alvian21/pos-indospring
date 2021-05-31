@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Msanggota;
 use Illuminate\Http\Request;
 use App\Trmutasihd;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use App\Mslokasi;
+use App\Msbarang;
 
 class DashboardController extends Controller
 {
@@ -140,4 +142,65 @@ class DashboardController extends Controller
             return response()->json($penjualanonline);
         }
     }
+
+    public function EmailStatus(Request $request){
+        if($request->ajax()){
+            $verified = Msanggota::where('verified_email',1)->count();
+            $unverified = Msanggota::where('verified_email',0)->count();
+
+            $arr = [
+                'verified' => $verified,
+                'unverified' => $unverified
+            ];
+
+            return response()->json($arr);
+
+        }
+    }
+
+    public function EmailStatusWithout(Request $request){
+        if($request->ajax()){
+            $verified = Msanggota::where('verified_email',1)->count();
+            $without = Msanggota::where('email',null)->count();
+
+            $arr = [
+                'verified' => $verified,
+                'without' => $without
+            ];
+
+            return response()->json($arr);
+
+        }
+    }
+
+    public function BarangPictures(Request $request){
+        if($request->ajax()){
+            $with = Msbarang::where('LokasiGambar','!=',null)->count();
+            $without = Msbarang::where('LokasiGambar',null)->count();
+
+            $arr = [
+                'with' => $with,
+                'without' => $without
+            ];
+
+            return response()->json($arr);
+
+        }
+    }
+
+    public function BarangBarcode(Request $request){
+        if($request->ajax()){
+            $with = Msbarang::where('KodeBarcode','!=',null)->count();
+            $without = Msbarang::where('KodeBarcode',null)->count();
+
+            $arr = [
+                'with' => $with,
+                'without' => $without
+            ];
+
+            return response()->json($arr);
+
+        }
+    }
+
 }
