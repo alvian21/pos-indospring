@@ -393,8 +393,8 @@ class PenjualanController extends Controller
             $trmutasihd->LokasiAwal = $trpenjualan["lokasi"];
             $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            if (($pembayaran_tunai != '' || $pembayaran_tunai > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]) {
-                $trmutasihd->PembayaranTunai = $pembayaran_tunai;
+            if (($request->get('ttl_pembayaran_tunai') != '' || $request->get('ttl_pembayaran_tunai') > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]) {
+                $trmutasihd->PembayaranTunai = $request->get('ttl_pembayaran_tunai');
 
                 //saldototalbelanjatunai
                 $cektunai = Trsaldototalbelanjatunai::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
@@ -402,9 +402,9 @@ class PenjualanController extends Controller
                 $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
                 $trsaldobelanjatunai->KodeUser = $barcode_cust;
                 if ($cektunai) {
-                    $trsaldobelanjatunai->Saldo = $pembayaran_tunai + $cektunai->Saldo;
+                    $trsaldobelanjatunai->Saldo = $request->get('ttl_pembayaran_tunai') + $cektunai->Saldo;
                 } else {
-                    $trsaldobelanjatunai->Saldo = $pembayaran_tunai;
+                    $trsaldobelanjatunai->Saldo = $request->get('ttl_pembayaran_tunai');
                 }
 
                 $trsaldobelanjatunai->save();

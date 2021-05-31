@@ -819,7 +819,7 @@
      }
 
 
-     $(document).on('keyup change', '#pembayaran_ekop, #pembayaran_tunai', function(){
+     $(document).on('keyup keypress change', '#pembayaran_ekop, #pembayaran_tunai', function(){
          var ekop = $('#pembayaran_ekop').val();
          var ttl_belanja=$('#total_belanja').val();
          var tunai = $("#pembayaran_tunai").val();
