@@ -468,6 +468,9 @@
     $('#barang').on('change', function () {
         var kode_barang = $(this).val();
         $('#alert-detail').hide();
+        var qty = $('#qty').val();
+        ds_persen = $('.diskon_persen').val();
+        ds_rp = $('.diskon_rp').val();
         if(kode_barang != 0){
             $.ajax({
             url:"{{route('pos.penjualan.databarang')}}",
@@ -478,9 +481,17 @@
             success:function(data){
                 $('#nama_barang').val(data["Nama"])
                 $('#stok').val(data["Saldo"]);
-                var harga = convertToRupiah(data["HargaJual"]);
-
-                $('#harga').val(harga);
+                harga = data["HargaJual"];
+                ds_rp = replace_titik(ds_rp);
+                subtotal = parseInt(qty) * parseInt(harga);
+                subtotal = diskon_persen(subtotal, ds_persen);
+                subtotal = diskon_rp(subtotal, ds_rp);
+                if(subtotal <=0){
+                    subtotal = 0;
+                }
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
+                $('#harga').val(convertToRupiah(harga));
             }
         })
         }
@@ -592,7 +603,7 @@
                        setTimeout(function(){ $('#alert-detail').hide()},3000);
                        $('#formDetail').trigger("reset");
                        table_detail.ajax.reload();
-
+                       setTimeout(function(){ $('#barang').select2('open');},500)
                        $('.btnSimpan').show();
                        $('#barang').val('0');
                        var ttl_harga = convertToRupiah(String(data['total_harga']));
@@ -630,7 +641,7 @@
                 success:function(data){
                     $('#formDetail').trigger("reset");
                     table_detail.ajax.reload();
-
+                    // setTimeout(function(){ $('#barang').select2('open');},500)
                     $('[id=barang]').val('0').trigger('change');
                     $('.btnSimpan').show();
                     $('.alert-success').text('Data berhasil di update')
@@ -722,6 +733,7 @@
         if(cek){
             $('#alert-total').hide();
              $('#totalModal').modal('show');
+             setTimeout(function(){  $('#barcode_cust').select2('open');},500)
         }else{
             swal("Detail Belum Diisi!");
         }
