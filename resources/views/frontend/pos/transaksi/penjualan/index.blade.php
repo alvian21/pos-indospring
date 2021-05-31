@@ -653,7 +653,7 @@
                     var ttl_harga = convertToRupiah(String(data['total_harga']));
                        var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
                        $("#ttl_harga").val(ttl_harga);
-                        $("#ttl_harga_pajak").val(ttl_harga_pajak);
+                       $("#ttl_harga_pajak").val(ttl_harga_pajak);
                 }
             })
             }
