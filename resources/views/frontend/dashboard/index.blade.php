@@ -149,6 +149,8 @@
                         data: total
                     }]
                 });
+
+                $('#penjualanoffline .highcharts-legend').hide()
             }
         })
 
@@ -183,7 +185,7 @@
                     }]
                 });
 
-                $('.highcharts-legend').hide()
+                $('#penjualanonline .highcharts-legend').hide()
             }
         })
 
@@ -220,7 +222,7 @@
                     }]
                 });
 
-                $('.highcharts-legend').hide()
+                $('#statuspesanan .highcharts-legend').hide()
             }
         })
 
