@@ -22,6 +22,10 @@ Route::post("/login", "Frontend\AuthController@login")->name("login");
 
 
 Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' => 'admin'], function () {
+    Route::group(['prefix'=>'dashboard','as'=>'dashboard.'],function () {
+        Route::get('penjualanoffline','DashboardController@PenjualanOffline')->name('penjualanoffline');
+        Route::get('penjualanonline','DashboardController@PenjualanOnline')->name('penjualanonline');
+    });
     Route::resource('dashboard', 'DashboardController');
     //saldo
     Route::group(['namespace' => 'Saldo', 'prefix' => 'saldo', 'as' => 'saldo.'], function () {
