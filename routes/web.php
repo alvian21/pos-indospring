@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     Route::group(['prefix'=>'dashboard','as'=>'dashboard.'],function () {
         Route::get('penjualanoffline','DashboardController@PenjualanOffline')->name('penjualanoffline');
         Route::get('penjualanonline','DashboardController@PenjualanOnline')->name('penjualanonline');
+        Route::get('statuspesanan','DashboardController@StatusPesanan')->name('statuspesanan');
     });
     Route::resource('dashboard', 'DashboardController');
     //saldo

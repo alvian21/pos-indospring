@@ -95,7 +95,7 @@ class DashboardController extends Controller
             $to = date('Y-m-d');
             $penjualanoffline = Trmutasihd::select([
                 DB::raw('sum(TotalHarga) as `total`'),
-                DB::raw("DATE_FORMAT(Tanggal, '%d-%M-%Y') as day")
+                DB::raw("DATE_FORMAT(Tanggal, '%d-%M') as day")
             ])->groupBy('day')
                 ->where('Transaksi', 'PENJUALAN')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
@@ -113,9 +113,26 @@ class DashboardController extends Controller
             $to = date('Y-m-d');
             $penjualanonline = Trmutasihd::select([
                 DB::raw('sum(TotalHarga) as `total`'),
-                DB::raw("DATE_FORMAT(Tanggal, '%d-%M-%Y') as day")
+                DB::raw("DATE_FORMAT(Tanggal, '%d-%M') as day")
             ])->groupBy('day')
                 ->where('Transaksi', 'CHECKOUT')
+                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
+                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->limit(10)->get();
+
+            return response()->json($penjualanonline);
+        }
+    }
+
+    public function StatusPesanan(Request $request)
+    {
+        if ($request->ajax()) {
+            $from = strtotime(date("Y-m-d", strtotime("-10 day")));
+            $to = date('Y-m-d');
+            $penjualanonline = Trmutasihd::select([
+                DB::raw('StatusPesanan as status'),
+                DB::raw('count(StatusPesanan) as total')
+            ])->groupBy('status')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
                 ->limit(10)->get();

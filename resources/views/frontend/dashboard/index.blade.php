@@ -14,39 +14,27 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-header">
-                        <h4 class="text-center">Penjualan {{$lokasi['Nama']}}</h4>
 
-                    </div>
                     <div class="card-body">
 
-                        <div id="penjualanoffline"></div>
+                        <div id="penjualanoffline" style="width:100%; height:400px;"></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-header">
-                        <h4 class="text-center">Penjualan Online {{$lokasi['Nama']}}</h4>
 
-                    </div>
                     <div class="card-body">
 
-                        <div id="penjualanonline"></div>
+                        <div id="penjualanonline" style="width:100%; height:400px;"></div>
 
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-header">
-                        <h4 class="text-center">Status Pesanan Online Hari ini</h4>
-
-                    </div>
                     <div class="card-body">
-
-                        <canvas id="myChart" class="chartjs-render-monitor"></canvas>
-
+                        <div id="statuspesanan" style="width:100%; height:400px;"></div>
                     </div>
                 </div>
             </div>
@@ -145,7 +133,6 @@
                         }
                     },
                     series: [{
-                        name: 'Penjualan Toko Plant 1',
                         data: total
                     }]
                 });
@@ -167,7 +154,7 @@
                         type: 'column'
                     },
                     title: {
-                        text: "Penjualan {{$lokasi['Nama']}}"
+                        text: "Penjualan Online {{$lokasi['Nama']}}"
                     },
                     xAxis: {
                         categories: day
@@ -179,10 +166,48 @@
                         }
                     },
                     series: [{
-                        name: 'Penjualan Toko Plant 1',
                         data: total
                     }]
                 });
+
+                $('.highcharts-legend').hide()
+            }
+        })
+
+
+        $.ajax({
+            url:"{{route('dashboard.statuspesanan')}}",
+            method:"GET",
+            success:function(data){
+                console.log(data)
+                var status = [];
+                var total = [];
+                data.forEach(element => {
+                    status.push(element['status'])
+                    total.push(element['total'])
+                });
+                const chart = Highcharts.chart('statuspesanan', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: "Status Pesanan Online"
+                    },
+                    xAxis: {
+                        categories: status
+                    },
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: 'jumlah'
+                        }
+                    },
+                    series: [{
+                        data: total
+                    }]
+                });
+
+                $('.highcharts-legend').hide()
             }
         })
   })
