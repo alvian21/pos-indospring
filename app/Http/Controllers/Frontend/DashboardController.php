@@ -103,9 +103,10 @@ class DashboardController extends Controller
             ])->groupBy('day')
                 ->where('Transaksi', 'PENJUALAN')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
-                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])->OrderBy('day','ASC')
-                ->limit(10)->get();
+                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->limit(10)->get()->toArray();
 
+            usort($penjualanoffline, fn ($a, $b) => strtotime($a["day"]) - strtotime($b["day"]));
             return response()->json($penjualanoffline);
         }
     }
@@ -120,10 +121,10 @@ class DashboardController extends Controller
                 DB::raw("DATE_FORMAT(Tanggal, '%d-%M') as day")
             ])->groupBy('day')
                 ->where('Transaksi', 'CHECKOUT')
-                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->OrderBy('day','ASC')
+                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
                 ->limit(10)->get();
-
+            usort($penjualanonline, fn ($a, $b) => strtotime($a["day"]) - strtotime($b["day"]));
             return response()->json($penjualanonline);
         }
     }
