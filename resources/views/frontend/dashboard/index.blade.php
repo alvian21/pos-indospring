@@ -475,7 +475,7 @@
                         }
                     },
                     series: [{
-                        name: 'Barcode Status',
+                        name: 'Stok',
                         colorByPoint: true,
                         innerSize: '20%',
                         data: [{
