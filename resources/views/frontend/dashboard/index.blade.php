@@ -170,7 +170,7 @@
                         type: 'column'
                     },
                     title: {
-                        text: "Penjualan Online {{ucwords(strtolower($lokasi->Grup))}}",
+                        text: "Penjualan ONLINE {{ucwords(strtolower($lokasi->Grup))}}",
                         fontSize: '12px'
                     },
                     credits: {
@@ -211,7 +211,7 @@
                         type: 'column'
                     },
                     title: {
-                        text: "Status Pesanan Online Hari Ini",
+                        text: "Status Pesanan ONLINE Hari Ini",
                         fontSize: '12px'
                     },
                     credits: {
