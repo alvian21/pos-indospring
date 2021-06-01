@@ -256,12 +256,14 @@
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true
+                            showInLegend: true,
+                            shadow: false
                         }
                     },
                     series: [{
                         name: 'Email Status',
                         colorByPoint: true,
+                        innerSize: '20%',
                         data: [{
                             name: 'Unverified',
                             y:data['unverified'],
@@ -305,12 +307,14 @@
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true
+                            showInLegend: true,
+                            shadow: false
                         }
                     },
                     series: [{
                         name: 'Email Status',
                         colorByPoint: true,
+                        innerSize: '20%',
                         data: [{
                             name: 'Without',
                             y:data['without'],
@@ -358,12 +362,14 @@
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true
+                            showInLegend: true,
+                            shadow: false
                         }
                     },
                     series: [{
                         name: 'Picture Status',
                         colorByPoint: true,
+                        innerSize: '20%',
                         data: [{
                             name: 'With',
                             y:data['with'],
@@ -410,12 +416,14 @@
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true
+                            showInLegend: true,
+                            shadow: false
                         }
                     },
                     series: [{
                         name: 'Barcode Status',
                         colorByPoint: true,
+                        innerSize: '20%',
                         data: [{
                             name: 'With',
                             y:data['with'],
