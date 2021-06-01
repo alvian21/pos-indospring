@@ -22,7 +22,7 @@ class DashboardController extends Controller
     public function index()
     {
         $lokasi = Mslokasi::where('Kode', auth('web')->user()->KodeLokasi)->first();
-        
+
         return view("frontend.dashboard.index", ['lokasi' => $lokasi]);
     }
 
@@ -103,7 +103,7 @@ class DashboardController extends Controller
             ])->groupBy('day')
                 ->where('Transaksi', 'PENJUALAN')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
-                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])->OrderBy('day')
+                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])->OrderBy('day','ASC')
                 ->limit(10)->get();
 
             return response()->json($penjualanoffline);
@@ -120,7 +120,7 @@ class DashboardController extends Controller
                 DB::raw("DATE_FORMAT(Tanggal, '%d-%M') as day")
             ])->groupBy('day')
                 ->where('Transaksi', 'CHECKOUT')
-                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->OrderBy('day')
+                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->OrderBy('day','ASC')
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
                 ->limit(10)->get();
 
