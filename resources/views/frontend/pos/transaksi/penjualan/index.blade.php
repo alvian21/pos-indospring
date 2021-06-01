@@ -669,7 +669,7 @@
 
     $('#totalModal').on('hidden.bs.modal', function() {
         $(this).find('form').trigger('reset');
-        $('[id=barcode_cust]').val('0').trigger('change');
+        $('[id=barcode_cust]').val('UMUM').trigger('change');
     });
 
 
@@ -733,6 +733,7 @@
         if(cek){
             $('#alert-total').hide();
              $('#totalModal').modal('show');
+             $('#ttl_pembayaran_tunai').val(ttl_belanja);
              setTimeout(function(){  $('#barcode_cust').select2('open');},500)
         }else{
             swal("Detail Belum Diisi!");
