@@ -194,7 +194,7 @@
             url:"{{route('dashboard.statuspesanan')}}",
             method:"GET",
             success:function(data){
-                console.log(data)
+
                 var status = [];
                 var total = [];
                 data.forEach(element => {
@@ -434,6 +434,60 @@
                     }]
                 });
                 // $('#emailstatuswithout .highcharts-title').remove()
+            }
+        })
+
+
+        $.ajax({
+            url:"{{route('dashboard.minimumstok')}}",
+            method:"GET",
+            success:function(data){
+
+                Highcharts.chart('minimumstok', {
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                    },
+                    title: {
+                        text: "Barcode"
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    accessibility: {
+                        point: {
+                            valueSuffix: '%'
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            size: 220,
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                            },
+                            showInLegend: true,
+                            shadow: false
+                        }
+                    },
+                    series: [{
+                        name: 'Barcode Status',
+                        colorByPoint: true,
+                        innerSize: '20%',
+                        data: [{
+                            name: 'Stok Aman',
+                            y:data['available'],
+                        }, {
+                            name: 'Minimum Stok',
+                            y: data['minimum']
+                        }]
+                    }]
+                });
+                $('#minimumstok .highcharts-title').remove()
             }
         })
   })

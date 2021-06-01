@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use App\Mslokasi;
 use App\Msbarang;
+use App\Trsaldobarang;
 
 class DashboardController extends Controller
 {
@@ -143,10 +144,11 @@ class DashboardController extends Controller
         }
     }
 
-    public function EmailStatus(Request $request){
-        if($request->ajax()){
-            $verified = Msanggota::where('verified_email',1)->count();
-            $unverified = Msanggota::where('verified_email',0)->count();
+    public function EmailStatus(Request $request)
+    {
+        if ($request->ajax()) {
+            $verified = Msanggota::where('verified_email', 1)->count();
+            $unverified = Msanggota::where('verified_email', 0)->count();
 
             $arr = [
                 'verified' => $verified,
@@ -154,14 +156,14 @@ class DashboardController extends Controller
             ];
 
             return response()->json($arr);
-
         }
     }
 
-    public function EmailStatusWithout(Request $request){
-        if($request->ajax()){
-            $verified = Msanggota::where('verified_email',1)->count();
-            $without = Msanggota::where('email',null)->count();
+    public function EmailStatusWithout(Request $request)
+    {
+        if ($request->ajax()) {
+            $verified = Msanggota::where('verified_email', 1)->count();
+            $without = Msanggota::where('email', null)->count();
 
             $arr = [
                 'verified' => $verified,
@@ -169,14 +171,14 @@ class DashboardController extends Controller
             ];
 
             return response()->json($arr);
-
         }
     }
 
-    public function BarangPictures(Request $request){
-        if($request->ajax()){
-            $with = Msbarang::where('LokasiGambar','!=',null)->count();
-            $without = Msbarang::where('LokasiGambar',null)->count();
+    public function BarangPictures(Request $request)
+    {
+        if ($request->ajax()) {
+            $with = Msbarang::where('LokasiGambar', '!=', null)->count();
+            $without = Msbarang::where('LokasiGambar', null)->count();
 
             $arr = [
                 'with' => $with,
@@ -184,14 +186,14 @@ class DashboardController extends Controller
             ];
 
             return response()->json($arr);
-
         }
     }
 
-    public function BarangBarcode(Request $request){
-        if($request->ajax()){
-            $with = Msbarang::where('KodeBarcode','!=',null)->count();
-            $without = Msbarang::where('KodeBarcode',null)->count();
+    public function BarangBarcode(Request $request)
+    {
+        if ($request->ajax()) {
+            $with = Msbarang::where('KodeBarcode', '!=', null)->count();
+            $without = Msbarang::where('KodeBarcode', null)->count();
 
             $arr = [
                 'with' => $with,
@@ -199,8 +201,41 @@ class DashboardController extends Controller
             ];
 
             return response()->json($arr);
-
         }
     }
 
+    public function MinimumStok(Request $request)
+    {
+        if ($request->ajax()) {
+            $barang = Msbarang::all();
+
+            $minimum = [];
+
+            foreach ($barang as $key => $value) {
+                $trsaldobarang = Trsaldobarang::where('KodeBarang', $value->Kode)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+                if ($trsaldobarang) {
+                    if ($trsaldobarang->Saldo <= $value->MinimumStok) {
+                        array_push($minimum, $trsaldobarang->KodeBarang);
+                    }
+                }
+            }
+
+            $available = [];
+            foreach ($barang as $key => $value) {
+                $trsaldobarang = Trsaldobarang::where('KodeBarang', $value->Kode)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+                if ($trsaldobarang) {
+                    if ($trsaldobarang->Saldo > $value->MinimumStok) {
+                        array_push($available, $trsaldobarang->KodeBarang);
+                    }
+                }
+            }
+
+            $res = [
+                'minimum' => count($minimum),
+                'available' => count($available)
+            ];
+
+            return response()->json($res);
+        }
+    }
 }
