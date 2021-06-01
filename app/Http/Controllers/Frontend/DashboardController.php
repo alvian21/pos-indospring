@@ -106,7 +106,7 @@ class DashboardController extends Controller
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
                 ->limit(10)->get()->toArray();
 
-            usort($penjualanoffline, fn ($a, $b) => strtotime($a["day"]) - strtotime($b["day"]));
+            $penjualanoffline = $this->sortFunction($penjualanoffline);
             return response()->json($penjualanoffline);
         }
     }
@@ -123,8 +123,8 @@ class DashboardController extends Controller
                 ->where('Transaksi', 'CHECKOUT')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
-                ->limit(10)->get();
-            usort($penjualanonline, fn ($a, $b) => strtotime($a["day"]) - strtotime($b["day"]));
+                ->limit(10)->get()->toArray();
+            $penjualanonline = $this->sortFunction($penjualanonline);
             return response()->json($penjualanonline);
         }
     }
@@ -257,5 +257,15 @@ class DashboardController extends Controller
 
             return response()->json($res);
         }
+    }
+
+    public function sortFunction($array)
+    {
+        usort($array, function ($a1, $a2) {
+            $v1 = strtotime($a1['day']);
+            $v2 = strtotime($a2['day']);
+            return $v1 - $v2; // $v2 - $v1 to reverse direction
+        });
+        return $array;
     }
 }
