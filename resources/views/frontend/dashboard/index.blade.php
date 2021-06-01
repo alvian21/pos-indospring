@@ -41,8 +41,8 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
+            <div class="col-md-8">
+                <div class="card" style="height: 95%">
                     <div class="card-header">
                         <h4 class="text-center">Status Pinjaman</h4>
 
@@ -54,7 +54,21 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="card ">
+                    <div class="card-header d-flex justify-content-center ">
+                        <h4 class="mb-0">Minimum Stok</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="minimumstok" style="width:100%; height:400px;"></div>
+                            </div>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6">
@@ -93,24 +107,7 @@
             </div>
 
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card ">
-                    <div class="card-header d-flex justify-content-center ">
-                        <h4 class="mb-0">Minimum Stok</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div id="minimumstok" style="width:100%; height:400px;"></div>
-                            </div>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </div>
 </section>
 @endsection
@@ -134,7 +131,11 @@
                         type: 'column'
                     },
                     title: {
-                        text: "Penjualan {{$lokasi['Nama']}}"
+                        text: "Penjualan {{ucwords(strtolower($lokasi->Nama))}}",
+                        fontSize: '12px'
+                    },
+                    credits: {
+                        enabled: false
                     },
                     xAxis: {
                         categories: day
@@ -169,7 +170,11 @@
                         type: 'column'
                     },
                     title: {
-                        text: "Penjualan Online {{$lokasi['Nama']}}"
+                        text: "Penjualan Online {{ucwords(strtolower($lokasi->Grup))}}",
+                        fontSize: '12px'
+                    },
+                    credits: {
+                        enabled: false
                     },
                     xAxis: {
                         categories: day
@@ -206,7 +211,11 @@
                         type: 'column'
                     },
                     title: {
-                        text: "Status Pesanan Online"
+                        text: "Status Pesanan Online Hari Ini",
+                        fontSize: '12px'
+                    },
+                    credits: {
+                        enabled: false
                     },
                     xAxis: {
                         categories: status
@@ -238,7 +247,9 @@
                         plotShadow: false,
                         type: 'pie'
                     },
-
+                    credits: {
+                        enabled: false
+                    },
                     tooltip: {
                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                     },
@@ -251,12 +262,11 @@
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            size: 220,
+                            size: 200,
                             dataLabels: {
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true,
                             shadow: false
                         }
                     },
@@ -290,6 +300,9 @@
                         plotShadow: false,
                         type: 'pie'
                     },
+                    credits: {
+                        enabled: false
+                    },
                     tooltip: {
                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                     },
@@ -302,12 +315,11 @@
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            size: 220,
+                            size: 200,
                             dataLabels: {
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true,
                             shadow: false
                         }
                     },
@@ -345,6 +357,9 @@
                     title: {
                         text: "Pictures"
                     },
+                    credits: {
+                        enabled: false
+                    },
                     tooltip: {
                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                     },
@@ -357,12 +372,11 @@
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            size: 220,
+                            size: 200,
                             dataLabels: {
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true,
                             shadow: false
                         }
                     },
@@ -399,6 +413,9 @@
                     title: {
                         text: "Barcode"
                     },
+                    credits: {
+                        enabled: false
+                    },
                     tooltip: {
                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                     },
@@ -411,12 +428,11 @@
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            size: 220,
+                            size: 200,
                             dataLabels: {
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true,
                             shadow: false
                         }
                     },
@@ -453,6 +469,9 @@
                     title: {
                         text: "Barcode"
                     },
+                    credits: {
+                        enabled: false
+                    },
                     tooltip: {
                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                     },
@@ -465,12 +484,11 @@
                         pie: {
                             allowPointSelect: true,
                             cursor: 'pointer',
-                            size: 220,
+                            size: 200,
                             dataLabels: {
                                 enabled: true,
                                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             },
-                            showInLegend: true,
                             shadow: false
                         }
                     },

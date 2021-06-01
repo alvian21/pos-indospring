@@ -22,6 +22,7 @@ class DashboardController extends Controller
     public function index()
     {
         $lokasi = Mslokasi::where('Kode', auth('web')->user()->KodeLokasi)->first();
+        
         return view("frontend.dashboard.index", ['lokasi' => $lokasi]);
     }
 
@@ -94,7 +95,7 @@ class DashboardController extends Controller
     public function PenjualanOffline(Request $request)
     {
         if ($request->ajax()) {
-            $from = strtotime(date("Y-m-d", strtotime("-10 day")));
+            $from = date("Y-m-d", strtotime("-10 day"));
             $to = date('Y-m-d');
             $penjualanoffline = Trmutasihd::select([
                 DB::raw('sum(TotalHarga) as `total`'),
@@ -102,7 +103,7 @@ class DashboardController extends Controller
             ])->groupBy('day')
                 ->where('Transaksi', 'PENJUALAN')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
-                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])->OrderBy('day')
                 ->limit(10)->get();
 
             return response()->json($penjualanoffline);
@@ -112,14 +113,14 @@ class DashboardController extends Controller
     public function PenjualanOnline(Request $request)
     {
         if ($request->ajax()) {
-            $from = strtotime(date("Y-m-d", strtotime("-10 day")));
+            $from = date("Y-m-d", strtotime("-10 day"));
             $to = date('Y-m-d');
             $penjualanonline = Trmutasihd::select([
                 DB::raw('sum(TotalHarga) as `total`'),
                 DB::raw("DATE_FORMAT(Tanggal, '%d-%M') as day")
             ])->groupBy('day')
                 ->where('Transaksi', 'CHECKOUT')
-                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
+                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->OrderBy('day')
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
                 ->limit(10)->get();
 
@@ -132,15 +133,33 @@ class DashboardController extends Controller
         if ($request->ajax()) {
             $from = strtotime(date("Y-m-d", strtotime("-10 day")));
             $to = date('Y-m-d');
-            $penjualanonline = Trmutasihd::select([
-                DB::raw('StatusPesanan as status'),
-                DB::raw('count(StatusPesanan) as total')
-            ])->groupBy('status')
-                ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
-                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
-                ->limit(10)->get();
+            $status = [
+                'Pesanan',
+                'Dalam Proses',
+                'Barang Sudah Siap',
+                'Barang Telah Diambil'
+            ];
 
-            return response()->json($penjualanonline);
+            $arr = [];
+            foreach ($status as $key => $value) {
+                $penjualanonline = Trmutasihd::select([
+                    DB::raw('StatusPesanan as status'),
+                    DB::raw('count(StatusPesanan) as total')
+                ])->groupBy('status')
+                    ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->where('StatusPesanan', $value)
+                    ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                    ->limit(10)->first();
+                if ($penjualanonline) {
+                    $x['status'] = $penjualanonline->status;
+                    $x['total'] = $penjualanonline->total;
+                } else {
+                    $x['status'] = $value;
+                    $x['total'] = 0;
+                }
+                array_push($arr, $x);
+            }
+
+            return response()->json($arr);
         }
     }
 
