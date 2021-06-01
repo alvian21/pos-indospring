@@ -309,9 +309,9 @@
                                 <label for="barcode_cust">Customer (Tempelkan Ekop/ scan ID Barcode)</label>
                                 <select class="form-control" id="barcode_cust" name="barcode_cust">
                                     <option value="0">Pilih Customer</option>
+                                    <option value="UMUM" selected>000000000 | UMUM</option>
                                     @foreach ($msanggota as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}} |
-                                        {{$item->NoEkop}}</option>
+                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}} @if($item->NoEkop!=null) | {{$item->NoEkop}} @endif</option>
                                     @endforeach
 
                                 </select>
@@ -323,13 +323,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="pembayaran_ekop">Pembayaran Ekop</label>
-                                <input type="text" class="form-control" name="pembayaran_ekop" id="pembayaran_ekop">
+                                <input type="text" class="form-control" value="0" name="pembayaran_ekop" id="pembayaran_ekop">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="saldo_ekop">Saldo Ekop</label>
-                                <input type="text" class="form-control" readonly name="saldo_ekop" id="saldo_ekop">
+                                <input type="text" class="form-control" value="0" readonly name="saldo_ekop" id="saldo_ekop">
                             </div>
                         </div>
                     </div>
@@ -775,6 +775,7 @@
                     var ekop = 0;
                     var ttl_belanja=$('#total_belanja').val();
                     var pembayaran_tunai  = 0;
+                    var ttl_pembayaran_tunai = 0;
                     if(parseInt(saldo) > parseInt(replace_titik(ttl_belanja))){
                         $('#pembayaran_tunai').val(0);
                         $('#ttl_pembayaran_tunai').val(0);
@@ -825,13 +826,14 @@
      function replace_titik(cek){
          if(cek!=undefined){
             var datacek = cek.replace('.','');
+            datacek = datacek.replace('.','');
             return datacek;
          }
 
      }
 
 
-     $(document).on('keyup keypress change', '#pembayaran_ekop, #pembayaran_tunai', function(){
+     $(document).on('keyup keypress', '#pembayaran_ekop, #pembayaran_tunai', function(){
          var ekop = $('#pembayaran_ekop').val();
          var ttl_belanja=$('#total_belanja').val();
          var tunai = $("#pembayaran_tunai").val();
@@ -855,7 +857,8 @@
             tunai = replace_titik(tunai);
             saldo_ekop = replace_titik(saldo_ekop);
             var hasil_total = 0;
-
+            // console.log(ekop)
+            console.log(saldo_ekop)
             if(parseInt(ekop) > parseInt(saldo_ekop) ){
                 $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
                 $('.alertsuccesstotal').hide();
@@ -873,6 +876,9 @@
 
                 }else if((ekop == 0 || ekop ==  '') && tunai > 0){
                     hasil_total = tunai - ttl_belanja;
+                }else if(ekop == 0 ){
+
+                    $('#ttl_pembayaran_tunai').val(convertToRupiah(ttl_belanja))
                 }
                 if(hasil_total >= 0){
                     $('#kembalian').val(convertToRupiah(hasil_total));

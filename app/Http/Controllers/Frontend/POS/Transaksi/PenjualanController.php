@@ -37,7 +37,17 @@ class PenjualanController extends Controller
         $penjualan = Trmutasihd::where('Transaksi', 'PENJUALAN')->get();
         $mslokasi = Mslokasi::all();
         $msbarang = Msbarang::all();
-        $msanggota = DB::table('msanggota')->leftJoin('traktifasi', 'msanggota.Kode', 'traktifasi.Kode')->where('traktifasi.Status', 'aktif')->get();
+        // $msanggota = DB::table('msanggota')
+        // ->leftJoin('traktifasi', 'msanggota.Kode', 'traktifasi.Kode')
+        // ->where('traktifasi.Status', 'aktif')
+        // ->get();
+
+        $msanggota = DB::table('msanggota')->select('msanggota.Kode', 'traktifasi.NoEkop', 'msanggota.Nama')
+            ->leftJoin('traktifasi', function ($join) {
+                $join->where('traktifasi.Status', 'aktif')
+                    ->on('msanggota.Kode', 'traktifasi.Kode');
+            })
+            ->get();
         if ($trmutasihd) {
             $nomor = (int) substr($trmutasihd->Nomor, 14);
             if ($nomor != 0) {
@@ -363,6 +373,8 @@ class PenjualanController extends Controller
             $pembayaran_tunai = $request->get('pembayaran_tunai');
             $pembayaran_tunai = str_replace('.', '', $pembayaran_tunai);
             $barcode_cust = $request->get('barcode_cust');
+            $tunai = $request->get('ttl_pembayaran_tunai');
+            $tunai = str_replace('.','',$tunai);
             $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
             if ($trmutasihd) {
                 $nomor = (int) substr($trmutasihd->Nomor, 14);
@@ -381,6 +393,7 @@ class PenjualanController extends Controller
                 $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
                 $formatNomor = "PE-" . date('y-m-d') . "-" . $addzero;
             }
+
             $trpenjualan = session('transaksi_penjualan');
             $trmutasihd = new Trmutasihd();
             $trmutasihd->Transaksi = $trpenjualan["transaksi"];
@@ -393,20 +406,18 @@ class PenjualanController extends Controller
             $trmutasihd->LokasiAwal = $trpenjualan["lokasi"];
             $trmutasihd->TotalHarga = $trpenjualan["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            if (($request->get('ttl_pembayaran_tunai') != '' || $request->get('ttl_pembayaran_tunai') > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]) {
-                $trmutasihd->PembayaranTunai = $request->get('ttl_pembayaran_tunai');
-
+            if (($tunai != '' || $tunai > 0) && $pembayaran_ekop != $trpenjualan["total_harga_setelah_pajak"]) {
+                $trmutasihd->PembayaranTunai = $tunai;
                 //saldototalbelanjatunai
                 $cektunai = Trsaldototalbelanjatunai::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
                 $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
                 $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
                 $trsaldobelanjatunai->KodeUser = $barcode_cust;
                 if ($cektunai) {
-                    $trsaldobelanjatunai->Saldo = $request->get('ttl_pembayaran_tunai') + $cektunai->Saldo;
+                    $trsaldobelanjatunai->Saldo = $tunai + $cektunai->Saldo;
                 } else {
-                    $trsaldobelanjatunai->Saldo = $request->get('ttl_pembayaran_tunai');
+                    $trsaldobelanjatunai->Saldo = $tunai;
                 }
-
                 $trsaldobelanjatunai->save();
             }
             if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
@@ -437,7 +448,6 @@ class PenjualanController extends Controller
             $trmutasihd->save();
 
             //trsaldototalbelanja
-
             $cektotalbelanja = Trsaldototalbelanja::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
             $trsaldototalbelanja = new Trsaldototalbelanja();
             $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
@@ -448,7 +458,6 @@ class PenjualanController extends Controller
                 $trsaldototalbelanja->Saldo = $trpenjualan["total_harga_setelah_pajak"];
             }
             $trsaldototalbelanja->save();
-
 
             $datadetail = session('detail_transaksi_penjualan');
             foreach ($datadetail as $key => $value) {
