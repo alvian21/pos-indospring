@@ -132,8 +132,6 @@ class DashboardController extends Controller
     public function StatusPesanan(Request $request)
     {
         if ($request->ajax()) {
-            $from = strtotime(date("Y-m-d", strtotime("-10 day")));
-            $to = date('Y-m-d');
             $status = [
                 'Pesanan',
                 'Dalam Proses',
@@ -145,10 +143,10 @@ class DashboardController extends Controller
             foreach ($status as $key => $value) {
                 $penjualanonline = Trmutasihd::select([
                     DB::raw('StatusPesanan as status'),
-                    DB::raw('count(StatusPesanan) as total')
+                    DB::raw('count(Nomor) as total')
                 ])->groupBy('status')
                     ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->where('StatusPesanan', $value)
-                    ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                    ->where('Tanggal', '>=', date('Y-m-d') . ' 00:00:00')
                     ->limit(10)->first();
                 if ($penjualanonline) {
                     $x['status'] = $penjualanonline->status;

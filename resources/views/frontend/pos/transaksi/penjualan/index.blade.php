@@ -734,6 +734,7 @@
             $('#alert-total').hide();
              $('#totalModal').modal('show');
              $('#ttl_pembayaran_tunai').val(ttl_belanja);
+             $('#pembayaran_ekop').attr('readonly', true);
              setTimeout(function(){  $('#barcode_cust').select2('open');},500)
         }else{
             swal("Detail Belum Diisi!");
@@ -764,6 +765,7 @@
          var kode = $(this).val();
          var ttl_belanja=$('#total_belanja').val();
          ttl_belanja = ttl_belanja.replace('.','');
+
          if(kode != 0){
             $('#alert-total').hide();
             $.ajax({
@@ -785,7 +787,13 @@
                         $('#ttl_pembayaran_tunai').val(ttl_belanja);
                         $('#pembayaran_ekop').val(0);
                     }
-                    $('#saldo_ekop').val(convertToRupiah(data['Saldo']));
+                    $('#saldo_ekop').val(convertToRupiah(data['Saldo']));''
+
+                    if(kode != 'UMUM'){
+                        $('#pembayaran_ekop').attr('readonly', false);
+                    }else{
+                        $('#pembayaran_ekop').attr('readonly', true);
+                    }
 
              }
          })

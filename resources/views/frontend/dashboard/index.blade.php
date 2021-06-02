@@ -132,7 +132,9 @@
                     },
                     title: {
                         text: "Penjualan {{ucwords(strtolower($lokasi->Nama))}}",
-                        fontSize: '12px'
+                        style:{
+                            fontSize: '16px'
+                        }
                     },
                     credits: {
                         enabled: false
@@ -171,7 +173,9 @@
                     },
                     title: {
                         text: "Penjualan ONLINE {{ucwords(strtolower($lokasi->Grup))}}",
-                        fontSize: '12px'
+                        style:{
+                            fontSize: '16px'
+                        }
                     },
                     credits: {
                         enabled: false
@@ -212,7 +216,9 @@
                     },
                     title: {
                         text: "Status Pesanan ONLINE Hari Ini",
-                        fontSize: '12px'
+                        style:{
+                            fontSize: '16px'
+                        }
                     },
                     credits: {
                         enabled: false
