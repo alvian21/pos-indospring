@@ -133,13 +133,13 @@ class DashboardController extends Controller
     {
         if ($request->ajax()) {
             $status = [
-                'Pesanan',
                 'Dalam Proses',
                 'Barang Sudah Siap',
                 'Barang Telah Diambil'
             ];
 
             $arr = [];
+            $total = 0;
             foreach ($status as $key => $value) {
                 $penjualanonline = Trmutasihd::select([
                     DB::raw('StatusPesanan as status'),
@@ -149,6 +149,7 @@ class DashboardController extends Controller
                     ->where('Tanggal', '>=', date('Y-m-d') . ' 00:00:00')
                     ->limit(10)->first();
                 if ($penjualanonline) {
+                    $total += $penjualanonline->total;
                     $x['status'] = $penjualanonline->status;
                     $x['total'] = $penjualanonline->total;
                 } else {
@@ -157,6 +158,9 @@ class DashboardController extends Controller
                 }
                 array_push($arr, $x);
             }
+            $x['status'] = 'Pesanan';
+            $x['total'] = $total;
+            array_push($arr, $x);
 
             return response()->json($arr);
         }
