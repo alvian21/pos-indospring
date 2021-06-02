@@ -144,7 +144,7 @@ class DashboardController extends Controller
                 $penjualanonline = Trmutasihd::select([
                     DB::raw('StatusPesanan as status'),
                     DB::raw('count(Nomor) as total')
-                ])->groupBy('status')
+                ])->groupBy('status')->where('Transaksi', 'CHECKOUT')
                     ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->where('StatusPesanan', $value)
                     ->where('Tanggal', '>=', date('Y-m-d') . ' 00:00:00')
                     ->limit(10)->first();
