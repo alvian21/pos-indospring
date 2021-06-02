@@ -140,6 +140,8 @@ class DashboardController extends Controller
 
             $arr = [];
             $total = 0;
+            $arr[0]['status'] = 'Pesanan';
+            $arr[0]['total'] = 0;
             foreach ($status as $key => $value) {
                 $penjualanonline = Trmutasihd::select([
                     DB::raw('StatusPesanan as status'),
@@ -158,9 +160,8 @@ class DashboardController extends Controller
                 }
                 array_push($arr, $x);
             }
-            $x['status'] = 'Pesanan';
-            $x['total'] = $total;
-            array_push($arr, $x);
+
+            $arr[0]['total'] = $total;
 
             return response()->json($arr);
         }
