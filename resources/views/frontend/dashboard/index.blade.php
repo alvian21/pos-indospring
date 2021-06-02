@@ -74,7 +74,7 @@
             <div class="col-md-6">
                 <div class="card ">
                     <div class="card-header d-flex justify-content-center ">
-                        <h4 class="mb-0">Email</h4>
+                        <h4 class="mb-0"><a href="{{route('anggotaemail.index')}}">Email</a></h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -91,7 +91,7 @@
             <div class="col-md-6">
                 <div class="card ">
                     <div class="card-header d-flex justify-content-center ">
-                        <h4 class="mb-0">Master Barang</h4>
+                        <h4 class="mb-0"><a href="http://31.220.50.154/koperasi/msbarang" target="_blank">Master Barang</a></h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -114,21 +114,81 @@
 @section('scripts')
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
+  var chartoffline;
+  var chartonline;
+  var chartpesanan;
+    function requestDataOffline() {
+            $.ajax({
+                url: "{{route('dashboard.penjualanoffline')}}",
+                method:"GET",
+                dataType: 'json',
+                success: function(data){
+                    var total = [];
+                    var day = [];
+                    data.forEach(element => {
+                        total.push(element['total'])
+                        day.push(element['day'])
+                    });
+                    chartoffline.series[0].setData(total, false);
+                    chartoffline.xAxis[0].setCategories(day);
+                    setTimeout(requestDataOffline, 1000);
+                },
+                cache: false
+            })
+    };
+
+
+    function requestDataOnline() {
+            $.ajax({
+                url: "{{route('dashboard.penjualanonline')}}",
+                method:"GET",
+                dataType: 'json',
+                success: function(data){
+                    var total = [];
+                    var day = [];
+                    data.forEach(element => {
+                        total.push(element['total'])
+                        day.push(element['day'])
+                    });
+                    chartonline.series[0].setData(total, false);
+                    chartonline.xAxis[0].setCategories(day);
+                    setTimeout(requestDataOnline, 1000);
+                },
+                cache: false
+            })
+    };
+
+
+    function requestDataPesanan() {
+            $.ajax({
+                url: "{{route('dashboard.statuspesanan')}}",
+                method:"GET",
+                dataType: 'json',
+                success: function(data){
+                    var status = [];
+                    var total = [];
+                    data.forEach(element => {
+                        status.push(element['status'])
+                        total.push(element['total'])
+                    });
+                    chartpesanan.series[0].setData(total, false);
+                    chartpesanan.xAxis[0].setCategories(status);
+                    setTimeout(requestDataPesanan, 1000);
+                },
+                cache: false
+            })
+    };
+
+
     $(document).ready(function(){
 
-        $.ajax({
-            url:"{{route('dashboard.penjualanoffline')}}",
-            method:"GET",
-            success:function(data){
-                var total = [];
-                var day = [];
-                data.forEach(element => {
-                    total.push(element['total'])
-                    day.push(element['day'])
-                });
-                const chart = Highcharts.chart('penjualanoffline', {
+
+        chartoffline = Highcharts.chart('penjualanoffline', {
                     chart: {
-                        type: 'column'
+                        type: 'column',
+                        events: {
+                            load: requestDataOffline
+                        }
                     },
                     title: {
                         text: "Penjualan {{ucwords(strtolower($lokasi->Nama))}}",
@@ -140,7 +200,7 @@
                         enabled: false
                     },
                     xAxis: {
-                        categories: day
+                        categories: []
                     },
                     yAxis: {
                         allowDecimals: false,
@@ -149,27 +209,19 @@
                         }
                     },
                     series: [{
-                        data: total
+                        data: []
                     }]
                 });
 
                 $('#penjualanoffline .highcharts-legend').hide()
-            }
-        })
 
-        $.ajax({
-            url:"{{route('dashboard.penjualanonline')}}",
-            method:"GET",
-            success:function(data){
-                var total = [];
-                var day = [];
-                data.forEach(element => {
-                    total.push(element['total'])
-                    day.push(element['day'])
-                });
-                const chart = Highcharts.chart('penjualanonline', {
+
+    chartonline = Highcharts.chart('penjualanonline', {
                     chart: {
-                        type: 'column'
+                        type: 'column',
+                        events: {
+                            load: requestDataOnline
+                        }
                     },
                     title: {
                         text: "Penjualan ONLINE {{ucwords(strtolower($lokasi->Grup))}}",
@@ -181,7 +233,7 @@
                         enabled: false
                     },
                     xAxis: {
-                        categories: day
+                        categories: []
                     },
                     yAxis: {
                         allowDecimals: false,
@@ -190,29 +242,19 @@
                         }
                     },
                     series: [{
-                        data: total
+                        data: []
                     }]
                 });
 
                 $('#penjualanonline .highcharts-legend').hide()
-            }
-        })
 
 
-        $.ajax({
-            url:"{{route('dashboard.statuspesanan')}}",
-            method:"GET",
-            success:function(data){
-
-                var status = [];
-                var total = [];
-                data.forEach(element => {
-                    status.push(element['status'])
-                    total.push(element['total'])
-                });
-                const chart = Highcharts.chart('statuspesanan', {
+    chartpesanan = Highcharts.chart('statuspesanan', {
                     chart: {
-                        type: 'column'
+                        type: 'column',
+                        events: {
+                            load: requestDataPesanan
+                        }
                     },
                     title: {
                         text: "Status Pesanan ONLINE Hari Ini",
@@ -224,7 +266,7 @@
                         enabled: false
                     },
                     xAxis: {
-                        categories: status
+                        categories: []
                     },
                     yAxis: {
                         allowDecimals: false,
@@ -233,13 +275,11 @@
                         }
                     },
                     series: [{
-                        data: total
+                        data: []
                     }]
                 });
 
-                $('#statuspesanan .highcharts-legend').hide()
-            }
-        })
+    $('#statuspesanan .highcharts-legend').hide()
 
         $.ajax({
             url:"{{route('dashboard.emailstatus')}}",

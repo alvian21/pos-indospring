@@ -29,6 +29,11 @@
                 <i class="fas fa-file-alt"></i> <span>User</span>
             </a>
         </li>
+        <li @yield('barang')>
+            <a class="nav-link" href="#">
+                <i class="fas fa-file-alt"></i> <span>Barang</span>
+            </a>
+        </li>
         <li class="menu-header">Saldo</li>
         <li class="nav-item @yield('saldo-awal') ">
             <a class="nav-link" href="{{route('saldo.saldo_awal.index')}}">

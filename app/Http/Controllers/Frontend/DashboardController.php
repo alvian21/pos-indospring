@@ -7,6 +7,7 @@ use App\Msanggota;
 use Illuminate\Http\Request;
 use App\Trmutasihd;
 use Illuminate\Support\Facades\DB;
+use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Mslokasi;
 use App\Msbarang;
@@ -271,4 +272,6 @@ class DashboardController extends Controller
         });
         return $array;
     }
+
+
 }

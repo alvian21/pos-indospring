@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Route;
 Route::get("/login", "Frontend\AuthController@getLogin");
 Route::post("/login", "Frontend\AuthController@login")->name("login");
 
-
 Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' => 'admin'], function () {
     Route::group(['prefix'=>'dashboard','as'=>'dashboard.'],function () {
         Route::get('penjualanoffline','DashboardController@PenjualanOffline')->name('penjualanoffline');
@@ -31,7 +30,9 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::get('barangpictures','DashboardController@BarangPictures')->name('barangpictures');
         Route::get('barangbarcode','DashboardController@BarangBarcode')->name('barangbarcode');
         Route::get('minimumstok','DashboardController@MinimumStok')->name('minimumstok');
+
     });
+
     Route::resource('dashboard', 'DashboardController');
     //saldo
     Route::group(['namespace' => 'Saldo', 'prefix' => 'saldo', 'as' => 'saldo.'], function () {
@@ -46,6 +47,13 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::post('/import_excel','ListAnggotaController@AnggotaImport')->name('anggota.import');
         });
         Route::resource('anggota', 'ListAnggotaController');
+
+    });
+
+    //anngota
+    Route::group(['namespace'=>'Anggota','prefix'=>'anggotaemail','as'=>'anggotaemail.'],function () {
+        Route::get('/verify','EmailController@verifyUser')->name('verify.user');
+        Route::resource('/','EmailController');
     });
 
     //POS-transaksi
@@ -84,6 +92,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/data_barang', 'StockHilangController@get_data_barang')->name('stockhilang.databarang');
             Route::get('/save_transaksi_stockhilang', 'StockHilangController@save_data_transaksi')->name('stockhilang.save');
         });
+
+
 
         Route::resource('pembelian', 'PembelianController');
         Route::resource('penjualan', 'PenjualanController');
