@@ -50,10 +50,23 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
     });
 
-    //anngota
+    //anggota
     Route::group(['namespace'=>'Anggota','prefix'=>'anggotaemail','as'=>'anggotaemail.'],function () {
         Route::get('/verify','EmailController@verifyUser')->name('verify.user');
         Route::resource('/','EmailController');
+    });
+
+    //pinjaman
+    Route::group(['namespace' => 'Pinjaman','prefix'=>'pinjaman','as'=>'pinjaman.'],function () {
+
+        Route::resource('/', 'PinjamanController');
+    });
+
+    //status pesanan
+    Route::group(['namespace' => 'Status','prefix'=>'status','as'=>'status.'],function () {
+        Route::get('updatestatus','StatusPesananController@updateStatus')->name('updatestatuspsn');
+        Route::get('datapesanan','StatusPesananController@getDataPesanan')->name('datapesanan');
+        Route::resource('pesanan', 'StatusPesananController');
     });
 
     //POS-transaksi

@@ -8,4 +8,7 @@ class Trmutasihd extends Model
 {
     protected $table = "trmutasihd";
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $primaryKey = "Nomor";
 }

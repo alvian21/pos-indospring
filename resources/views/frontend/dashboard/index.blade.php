@@ -44,7 +44,7 @@
             <div class="col-md-8">
                 <div class="card" style="height: 92%">
                     <div class="card-header d-flex justify-content-center">
-                        <h4 class="text-center">Status Pinjaman</h4>
+                        <h4 class="text-center"><a href="{{route('pinjaman.index')}}">Status Pinjaman</a></h4>
 
                     </div>
                     <div class="card-body">
@@ -79,11 +79,11 @@
 
                                     <div class="card-body text-center text-dark">
                                        <h5>Level 1</h5>
-                                        <p>PENGAJUAN</p>
+                                        <p style="font-size: 12px">PENGAJUAN</p>
                                         <h5>{{$pinjaman[0]['total']}}</h5>
-                                        <p>TDK VERIFIKASI</p>
+                                        <p style="font-size: 12px">TDK VERIFIKASI</p>
                                         <h5>{{$pinjaman[1]['total']}}</h5>
-                                        <p>VERIFIKASI</p>
+                                        <p style="font-size: 12px">VERIFIKASI</p>
                                         <h5>{{$pinjaman[2]['total']}}</h5>
                                     </div>
                                 </div>
@@ -93,9 +93,9 @@
 
                                     <div class="card-body text-center text-dark">
                                         <h5>Level 2</h5>
-                                        <p>TDK DIPROSES</p>
+                                        <p style="font-size: 12px">TDK DIPROSES</p>
                                         <h5>{{$pinjaman[3]['total']}}</h5>
-                                        <p class="mt-5">DIPROSES</p>
+                                        <p class="mt-5" style="font-size: 12px">DIPROSES</p>
                                         <h5>{{$pinjaman[4]['total']}}</h5>
                                     </div>
                                 </div>
@@ -105,9 +105,9 @@
 
                                     <div class="card-body text-center text-dark">
                                         <h5>Level 3</h5>
-                                        <p>TDK DISETUJUI</p>
+                                        <p style="font-size: 12px">TDK DISETUJUI</p>
                                         <h5>{{$pinjaman[5]['total']}}</h5>
-                                        <p class="mt-5">DISETUJUI</p>
+                                        <p class="mt-5" style="font-size: 12px">DISETUJUI</p>
                                         <h5>{{$pinjaman[6]['total']}}</h5>
                                     </div>
                                 </div>
@@ -616,6 +616,10 @@
                 });
                 $('#minimumstok .highcharts-title').remove()
             }
+        })
+        $('#statuspesanan .highcharts-title').css('cursor','pointer');
+        $('#statuspesanan .highcharts-title').on('click', function(){
+            window.location.href="{{route('status.pesanan.index')}}"
         })
   })
 </script>

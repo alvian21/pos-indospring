@@ -533,7 +533,6 @@ class PenjualanController extends Controller
             if (session()->has('transaksi_penjualan')) {
                 $pembelian = session('transaksi_penjualan');
                 array_push($datapembelian, $pembelian);
-
                 $count = count($datapembelian);
                 $no = 1;
                 foreach ($datapembelian as $row) {
