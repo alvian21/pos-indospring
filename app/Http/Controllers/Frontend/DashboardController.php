@@ -11,7 +11,9 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Carbon;
 use App\Mslokasi;
 use App\Msbarang;
+use App\Mssetting;
 use App\Trsaldobarang;
+use App\Trpinjaman;
 
 class DashboardController extends Controller
 {
@@ -22,9 +24,39 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $lokasi = Mslokasi::where('Kode', auth('web')->user()->KodeLokasi)->first();
+        $month = date('m');
+        $year = date('Y');
 
-        return view("frontend.dashboard.index", ['lokasi' => $lokasi]);
+        $status = [
+            'PENGAJUAN',
+            'TDK VERIFIKASI',
+            'VERIFIKASI',
+            'TDK DIPROSES',
+            'DIPROSES',
+            'TDK DISETUJUI',
+            'DISETUJUI',
+        ];
+
+        $lokasi = Mslokasi::where('Kode', auth('web')->user()->KodeLokasi)->first();
+        $pinjaman = Trpinjaman::select('ApprovalStatus', DB::raw('count(*) as total'))->whereMonth('TanggalPengajuan', $month)->whereYear('TanggalPengajuan', $year)->groupBy('ApprovalStatus')->first();
+        $kuota = Mssetting::where('Kode', 'MobilePengajuanMaksAnggota')->first();
+        $arr = [];
+        $total = 0;
+        foreach ($status as $key => $value) {
+            $pinjaman = Trpinjaman::select('ApprovalStatus', DB::raw('count(*) as total'))->where('ApprovalStatus', $value)->whereMonth('TanggalPengajuan', $month)->whereYear('TanggalPengajuan', $year)->groupBy('ApprovalStatus')->first();
+            if ($pinjaman) {
+                $x["status"] = $value;
+                $x["total"] = $pinjaman->total;
+                $total += $x['total'];
+            } else {
+                $x["status"] = $value;
+                $x["total"] = 0;
+                $total += $x['total'];
+            }
+
+            array_push($arr, $x);
+        }
+        return view("frontend.dashboard.index", ['lokasi' => $lokasi, 'pinjaman' => $arr, 'kuota' => $kuota,'total'=>$total]);
     }
 
     /**
@@ -272,6 +304,4 @@ class DashboardController extends Controller
         });
         return $array;
     }
-
-
 }

@@ -42,15 +42,77 @@
 
         <div class="row">
             <div class="col-md-8">
-                <div class="card" style="height: 95%">
-                    <div class="card-header">
+                <div class="card" style="height: 92%">
+                    <div class="card-header d-flex justify-content-center">
                         <h4 class="text-center">Status Pinjaman</h4>
 
                     </div>
                     <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card border-dark shadow p-3 mb-5 bg-white rounded"
+                                            style="height: 10rem;">
+                                            {{-- <div class="card-header text-dark d-flex justify-content-center">Level 2</div> --}}
+                                            <div class="card-body  text-center text-dark">
+                                                <p>QUOTA</p>
+                                                <h3 class="mt-3">{{$kuota->Nilai}}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card border-dark shadow p-3 mb-5 bg-white rounded"
+                                            style="height: 10rem;">
+                                            <div class="card-body text-center text-dark">
+                                                <p style="font-size: 12px">ON PROGRESS</p>
+                                                <h3 class="mt-3">{{$total}}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card shadow p-3 mb-5 bg-white rounded" style="height: 23rem;">
 
-                        <canvas id="myChart" class="chartjs-render-monitor"></canvas>
+                                    <div class="card-body text-center text-dark">
+                                       <h5>Level 1</h5>
+                                        <p>PENGAJUAN</p>
+                                        <h5>{{$pinjaman[0]['total']}}</h5>
+                                        <p>TDK VERIFIKASI</p>
+                                        <h5>{{$pinjaman[1]['total']}}</h5>
+                                        <p>VERIFIKASI</p>
+                                        <h5>{{$pinjaman[2]['total']}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card shadow p-3 mb-5 bg-white rounded" style="height: 23rem;">
 
+                                    <div class="card-body text-center text-dark">
+                                        <h5>Level 2</h5>
+                                        <p>TDK DIPROSES</p>
+                                        <h5>{{$pinjaman[3]['total']}}</h5>
+                                        <p class="mt-5">DIPROSES</p>
+                                        <h5>{{$pinjaman[4]['total']}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card shadow p-3 mb-5 bg-white rounded" style="height: 23rem;">
+
+                                    <div class="card-body text-center text-dark">
+                                        <h5>Level 3</h5>
+                                        <p>TDK DISETUJUI</p>
+                                        <h5>{{$pinjaman[5]['total']}}</h5>
+                                        <p class="mt-5">DISETUJUI</p>
+                                        <h5>{{$pinjaman[6]['total']}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -91,7 +153,8 @@
             <div class="col-md-6">
                 <div class="card ">
                     <div class="card-header d-flex justify-content-center ">
-                        <h4 class="mb-0"><a href="http://31.220.50.154/koperasi/msbarang" target="_blank">Master Barang</a></h4>
+                        <h4 class="mb-0"><a href="http://31.220.50.154/koperasi/msbarang" target="_blank">Master
+                                Barang</a></h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -114,7 +177,7 @@
 @section('scripts')
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
-  var chartoffline;
+    var chartoffline;
   var chartonline;
   var chartpesanan;
     function requestDataOffline() {
