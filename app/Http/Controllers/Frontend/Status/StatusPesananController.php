@@ -94,7 +94,7 @@ class StatusPesananController extends Controller
     {
         if ($request->ajax()) {
             $date = date('Y-m-d');
-            $trmutasihd = Trmutasihd::where('Transaksi', 'CHECKOUT')->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
+            $trmutasihd = Trmutasihd::where('Transaksi', 'CHECKOUT')->whereDate('Tanggal',$date)->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
 
             $arr = [];
             foreach ($trmutasihd as $key => $value) {
