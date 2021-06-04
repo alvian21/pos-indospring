@@ -178,8 +178,10 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
     var chartoffline;
-  var chartonline;
-  var chartpesanan;
+    var chartonline;
+    var chartpesanan;
+    var chartemailstatus;
+    var chartemailstatuswithout;
     function requestDataOffline() {
             $.ajax({
                 url: "{{route('dashboard.penjualanoffline')}}",
@@ -237,6 +239,48 @@
                     chartpesanan.series[0].setData(total, false);
                     chartpesanan.xAxis[0].setCategories(status);
                     setTimeout(requestDataPesanan, 30000);
+                },
+                cache: false
+            })
+    };
+
+
+    function requestEmailStatus() {
+            $.ajax({
+                url: "{{route('dashboard.emailstatus')}}",
+                method:"GET",
+                dataType: 'json',
+                success: function(data){
+                    chartemailstatus.series[0].setData([{
+                            name: 'Unverified',
+                            y:data['unverified'],
+                        }, {
+                            name: 'Verified',
+                            y: data['verified']
+                        }]);
+
+                    setTimeout(requestEmailStatus, 30000);
+                },
+                cache: false
+            })
+    };
+
+
+    function requestEmailStatusWithout() {
+            $.ajax({
+                url: "{{route('dashboard.emailstatuswithout')}}",
+                method:"GET",
+                dataType: 'json',
+                success: function(data){
+                    chartemailstatuswithout.series[0].setData([{
+                            name: 'Without',
+                            y:data['without'],
+                        }, {
+                            name: 'Verified',
+                            y: data['verified']
+                        }]);
+
+                    setTimeout(requestEmailStatusWithout, 30000);
                 },
                 cache: false
             })
@@ -355,17 +399,15 @@
 
     $('#statuspesanan .highcharts-legend').hide()
 
-        $.ajax({
-            url:"{{route('dashboard.emailstatus')}}",
-            method:"GET",
-            success:function(data){
-
-                Highcharts.chart('emailstatus', {
+    chartemailstatus  = Highcharts.chart('emailstatus', {
                     chart: {
                         plotBackgroundColor: null,
                         plotBorderWidth: null,
                         plotShadow: false,
-                        type: 'pie'
+                        type: 'pie',
+                        events: {
+                            load: requestEmailStatus
+                        }
                     },
                     credits: {
                         enabled: false
@@ -394,31 +436,23 @@
                         name: 'Email Status',
                         colorByPoint: true,
                         innerSize: '20%',
-                        data: [{
-                            name: 'Unverified',
-                            y:data['unverified'],
-                        }, {
-                            name: 'Verified',
-                            y: data['verified']
-                        }]
+                        data: []
                     }]
                 });
                 $('#emailstatus .highcharts-title').remove()
-            }
-        })
 
 
-        $.ajax({
-            url:"{{route('dashboard.emailstatuswithout')}}",
-            method:"GET",
-            success:function(data){
 
-                Highcharts.chart('emailstatuswithout', {
+
+  chartemailstatuswithout = Highcharts.chart('emailstatuswithout', {
                     chart: {
                         plotBackgroundColor: null,
                         plotBorderWidth: null,
                         plotShadow: false,
-                        type: 'pie'
+                        type: 'pie',
+                        events: {
+                            load: requestEmailStatusWithout
+                        }
                     },
                     credits: {
                         enabled: false
@@ -447,18 +481,10 @@
                         name: 'Email Status',
                         colorByPoint: true,
                         innerSize: '20%',
-                        data: [{
-                            name: 'Without',
-                            y:data['without'],
-                        }, {
-                            name: 'Verified',
-                            y: data['verified']
-                        }]
+                        data: []
                     }]
                 });
                 $('#emailstatuswithout .highcharts-title').remove()
-            }
-        })
 
 
 
