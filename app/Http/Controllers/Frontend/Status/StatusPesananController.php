@@ -149,7 +149,8 @@ class StatusPesananController extends Controller
         if ($request->ajax()) {
             $nomor = $request->get('nomor');
             $trmutasihd = Trmutasihd::where('Nomor', $nomor)->where('LokasiAwal', auth()->user()->KodeLokasi)->first();
-
+            $trmutasihd->UserUpdateSP = auth()->user()->UserLogin;
+            $trmutasihd->LastUpdateSP = date('Y-m-d H:i:s');
             $trmutasihd->StatusPesanan = $request->get('status');
             $trmutasihd->save();
 
