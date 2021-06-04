@@ -63,6 +63,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
     integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
     crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.21/api/sum().js"></script>
 <script>
     $(document).ready(function(){
         $("#tablepesanan").append('<tfoot><th>Total</th><th></th><th></th><th></th><th></th></tfoot>');
