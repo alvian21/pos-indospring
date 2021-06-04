@@ -54,7 +54,7 @@ class CsvImport implements ToCollection
                     }
 
 
-                    if ($value[2] != null || $value[2] != '') {
+                    if ($value[2] != 0) {
                         $trsaldohutang = new Trsaldohutang();
                         $trsaldohutang->Tanggal = date('Y-m-d H:i:s');
                         $trsaldohutang->KodeUser = $value[0];
@@ -109,16 +109,18 @@ class CsvImport implements ToCollection
                             $datatrpinjaman->SubDept = "-";
                         }
 
-                        $datatrpinjaman->Pinjaman = $mscicilan->Nominal;
-                        $datatrpinjaman->CicilanTotal = $mscicilan->CicilanTotal;
+                        if($mscicilan){
+                            $datatrpinjaman->Pinjaman = $mscicilan->Nominal;
+                            $datatrpinjaman->CicilanTotal = $mscicilan->CicilanTotal;
+                            $datatrpinjaman->CicilanPokok = $mscicilan->CicilanPokok;
+                            $datatrpinjaman->CicilanBunga = $mscicilan->CicilanBunga;
+                            $datatrpinjaman->PengajuanPinjaman = $mscicilan->Nominal;
+                        }
                         $datatrpinjaman->BerapaKaliBayar = $value[5];
-                        $datatrpinjaman->CicilanPokok = $mscicilan->CicilanPokok;
-                        $datatrpinjaman->CicilanBunga = $mscicilan->CicilanBunga;
                         $datatrpinjaman->Alasan = "Saldo Awal";
                         $datatrpinjaman->TanggalPengajuan = date('Y-m-d');
                         $datatrpinjaman->UserUpdate = $user;
                         $datatrpinjaman->ApprovalStatus = "DISETUJUI";
-                        $datatrpinjaman->PengajuanPinjaman = $mscicilan->Nominal;
                         $datatrpinjaman->save();
                     }
 
