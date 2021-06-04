@@ -1,6 +1,6 @@
 @extends('frontend.master')
 
-@section('title', 'Trpinjaman')
+@section('title', 'Status Pesanan')
 
 @section('content')
 <section class="section">
@@ -102,6 +102,11 @@
                 }
 
             });
+        })
+
+        $(document).on('click','.btnshow', function(){
+            var nomor = $(this).data('nomor');
+            window.location.href = "{{url('admin/status/pesanan/')}}/"+nomor;
         })
     })
 </script>

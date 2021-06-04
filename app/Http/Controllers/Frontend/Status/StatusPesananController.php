@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Frontend\Status;
 
 use App\Http\Controllers\Controller;
+use App\Trmutasidt;
 use Illuminate\Http\Request;
 use App\Trmutasihd;
+use Illuminate\Support\Facades\DB;
 use App\Msanggota;
-
+use App\Msbarang;
 class StatusPesananController extends Controller
 {
     /**
@@ -48,7 +50,10 @@ class StatusPesananController extends Controller
      */
     public function show($id)
     {
-        //
+        $trmutasidt = DB::table('trmutasidt')
+        ->join('msbarang','msbarang.Kode','trmutasidt.KodeBarang')
+        ->where('trmutasidt.Nomor',$id)->get();
+        return view('frontend.dashboard.status_pesanan.show', ['barang' => $trmutasidt]);
     }
 
     /**
@@ -89,7 +94,7 @@ class StatusPesananController extends Controller
     {
         if ($request->ajax()) {
             $date = date('Y-m-d');
-            $trmutasihd = Trmutasihd::where('Transaksi', 'CHECKOUT')->whereDate('Tanggal',$date)->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
+            $trmutasihd = Trmutasihd::where('Transaksi', 'CHECKOUT')->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
 
             $arr = [];
             foreach ($trmutasihd as $key => $value) {
@@ -98,36 +103,35 @@ class StatusPesananController extends Controller
                 $sub['nomor'] = $value->Nomor;
                 $sub['tanggal'] = $value->Tanggal;
                 $sub['kode_anggota'] = $value->KodeSuppCust;
-                if($anggota){
+                if ($anggota) {
                     $sub['nama_anggota'] = $anggota->Nama;
-                }else{
+                } else {
                     $sub['nama_anggota'] = '';
                 }
 
-                if($value->StatusPesanan == "Dalam Proses"){
-                    $sub['status_pesanan'] = '<select class="form-control" data-nomor="'.$sub['nomor'].'" id="status_pesanan">
+                if ($value->StatusPesanan == "Dalam Proses") {
+                    $sub['status_pesanan'] = '<select class="form-control" data-nomor="' . $sub['nomor'] . '" id="status_pesanan">
                             <option value="Dalam Proses" selected >Dalam Proses</option>
                             <option value="Barang Sudah Siap">Barang Sudah Siap</option>
                             <option value="Barang Telah Diambil">Barang Telah Diambil</option>
                         </select>';
-                }elseif($value->StatusPesanan == "Barang Sudah Siap"){
-                    $sub['status_pesanan'] = '<select class="form-control" data-nomor="'.$sub['nomor'].'" id="status_pesanan">
+                } elseif ($value->StatusPesanan == "Barang Sudah Siap") {
+                    $sub['status_pesanan'] = '<select class="form-control" data-nomor="' . $sub['nomor'] . '" id="status_pesanan">
                             <option value="Dalam Proses" >Dalam Proses</option>
                             <option value="Barang Sudah Siap" selected>Barang Sudah Siap</option>
                             <option value="Barang Telah Diambil">Barang Telah Diambil</option>
                         </select>';
-                }else{
-                    $sub['status_pesanan'] = '<select class="form-control" data-nomor="'.$sub['nomor'].'" id="status_pesanan">
+                } else {
+                    $sub['status_pesanan'] = '<select class="form-control" data-nomor="' . $sub['nomor'] . '" id="status_pesanan">
                             <option value="Dalam Proses" >Dalam Proses</option>
                             <option value="Barang Sudah Siap" >Barang Sudah Siap</option>
                             <option value="Barang Telah Diambil" selected>Barang Telah Diambil</option>
                         </select>';
                 }
 
-                $sub['action'] = '<button type="button" class="btn btn-info">Show</button>';
+                $sub['action'] = '<button type="button" data-nomor="' . $sub['nomor'] . '" class="btn btn-info btnshow">Show</button>';
 
                 $arr[] = $sub;
-
             }
             $count = count($arr);
             $output = [
@@ -142,7 +146,7 @@ class StatusPesananController extends Controller
 
     public function updateStatus(Request $request)
     {
-        if($request->ajax()){
+        if ($request->ajax()) {
             $nomor = $request->get('nomor');
             $trmutasihd = Trmutasihd::where('Nomor', $nomor)->where('LokasiAwal', auth()->user()->KodeLokasi)->first();
 
