@@ -37,10 +37,6 @@ class PenjualanController extends Controller
         $penjualan = Trmutasihd::where('Transaksi', 'PENJUALAN')->get();
         $mslokasi = Mslokasi::all();
         $msbarang = Msbarang::all();
-        // $msanggota = DB::table('msanggota')
-        // ->leftJoin('traktifasi', 'msanggota.Kode', 'traktifasi.Kode')
-        // ->where('traktifasi.Status', 'aktif')
-        // ->get();
 
         $msanggota = DB::table('msanggota')->select('msanggota.Kode', 'traktifasi.NoEkop', 'msanggota.Nama')
             ->leftJoin('traktifasi', function ($join) {

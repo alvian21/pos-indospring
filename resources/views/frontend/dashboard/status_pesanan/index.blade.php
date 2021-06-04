@@ -98,7 +98,8 @@
                         }
                     })
 
-
+                }else{
+                    table_pesanan.ajax.reload()
                 }
 
             });
