@@ -13,6 +13,7 @@
                 <div class="card card-dark">
                     <div class="card-header">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Detail Status Pesanan Online Hari Ini</h4>
+                        <a href="{{route('status.pesanan.index')}}" class="btn btn-success">Close</a>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')

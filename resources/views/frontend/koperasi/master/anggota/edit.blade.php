@@ -114,12 +114,6 @@
                                     </div>
 
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="password">Password </label>
-                                        <input type="text" class="form-control" id="password" name="password" value="{{$anggota->UserPassword}}">
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">

@@ -66,7 +66,11 @@
                                         <td>{{$item->TglKeluar}}</td>
                                         <td>{{$item->UserUpdate}}</td>
                                         <td>{{$item->LastUpdate}}</td>
-                                        <td><a href="{{route('koperasi.anggota.edit',[$item->Kode])}}" class="btn btn-warning">Edit</a></td>
+                                        <td>
+                                            <a href="{{route('koperasi.anggota.edit',[$item->Kode])}}" class="btn btn-warning">Edit</a>
+                                            <button type="button" class="btn btn-warning btnpassword" data-kode="{{$item->Kode}}">Reset Password</button>
+                                            <button type="button" class="btn btn-warning btnemail" data-kode="{{$item->Kode}}">Reset Email</button>
+                                        </td>
                                     </tr>
                                     @empty
 
@@ -116,8 +120,71 @@
         "scrollX": true,
     });
 
+    $(document).on('click', '.btnpassword', function(){
+        var kode = $(this).data("kode");
+        swal({
+            title: "Apa anda yakin?",
+            text: "Proses ini akan me-RESET Password (000000)",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            })
+            .then((willUpdate) => {
+            if (willUpdate) {
+
+                $.ajax({
+                    url:"{{route('koperasi.updatepassword')}}",
+                    method:"GET",
+                    data:{
+                        'kode':kode
+                    }, success:function(data){
+                        swal("Password berhasil di update!", {
+                        icon: "success",
+                        });
+
+                        setTimeout(function(){
+                            window.location.href = "{{route('koperasi.anggota.index')}}"
+                        },1500)
+                    }
+                })
 
 
+            }
+            });
+    })
+
+    $(document).on('click', '.btnemail', function(){
+        var kode = $(this).data("kode");
+        swal({
+            title: "Apa anda yakin?",
+            text: "Proses ini akan me-RESET Email",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            })
+            .then((willUpdate) => {
+            if (willUpdate) {
+
+                $.ajax({
+                    url:"{{route('koperasi.updateemail')}}",
+                    method:"GET",
+                    data:{
+                        'kode':kode
+                    }, success:function(data){
+                        swal("Email berhasil di update!", {
+                        icon: "success",
+                        });
+
+                        setTimeout(function(){
+                            window.location.href = "{{route('koperasi.anggota.index')}}"
+                        },1500)
+                    }
+                })
+
+
+            }
+            });
+    })
 })
 </script>
 @endsection

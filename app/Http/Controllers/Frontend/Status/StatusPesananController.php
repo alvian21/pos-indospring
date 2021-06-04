@@ -18,7 +18,9 @@ class StatusPesananController extends Controller
      */
     public function index()
     {
-        return view("frontend.dashboard.status_pesanan.index");
+        $date = date('Y-m-d');
+        $trmutasihd = DB::table('trmutasihd')->join('msanggota','msanggota.Kode','trmutasihd.KodeSuppCust')->where('Transaksi', 'CHECKOUT')->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
+        return view("frontend.dashboard.status_pesanan.index",['trmutasihd'=>$trmutasihd]);
     }
 
     /**
@@ -114,19 +116,25 @@ class StatusPesananController extends Controller
                             <option value="Dalam Proses" selected >Dalam Proses</option>
                             <option value="Barang Sudah Siap">Barang Sudah Siap</option>
                             <option value="Barang Telah Diambil">Barang Telah Diambil</option>
-                        </select>';
+                        </select>
+                        <p style="display:none">dalam_proses</p>
+                        ';
                 } elseif ($value->StatusPesanan == "Barang Sudah Siap") {
                     $sub['status_pesanan'] = '<select class="form-control" data-nomor="' . $sub['nomor'] . '" id="status_pesanan">
                             <option value="Dalam Proses" >Dalam Proses</option>
                             <option value="Barang Sudah Siap" selected>Barang Sudah Siap</option>
                             <option value="Barang Telah Diambil">Barang Telah Diambil</option>
-                        </select>';
+                        </select>
+                        <p style="display:none">barang_sudah_siap</p>
+                        ';
                 } else {
                     $sub['status_pesanan'] = '<select class="form-control" data-nomor="' . $sub['nomor'] . '" id="status_pesanan">
                             <option value="Dalam Proses" >Dalam Proses</option>
                             <option value="Barang Sudah Siap" >Barang Sudah Siap</option>
                             <option value="Barang Telah Diambil" selected>Barang Telah Diambil</option>
-                        </select>';
+                        </select>
+                        <p style="display:none">barang_telah_diambil</p>
+                        ';
                 }
 
                 $sub['action'] = '<button type="button" data-nomor="' . $sub['nomor'] . '" class="btn btn-info btnshow">Show</button>';

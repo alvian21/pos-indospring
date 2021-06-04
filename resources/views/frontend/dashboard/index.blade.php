@@ -79,11 +79,11 @@
 
                                     <div class="card-body text-center text-dark">
                                        <h5>Level 1</h5>
-                                        <p style="font-size: 12px">PENGAJUAN</p>
+                                        <p class="card-text" style="font-size: 12px">PENGAJUAN</p>
                                         <h5>{{$pinjaman[0]['total']}}</h5>
-                                        <p style="font-size: 12px">TDK VERIFIKASI</p>
+                                        <p class="card-text" style="font-size: 12px">TDK VERIFIKASI</p>
                                         <h5>{{$pinjaman[1]['total']}}</h5>
-                                        <p style="font-size: 12px">VERIFIKASI</p>
+                                        <p class="card-text" style="font-size: 12px">VERIFIKASI</p>
                                         <h5>{{$pinjaman[2]['total']}}</h5>
                                     </div>
                                 </div>
@@ -93,9 +93,9 @@
 
                                     <div class="card-body text-center text-dark">
                                         <h5>Level 2</h5>
-                                        <p style="font-size: 12px">TDK DIPROSES</p>
+                                        <p class="card-text" style="font-size: 12px">TDK DIPROSES</p>
                                         <h5>{{$pinjaman[3]['total']}}</h5>
-                                        <p class="mt-5" style="font-size: 12px">DIPROSES</p>
+                                        <p class="mt-5 card-text" style="font-size: 12px">DIPROSES</p>
                                         <h5>{{$pinjaman[4]['total']}}</h5>
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@
                     });
                     chartoffline.series[0].setData(total, false);
                     chartoffline.xAxis[0].setCategories(day);
-                    setTimeout(requestDataOffline, 1000);
+                    setTimeout(requestDataOffline, 30000);
                 },
                 cache: false
             })
@@ -215,7 +215,7 @@
                     });
                     chartonline.series[0].setData(total, false);
                     chartonline.xAxis[0].setCategories(day);
-                    setTimeout(requestDataOnline, 1000);
+                    setTimeout(requestDataOnline, 30000);
                 },
                 cache: false
             })
@@ -236,7 +236,7 @@
                     });
                     chartpesanan.series[0].setData(total, false);
                     chartpesanan.xAxis[0].setCategories(status);
-                    setTimeout(requestDataPesanan, 1000);
+                    setTimeout(requestDataPesanan, 30000);
                 },
                 cache: false
             })
@@ -319,6 +319,12 @@
                             load: requestDataPesanan
                         }
                     },
+                    colors: [
+                        '#22c4e0',
+                        '#e0d322',
+                        '#22e038',
+                        '#2287e0',
+                        ],
                     title: {
                         text: "Status Pesanan ONLINE Hari Ini",
                         style:{
@@ -330,6 +336,11 @@
                     },
                     xAxis: {
                         categories: []
+                    },
+                    plotOptions: {
+                        series: {
+                            colorByPoint: true
+                        }
                     },
                     yAxis: {
                         allowDecimals: false,

@@ -24,6 +24,12 @@
                             </div>
                         </div>
                         <div class="table-responsive mt-4">
+                            <select id="select" class="form-control input-sm">
+                                <option selected>Dalam Proses</option>
+                                <option>Barang Sudah Siap</option>
+                                <option>Barang Telah Diambil</option>
+
+                            </select>
                             <table class="table table-striped" id="tablepesanan">
                                 <thead>
                                     <tr>
@@ -36,7 +42,34 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forelse ($trmutasihd as $item)
+                                         <tr>
+                                             <td>{{$item->Nomor}}</td>
+                                             <td>{{$item->Tanggal}}</td>
+                                             <td>{{$item->KodeSuppCust}}</td>
+                                             <td>{{$item->Nama}}</td>
+                                             <td>
+                                                <select class="form-control" data-nomor="{{$item->Nomor}}" id="status_pesanan">
+                                                    <option value="Dalam Proses" @if($item->StatusPesanan == "Dalam Proses") selected  @endif>Dalam Proses</option>
+                                                    <option value="Barang Sudah Siap" @if($item->StatusPesanan == "Barang Sudah Siap") selected data-text="barang_sudah_siap" @endif >Barang Sudah Siap</option>
+                                                    <option value="Barang Telah Diambil" @if($item->StatusPesanan == "Barang Telah Diambil") selected data-text="barang_telah_diambil" @endif>Barang Telah Diambil</option>
+                                                </select>
 
+                                                @if ($item->StatusPesanan == "Dalam Proses")
+                                                        <p style="display: none">dalam_proses</p>
+                                                @elseif ($item->StatusPesanan == "Barang Sudah Siap")
+                                                        <p style="display: none">barang_sudah_siap</p>
+                                                @elseif ($item->StatusPesanan == "Barang Telah Diambil")
+                                                <p style="display: none">barang_telah_diambil</p>
+                                                @endif
+                                             </td>
+                                             <td>
+                                                <button type="button" data-nomor="{{$item->Nomor}}" class="btn btn-info btnshow">Show</button>
+                                             </td>
+                                         </tr>
+                                    @empty
+
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -59,18 +92,49 @@
 <script>
     $(document).ready(function(){
         var table_pesanan = $("#tablepesanan").DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{ route('status.datapesanan') }}",
-        columns: [
-            {data: 'nomor', name: 'nomor'},
-            {data: 'tanggal', name: 'tanggal'},
-            {data: 'kode_anggota', name: 'kode_anggota'},
-            {data: 'nama_anggota', name: 'nama_anggota'},
-            {data: 'status_pesanan', name: 'status_pesanan', orderable: false},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
-        ]
+        dom: "<'row'<'col-sm-9'l><'col-sm-3'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-9'i><'col-sm-3'p>>",
     });
+
+    $('#tablepesanan thead th').each(function () {
+            var title = $(this).text();
+            $(this).html(title+' <input type="text" class="col-search-input" placeholder="Search ' + title + '" />');
+        });
+
+        table_pesanan.columns().every(function () {
+            var table = this;
+            $('input', this.header()).on('keyup change', function () {
+                if (table.search() !== this.value) {
+                	   table.search(this.value).draw();
+                }
+            });
+        });
+        $(".dataTables_filter").append(select);
+
+        $('.dataTables_filter input').unbind().bind('keyup', function() {
+            table_pesanan.search(this.value).draw();
+        });
+
+        $('#select').ready(function() {
+                table_pesanan.columns(1).search("").draw();
+                table_pesanan.columns(4).search("dalam_proses").draw();
+            });
+
+            $('#select').change(function() {
+                if (this.value == "Dalam Proses") {
+                    table_pesanan.columns(1).search("").draw();
+                    table_pesanan.columns(4).search("dalam_proses").draw();
+
+                } else if (this.value == "Barang Telah Diambil") {
+                    table_pesanan.columns(1).search("").draw();
+                    table_pesanan.columns(4).search("barang_telah_diambil").draw();
+                }else if (this.value == "Barang Sudah Siap") {
+                    table_pesanan.columns(4).search("barang_sudah_siap").draw();
+                    table_pesanan.columns(1).search("").draw();
+
+                }
+        });
 
         $(document).on('change','#status_pesanan', function(){
             var nomor = $(this).data('nomor');
@@ -94,14 +158,11 @@
                             swal("Status Pesanan Berhasil di Update", {
                                 icon: "success",
                             });
-                            table_pesanan.ajax.reload()
+                           window.location.href="{{route('status.pesanan.index')}}"
                         }
                     })
 
-                }else{
-                    table_pesanan.ajax.reload()
                 }
-
             });
         })
 

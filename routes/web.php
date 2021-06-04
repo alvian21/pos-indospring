@@ -45,6 +45,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
         Route::group(['prefix' => 'anggota'], function () {
             Route::post('/import_excel','ListAnggotaController@AnggotaImport')->name('anggota.import');
+            Route::get("/updatepassword","ListAnggotaController@UpdatePassword")->name('updatepassword');
+            Route::get("/updateemail","ListAnggotaController@UpdateEmail")->name('updateemail');
         });
         Route::resource('anggota', 'ListAnggotaController');
 

@@ -39,6 +39,8 @@
                                     <tr>
                                         <th rowspan="2">No</th>
                                         <th rowspan="2">Nomor</th>
+                                        <th rowspan="2">Kode Anggota</th>
+                                        <th rowspan="2">Nama</th>
                                         <th rowspan="2">Bagian</th>
                                         <th rowspan="2">Pinjaman</th>
                                         <th rowspan="2">Cicilan Total</th>
@@ -71,6 +73,8 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->Nomor }}</td>
+                                        <td>{{ $item->KodeAnggota }}</td>
+                                        <td>{{ $item->Nama }}</td>
                                         <td>{{ $item->SubDept }}</td>
                                         <td>{{ str_replace(',','.', number_format($item->PengajuanPinjaman)) }}</td>
                                         <td>{{ str_replace(',','.', number_format($item->CicilanTotal)) }}</td>

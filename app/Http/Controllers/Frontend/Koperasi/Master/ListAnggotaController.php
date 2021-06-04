@@ -143,32 +143,26 @@ class ListAnggotaController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         } else {
 
-                $msanggota = Msanggota::where('Kode',$id)->first();
-                $msanggota->Nama = $request->get('nama');
-                $msanggota->Aktif = $request->get('status');
-                $msanggota->Sex = $request->get('jenis_kelamin');
-                $msanggota->Grp = $request->get('grp');
-                $msanggota->Pangkat = $request->get('pangkat');
-                $msanggota->Dept = $request->get('dept');
-                $msanggota->SubDept = $request->get('subdept');
-                $msanggota->TglMasuk = date('Y-m-d', strtotime($request->get('tanggal_masuk')));
-                if ($request->has('tanggal_keluar')) {
-                    $msanggota->TglKeluar = date('Y-m-d', strtotime($request->get('tanggal_keluar')));
-                } else {
-                    $msanggota->TglKeluar = '0000-00-00';
-                }
+            $msanggota = Msanggota::where('Kode', $id)->first();
+            $msanggota->Nama = $request->get('nama');
+            $msanggota->Aktif = $request->get('status');
+            $msanggota->Sex = $request->get('jenis_kelamin');
+            $msanggota->Grp = $request->get('grp');
+            $msanggota->Pangkat = $request->get('pangkat');
+            $msanggota->Dept = $request->get('dept');
+            $msanggota->SubDept = $request->get('subdept');
+            $msanggota->TglMasuk = date('Y-m-d', strtotime($request->get('tanggal_masuk')));
+            if ($request->has('tanggal_keluar')) {
+                $msanggota->TglKeluar = date('Y-m-d', strtotime($request->get('tanggal_keluar')));
+            } else {
+                $msanggota->TglKeluar = '0000-00-00';
+            }
 
-                if ($request->has('password')) {
-                    $msanggota->UserPassword = $request->get('password');
-                } else {
-                    $msanggota->UserPassword = '000000';
-                }
-                $msanggota->UserUpdate = Auth::guard('web')->user()->UserLogin;
-                $msanggota->LastUpdate = date('Y-m-d H:i:s');
-                $msanggota->save();
+            $msanggota->UserUpdate = Auth::guard('web')->user()->UserLogin;
+            $msanggota->LastUpdate = date('Y-m-d H:i:s');
+            $msanggota->save();
 
-                return redirect()->route('koperasi.anggota.index')->with("success", "Anggota berhasil diupdate");
-
+            return redirect()->route('koperasi.anggota.index')->with("success", "Anggota berhasil diupdate");
         }
     }
 
@@ -190,6 +184,44 @@ class ListAnggotaController extends Controller
             return back()->with('success', 'Data has been imported');
         } else {
             return back()->with('error', 'Please input the file');
+        }
+    }
+
+    public function UpdatePassword(Request $request)
+    {
+        if ($request->ajax()) {
+            $kode = $request->get("kode");
+
+            $anggota = Msanggota::where("Kode", $kode)->first();
+            $anggota->UserPassword = "000000";
+            $anggota->UserUpdate = auth()->user()->UserLogin;
+            $anggota->LastUpdate = date('Y-m-d H:i:s');
+            $anggota->save();
+
+            return response()->json([
+                'message' => 'saved'
+            ]);
+        }
+    }
+
+    public function UpdateEmail(Request $request)
+    {
+        if ($request->ajax()) {
+            $kode = $request->get("kode");
+
+            $anggota = Msanggota::where("Kode", $kode)->first();
+            $anggota->email = null;
+            $anggota->token = null;
+            $anggota->verified_2fa = null;
+            $anggota->verified_email = null;
+            $anggota->verified_email_date = null;
+            $anggota->UserUpdate = auth()->user()->UserLogin;
+            $anggota->LastUpdate = date('Y-m-d H:i:s');
+            $anggota->save();
+
+            return response()->json([
+                'message' => 'saved'
+            ]);
         }
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Msanggota;
 use App\Trpinjaman;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 class PinjamanController extends Controller
 {
@@ -20,19 +21,19 @@ class PinjamanController extends Controller
         $level = auth()->user()->LevelApprovalPengajuan;
         if ($level != 0) {
             if ($level == 1) {
-                $trpinjaman = Trpinjaman::where(function ($query) {
+                $trpinjaman = DB::table('trpinjaman')->join('msanggota','msanggota.Kode','trpinjaman.KodeAnggota')->where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "PENGAJUAN")
                         ->OrWhere("ApprovalStatus", "VERIFIKASI")
                         ->OrWhere("ApprovalStatus", "TDK VERIFIKASI");
                 })->get();
             } elseif ($level == 2) {
-                $trpinjaman = Trpinjaman::where(function ($query) {
+                $trpinjaman = DB::table('trpinjaman')->join('msanggota','msanggota.Kode','trpinjaman.KodeAnggota')->where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "VERIFIKASI")
                         ->OrWhere("ApprovalStatus", "DIPROSES")
                         ->OrWhere("ApprovalStatus", "TDK DIPROSES");
                 })->get();
             } elseif ($level == 3) {
-                $trpinjaman = Trpinjaman::where(function ($query) {
+                $trpinjaman = DB::table('trpinjaman')->join('msanggota','msanggota.Kode','trpinjaman.KodeAnggota')->where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "DIPROSES")
                         ->OrWhere("ApprovalStatus", "DISETUJUI")
                         ->OrWhere("ApprovalStatus", "TDK DISETUJUI");
@@ -41,7 +42,6 @@ class PinjamanController extends Controller
         }
         $trpinjaman = Trpinjaman::InfoPinjamanFrontend($trpinjaman);
         $trpinjaman = json_decode(json_encode($trpinjaman), FALSE);
-
         return view('frontend.dashboard.pinjaman.index', ['trpinjaman' => $trpinjaman]);
     }
 
