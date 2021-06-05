@@ -43,7 +43,7 @@ class PinjamanController extends Controller
         $trpinjaman = Trpinjaman::InfoPinjamanFrontend($trpinjaman);
         $arr = [];
         foreach ($trpinjaman as $key => $value) {
-            $anggota = Msanggota::where('Kode',$value["KodeAnggota"])->first();
+            $anggota = Msanggota::where('Kode',$value["KodeAnggota"])->first()->toArray();
             if($anggota){
                 $arr[] = array_merge($anggota,$value);
             }else{
