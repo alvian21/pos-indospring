@@ -34,7 +34,7 @@
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" readonly class="form-control" id="email"
-                                            placeholder="email" value="{{$anggota->Email}}">
+                                            placeholder="email" value="{{$anggota->email}}">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
