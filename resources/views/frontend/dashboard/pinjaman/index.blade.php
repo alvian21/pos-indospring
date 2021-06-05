@@ -225,7 +225,7 @@
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
-        var parseDate = moment(data[7]).format('YYYY/MM/DD')
+        var parseDate = moment(data[9]).format('YYYY/MM/DD')
         var date = new Date( parseDate );
         if (
             ( min == "" || max == "" )
