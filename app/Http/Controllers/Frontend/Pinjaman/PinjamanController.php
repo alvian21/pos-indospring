@@ -43,8 +43,9 @@ class PinjamanController extends Controller
         $trpinjaman = Trpinjaman::InfoPinjamanFrontend($trpinjaman);
         $arr = [];
         foreach ($trpinjaman as $key => $value) {
-            $anggota = Msanggota::where('Kode',$value["KodeAnggota"])->first()->toArray();
+            $anggota = Msanggota::where('Kode',$value["KodeAnggota"])->first();
             if($anggota){
+                $anggota = json_decode(json_encode($anggota),true);
                 $arr[] = array_merge($anggota,$value);
             }else{
                 $x["Nama"] = "";
