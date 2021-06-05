@@ -110,6 +110,22 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
 
 
+        Route::group(['prefix' => 'mutasi'], function () {
+            Route::get('/data_detail','TfAntarTokoController@getDataDetail')->name('mutasi.datadetail');
+            Route::get('/data_mutasi','TfAntarTokoController@getDataMutasi')->name('mutasi.transaksi');
+            Route::post('/transaksi_mutasi', 'TfAntarTokoController@store_transaksi')->name('transaksi_mutasi.store');
+            Route::post('/detail_transaksi_mutasi', 'TfAntarTokoController@store_detail')->name('detail_transaksi_mutasi.store');
+            Route::get('/data_barang', 'TfAntarTokoController@get_data_barang')->name('mutasi.databarang');
+            Route::post('/save_transaksi_mutasi', 'TfAntarTokoController@save_data_transaksi')->name('mutasi.save');
+            Route::post('/detail_transaksi_pembelian_update', 'TfAntarTokoController@update_detail_barang')->name('detail_transaksi_mutasi.update');
+            Route::get('/check_session', 'TfAntarTokoController@check_session_detail')->name('mutasi.check');
+            Route::get('/delete_detail/{id}', 'TfAntarTokoController@delete_data');
+            Route::get('/saldo_ekop','TfAntarTokoController@CekSaldoEkop')->name('mutasi.ceksaldo');
+        });
+
+
+
+
         Route::resource('pembelian', 'PembelianController');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('tfantartoko', 'TfAntarTokoController');
