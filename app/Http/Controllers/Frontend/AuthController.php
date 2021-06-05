@@ -40,7 +40,10 @@ class AuthController extends Controller
                 $auth = Auth::guard("web")->login($user);
                 $user = Auth::guard('web')->user();
                 $anggota = Msanggota::where("Kode", $user->KodeAnggota)->first();
-                session(['nama_anggota' => $anggota->Nama]);
+                if($anggota){
+                    session(['nama_anggota' => $anggota->Nama]);
+                }
+
                 session()->flash('info', 'Selamat Datang  !');
                 return redirect()->route('dashboard.index');
             } else {

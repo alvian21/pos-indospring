@@ -21,19 +21,19 @@ class PinjamanController extends Controller
         $level = auth()->user()->LevelApprovalPengajuan;
         if ($level != 0) {
             if ($level == 1) {
-                $trpinjaman = DB::table('trpinjaman')->join('msanggota','msanggota.Kode','trpinjaman.KodeAnggota')->where(function ($query) {
+                $trpinjaman = Trpinjaman::where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "PENGAJUAN")
                         ->OrWhere("ApprovalStatus", "VERIFIKASI")
                         ->OrWhere("ApprovalStatus", "TDK VERIFIKASI");
                 })->get();
             } elseif ($level == 2) {
-                $trpinjaman = DB::table('trpinjaman')->join('msanggota','msanggota.Kode','trpinjaman.KodeAnggota')->where(function ($query) {
+                $trpinjaman = Trpinjaman::where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "VERIFIKASI")
                         ->OrWhere("ApprovalStatus", "DIPROSES")
                         ->OrWhere("ApprovalStatus", "TDK DIPROSES");
                 })->get();
             } elseif ($level == 3) {
-                $trpinjaman = DB::table('trpinjaman')->join('msanggota','msanggota.Kode','trpinjaman.KodeAnggota')->where(function ($query) {
+                $trpinjaman = Trpinjaman::where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "DIPROSES")
                         ->OrWhere("ApprovalStatus", "DISETUJUI")
                         ->OrWhere("ApprovalStatus", "TDK DISETUJUI");
@@ -41,7 +41,17 @@ class PinjamanController extends Controller
             }
         }
         $trpinjaman = Trpinjaman::InfoPinjamanFrontend($trpinjaman);
-        $trpinjaman = json_decode(json_encode($trpinjaman), FALSE);
+        $arr = [];
+        foreach ($trpinjaman as $key => $value) {
+            $anggota = Msanggota::where('Kode',$value["KodeAnggota"])->first();
+            if($anggota){
+                $arr[] = array_merge($anggota,$value);
+            }else{
+                $x["Nama"] = "";
+                $arr[] = array_merge($value,$x);
+            }
+        }
+        $trpinjaman = json_decode(json_encode($arr), FALSE);
         return view('frontend.dashboard.pinjaman.index', ['trpinjaman' => $trpinjaman]);
     }
 
