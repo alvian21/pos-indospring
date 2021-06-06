@@ -108,8 +108,6 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/save_transaksi_stockhilang', 'StockHilangController@save_data_transaksi')->name('stockhilang.save');
         });
 
-
-
         Route::group(['prefix' => 'mutasi'], function () {
             Route::get('/data_detail','TfAntarTokoController@getDataDetail')->name('mutasi.datadetail');
             Route::get('/data_mutasi','TfAntarTokoController@getDataMutasi')->name('mutasi.transaksi');
@@ -124,7 +122,18 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         });
 
 
-
+        Route::group(['prefix' => 'opname'], function () {
+            Route::get('/data_detail','StockOpnameController@getDataDetail')->name('opname.datadetail');
+            Route::get('/data_opname','StockOpnameController@getDataOpname')->name('opname.transaksi');
+            Route::post('/transaksi_opname', 'StockOpnameController@store_transaksi')->name('transaksi_opname.store');
+            Route::post('/detail_transaksi_opname', 'StockOpnameController@store_detail')->name('detail_transaksi_opname.store');
+            Route::get('/data_barang', 'StockOpnameController@get_data_barang')->name('opname.databarang');
+            Route::post('/save_transaksi_opname', 'StockOpnameController@save_data_transaksi')->name('opname.save');
+            Route::post('/detail_transaksi_pembelian_update', 'StockOpnameController@update_detail_barang')->name('detail_transaksi_opname.update');
+            Route::get('/check_session', 'StockOpnameController@check_session_detail')->name('opname.check');
+            Route::get('/delete_detail/{id}', 'StockOpnameController@delete_data');
+            Route::get('/saldo_ekop','StockOpnameController@CekSaldoEkop')->name('opname.ceksaldo');
+        });
 
         Route::resource('pembelian', 'PembelianController');
         Route::resource('penjualan', 'PenjualanController');
