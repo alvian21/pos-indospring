@@ -66,7 +66,7 @@ class StockOpnameController extends Controller
             $tropname = session('transaksi_opname');
         } else {
             $data = [
-                'transaksi' => 'opname',
+                'transaksi' => 'OPNAME',
                 'nomor' => $formatNomor,
                 'tanggal' => date('d M y H:i'),
                 'diskon_persen' => '0',
@@ -325,12 +325,12 @@ class StockOpnameController extends Controller
             } else {
                 $nomor = 1;
                 $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "SO-" . date('y-m-d') . "-" . $addzero;
+                $formatNomor = "SO-" . date('Y-m-d') . "-" . $addzero;
             }
 
             $tropname = session('transaksi_opname');
             $trmutasihd = new Trmutasihd();
-            $trmutasihd->Transaksi = $tropname["transaksi"];
+            $trmutasihd->Transaksi = 'OPNAME';
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
             $trmutasihd->KodeSuppCust = null;

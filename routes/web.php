@@ -101,11 +101,15 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
         Route::group(['prefix' => 'stockhilang'], function () {
             Route::get('/data_detail','StockHilangController@getDataDetail')->name('stockhilang.datadetail');
-            Route::get('/data_stockhilang','StockHilangController@getDataStockHilang')->name('stockhilang.transaksi');
+            Route::get('/data_opnamestockhilang','StockHilangController@getDatastockhilang')->name('stockhilang.transaksi');
             Route::post('/transaksi_stockhilang', 'StockHilangController@store_transaksi')->name('transaksi_stockhilang.store');
             Route::post('/detail_transaksi_stockhilang', 'StockHilangController@store_detail')->name('detail_transaksi_stockhilang.store');
             Route::get('/data_barang', 'StockHilangController@get_data_barang')->name('stockhilang.databarang');
             Route::get('/save_transaksi_stockhilang', 'StockHilangController@save_data_transaksi')->name('stockhilang.save');
+            Route::post('/detail_transaksi_pembelian_update', 'StockHilangController@update_detail_barang')->name('detail_transaksi_stockhilang.update');
+            Route::get('/check_session', 'StockHilangController@check_session_detail')->name('stockhilang.check');
+            Route::get('/delete_detail/{id}', 'StockHilangController@delete_data');
+            Route::get('/saldo_ekop','StockHilangController@CekSaldoEkop')->name('stockhilang.ceksaldo');
         });
 
         Route::group(['prefix' => 'mutasi'], function () {

@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="ttl_harga_pajak">Total Harga + Pajak</label>
+                                        <label for="ttl_harga_pajak">Total Harga</label>
                                         <input type="text" class="form-control ttl_harga_pajak" id="ttl_harga_pajak"
                                             value="{{$tropname["total_harga_setelah_pajak"]}}" name="ttl_harga_pajak"
                                             readonly>
@@ -274,7 +274,7 @@
         ],
         fnRowCallback:function(nRow, aData, iDisplayIndex, iDisplayIndexFull){
             $('td:eq(4)', nRow).html(convertToRupiah(aData["harga"]));
-            $('td:eq(7)', nRow).html(convertToRupiah(aData["subtotal"]));
+            $('td:eq(5)', nRow).html(convertToRupiah(aData["subtotal"]));
         }
     });
 
@@ -414,10 +414,6 @@
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
-                $('#alert-detail').show();
-                $('.alert-success').hide();
             }
             else{
 
@@ -457,10 +453,6 @@
 
             }else if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
                 $('#alert-detail').show();
                 $('.alert-success').hide();
             }else{
