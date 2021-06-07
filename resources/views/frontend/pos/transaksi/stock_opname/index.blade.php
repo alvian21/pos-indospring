@@ -218,109 +218,6 @@
     </div>
 </div>
 
-{{-- modal total --}}
-<div class="modal fade " id="totalModal" tabindex="-1" role="dialog" aria-labelledby="totalModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog " role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="totalModalLabel">Total Belanja</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="formTotal" method="POST" action="{{route('pos.opname.save')}}">
-                @csrf
-                <div class="modal-body">
-                    <div id="alert-total">
-                        <div class="alert alert-danger alertdangertotal" role="alert">
-
-                        </div>
-                        <div class="alert alert-success alertsuccesstotal" role="alert">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="total_belanja">Total Belanja</label>
-                                <input type="number" class="form-control" name="total_belanja" id="total_belanja"
-                                    readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="barcode_cust">Customer (Tempelkan Ekop/ scan ID Barcode)</label>
-                                <select class="form-control" id="barcode_cust" name="barcode_cust">
-                                    <option value="0">Pilih Customer</option>
-                                    <option value="UMUM" selected>000000000 | UMUM</option>
-                                    @foreach ($msanggota as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}
-                                        @if($item->NoEkop!=null) | {{$item->NoEkop}} @endif</option>
-                                    @endforeach
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="pembayaran_ekop">Pembayaran Ekop</label>
-                                <input type="text" class="form-control" value="0" name="pembayaran_ekop"
-                                    id="pembayaran_ekop">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="saldo_ekop">Saldo Ekop</label>
-                                <input type="text" class="form-control" value="0" readonly name="saldo_ekop"
-                                    id="saldo_ekop">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="ttl_pembayaran_tunai">Total Pembayaran Tunai</label>
-                                <input type="text" class="form-control" readonly name="ttl_pembayaran_tunai" value="0"
-                                    id="ttl_pembayaran_tunai">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="pembayaran_tunai">Pembayaran Tunai</label>
-                                <input type="text" class="form-control" name="pembayaran_tunai" value="0"
-                                    id="pembayaran_tunai">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="kembalian">Kembalian</label>
-                                <input type="text" class="form-control" readonly name="kembalian" value="0"
-                                    id="kembalian">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btnTotalModal">Ok</button>
-                    {{-- <input type="submit" value="submit" class="btn btn-primary" name="submit"> --}}
-
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 
 @endsection
 @section('scripts')
@@ -524,15 +421,7 @@
             }
             else{
 
-                swal({
-                    text: "Apa kamu yakin menyimpan data barang ini ?",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                    })
-                    .then((willInsert) => {
-                    if (willInsert) {
-                        csrf_ajax();
+                csrf_ajax();
                             $.ajax({
                                 url:"{{route('pos.detail_transaksi_opname.store')}}",
                                 method: "POST",
@@ -554,10 +443,6 @@
                                         $("#ttl_harga_pajak").val(ttl_harga_pajak);
                                 }
                             })
-
-                    }
-                    });
-
             }
       });
 
@@ -665,11 +550,17 @@
             }
         })
         if(cek){
-            $('#alert-total').hide();
-             $('#totalModal').modal('show');
-             $('#ttl_pembayaran_tunai').val(ttl_belanja);
-             $('#pembayaran_ekop').attr('readonly', true);
-             setTimeout(function(){  $('#barcode_cust').select2('open');},500)
+            swal({
+                text: "Apa kamu yakin menyimpan data ini ?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willInsert) => {
+                if (willInsert) {
+                    window.location.href = "{{route('pos.opname.save')}}"
+                }
+            });
         }else{
             swal("Detail Belum Diisi!");
         }
@@ -695,45 +586,6 @@
             });
      })
 
-     $(document).on('change','#barcode_cust', function(){
-         var kode = $(this).val();
-         var ttl_belanja=$('#total_belanja').val();
-         ttl_belanja = ttl_belanja.replace('.','');
-
-         if(kode != 0){
-            $('#alert-total').hide();
-            $.ajax({
-             url:"{{route('pos.opname.ceksaldo')}}",
-             method:'GET',
-             data:{
-                 'kode':kode
-             }, success:function(data){
-                    var saldo = data['Saldo'];
-                    var ekop = 0;
-                    var ttl_belanja=$('#total_belanja').val();
-                    var pembayaran_tunai  = 0;
-                    var ttl_pembayaran_tunai = 0;
-                    if(parseInt(saldo) > parseInt(replace_titik(ttl_belanja))){
-                        $('#pembayaran_tunai').val(0);
-                        $('#ttl_pembayaran_tunai').val(0);
-                        $('#pembayaran_ekop').val(convertToRupiah(replace_titik(ttl_belanja)));
-                    }else{
-                        $('#ttl_pembayaran_tunai').val(ttl_belanja);
-                        $('#pembayaran_ekop').val(0);
-                    }
-                    $('#saldo_ekop').val(convertToRupiah(data['Saldo']));''
-
-                    if(kode != 'UMUM'){
-                        $('#pembayaran_ekop').attr('readonly', false);
-                    }else{
-                        $('#pembayaran_ekop').attr('readonly', true);
-                    }
-
-             }
-         })
-         }
-
-     })
 
 
      function replace_titik(cek){
@@ -746,129 +598,6 @@
      }
 
 
-     $(document).on('keyup keypress', '#pembayaran_ekop, #pembayaran_tunai', function(){
-         var ekop = $('#pembayaran_ekop').val();
-         var ttl_belanja=$('#total_belanja').val();
-         var tunai = $("#pembayaran_tunai").val();
-        var saldo_ekop = $('#saldo_ekop').val();
-        var barcode_cust = $('#barcode_cust').val();
-        if(barcode_cust == '0'){
-            $('.alertdangertotal').text('Pilih customer terlebih dahulu');
-            $('.alertsuccesstotal').hide();
-            $('#alert-total').show();
-            return false;
-        }else if(parseInt(ekop.replace('.','')) > parseInt(ttl_belanja.replace('.',''))){
-            $('.alertdangertotal').text('Maaf pembayaran maksimal adalah '+ttl_belanja);
-            $('.alertsuccesstotal').hide();
-            $('#alert-total').show();
-            return false;
-        }else{
-            $('#alert-total').hide();
-            ekop = replace_titik(ekop);
-
-            ttl_belanja = replace_titik(ttl_belanja);
-            tunai = replace_titik(tunai);
-            saldo_ekop = replace_titik(saldo_ekop);
-            var hasil_total = 0;
-            // console.log(ekop)
-            console.log(saldo_ekop)
-            if(parseInt(ekop) > parseInt(saldo_ekop) ){
-                $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
-                $('.alertsuccesstotal').hide();
-                $('#alert-total').show();
-                return false;
-            }else{
-                //tunai
-                if(ekop == ttl_belanja){
-                    $('#kembalian').val(0);
-                    hasil_total = 0;
-                }else if(ekop > 0 && ekop < ttl_belanja  ){
-                    hasil_total = ttl_belanja - ekop;
-                    $('#ttl_pembayaran_tunai').val(convertToRupiah(hasil_total))
-                    hasil_total = tunai - hasil_total;
-
-                }else if((ekop == 0 || ekop ==  '') && tunai > 0){
-                    hasil_total = tunai - ttl_belanja;
-                }else if(ekop == 0 ){
-
-                    $('#ttl_pembayaran_tunai').val(convertToRupiah(ttl_belanja))
-                }
-                if(hasil_total >= 0){
-                    $('#kembalian').val(convertToRupiah(hasil_total));
-                }
-
-
-            }
-
-        }
-
-
-     });
-
-
-     $(document).on('click','.btnTotalModal', function(){
-
-        var ekop = $('#pembayaran_ekop').val();
-         var ttl_belanja=$('#total_belanja').val();
-         var tunai = $("#pembayaran_tunai").val();
-        var saldo_ekop = $('#saldo_ekop').val();
-        var barcode_cust = $('#barcode_cust').val();
-        if(barcode_cust == '0'){
-            $('.alertdangertotal').text('Pilih customer terlebih dahulu');
-            $('.alertsuccesstotal').hide();
-            $('#alert-total').show();
-            return false;
-        }else if(parseInt(ekop.replace('.','')) > parseInt(ttl_belanja.replace('.',''))){
-            $('.alertdangertotal').text('Maaf pembayaran maksimal adalah '+ttl_belanja);
-            $('.alertsuccesstotal').hide();
-            $('#alert-total').show();
-            return false;
-        }else{
-            $('#alert-total').hide();
-            ekop = replace_titik(ekop);
-
-            ttl_belanja = replace_titik(ttl_belanja);
-            tunai = replace_titik(tunai);
-            saldo_ekop = replace_titik(saldo_ekop);
-            var hasil_total = 0;
-
-            if(parseInt(ekop) > parseInt(saldo_ekop) ){
-                $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
-                $('.alertsuccesstotal').hide();
-                $('#alert-total').show();
-                return false;
-            }else if((parseInt(tunai) == 0 || tunai == '') && parseInt(ekop) < parseInt(ttl_belanja)){
-                $('.alertdangertotal').text('Maaf pembayaran ekop kurang');
-                $('.alertsuccesstotal').hide();
-                $('#alert-total').show();
-                return false;
-
-            }else if((parseInt(ekop) == 0 || ekop == '') && parseInt(tunai) < parseInt(ttl_belanja)){
-                $('.alertdangertotal').text('Maaf pembayaran tunai kurang');
-                $('.alertsuccesstotal').hide();
-                $('#alert-total').show();
-                return false;
-            }else if(parseInt(ekop) > 0 && parseInt(tunai) > 0){
-               hasil_total = parseInt(tunai) + parseInt(ekop);
-                if(hasil_total < ttl_belanja){
-                    $('.alertdangertotal').text('Maaf pembayaran tunai dan ekop kurang');
-                    $('.alertsuccesstotal').hide();
-                    $('#alert-total').show();
-                    return false;
-                }else{
-                    $('#formTotal').submit();
-                    return true
-                }
-            }
-            else{
-                $('#formTotal').submit();
-                return true
-            }
-
-        }
-
-
-     })
 
 })
 </script>

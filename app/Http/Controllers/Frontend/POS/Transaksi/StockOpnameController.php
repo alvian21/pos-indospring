@@ -291,12 +291,7 @@ class StockOpnameController extends Controller
             Session::put('transaksi_opname', $data);
             Session::save();
 
-            $trsaldobarang = new Trsaldobarang();
-            $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-            $trsaldobarang->KodeBarang = $request->get('barang');
-            $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
-            $trsaldobarang->Saldo = $request->get('qty');
-            $trsaldobarang->save();
+
 
             return response()->json([
                 'message' => 'saved',
@@ -314,13 +309,6 @@ class StockOpnameController extends Controller
             $day = date('d');
             $month = date('m');
             $year = date('Y');
-            $pembayaran_ekop = $request->get('pembayaran_ekop');
-            $pembayaran_ekop = str_replace('.', '', $pembayaran_ekop);
-            $pembayaran_tunai = $request->get('pembayaran_tunai');
-            $pembayaran_tunai = str_replace('.', '', $pembayaran_tunai);
-            $barcode_cust = $request->get('barcode_cust');
-            $tunai = $request->get('ttl_pembayaran_tunai');
-            $tunai = str_replace('.', '', $tunai);
             $trmutasihd = Trmutasihd::where('Transaksi', 'OPNAME')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
             if ($trmutasihd) {
                 $nomor = (int) substr($trmutasihd->Nomor, 14);
@@ -346,15 +334,13 @@ class StockOpnameController extends Controller
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
             $trmutasihd->KodeSuppCust = null;
-            $trmutasihd->DiskonPersen = $tropname["diskon_persen"];
-            $trmutasihd->DiskonTunai = $tropname["diskon_rp"];
-            $trmutasihd->Pajak = $tropname["pajak"];
+            $trmutasihd->Pajak = 0;
             $trmutasihd->LokasiAwal = $tropname["lokasi"];
             $trmutasihd->TotalHarga = $tropname["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->PembayaranTunai = 0;
             $trmutasihd->PembayaranEkop = 0;
-            $trmutasihd->StatusPesanan = null;
+            $trmutasihd->StatusPesanan = "";
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->TotalHargaSetelahPajak = $tropname["total_harga_setelah_pajak"];
             $trmutasihd->save();
@@ -374,11 +360,20 @@ class StockOpnameController extends Controller
                 $trmutasidt->Jumlah = $value['qty'];
                 $trmutasidt->Harga = $value['subtotal'];
                 $trmutasidt->save();
+
+                $trsaldobarang = new Trsaldobarang();
+                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                $trsaldobarang->KodeBarang = $value["barang"];
+                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                $trsaldobarang->Saldo = $value['qty'];
+                $trsaldobarang->save();
             }
             session()->forget('detail_transaksi_opname');
             session()->forget('transaksi_opname');
             session()->save();
             return redirect()->route('pos.stockopname.index')->with("success", "Detail dan data transaksi opname berhasil disimpan");
+        }else{
+            return redirect()->route('pos.stockopname.index');
         }
     }
 
