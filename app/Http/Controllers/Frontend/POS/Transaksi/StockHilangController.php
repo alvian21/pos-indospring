@@ -361,9 +361,16 @@ class StockHilangController extends Controller
                 $trmutasidt->Harga = $value['subtotal'];
                 $trmutasidt->save();
 
+                $ceksaldo = Trsaldobarang::where("KodeBarang", $value["barang"])->OrderBy("Tanggal","DESC")->first();
+
                 $trsaldobarang = new Trsaldobarang();
                 $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-                $trsaldobarang->KodeBarang = $value["barang"];
+                if($ceksaldo){
+                    $trsaldobarang->KodeBarang = $ceksaldo->Saldo - $value["barang"];
+                }else{
+                    $trsaldobarang->KodeBarang = $value["barang"];
+                }
+
                 $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
                 $trsaldobarang->Saldo = $value['qty'];
                 $trsaldobarang->save();

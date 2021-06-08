@@ -42,14 +42,14 @@
                                 <tbody>
                                     @forelse ($msanggota as $item)
                                     <tr>
-                                        <td>{{$item->Kode}}</td>
-                                        <td>{{$item->Nama}}</td>
-                                        <td>{{$item->Dept}}</td>
-                                        <td>{{$item->email}}</td>
-                                        <td></td>
+                                        <td class="text-center">{{$item->Kode}}</td>
+                                        <td class="text-center">{{$item->Nama}}</td>
+                                        <td class="text-center">{{$item->SubDept}}</td>
+                                        <td class="text-center">{{$item->email}}</td>
+                                        <td class="text-center">{{$item->UserUpdate}}</td>
                                         <td>
                                             {{$item->verified_email_date}}</td>
-                                        <td>
+                                        <td class="text-center">
                                             @if($item->verified_email == 1)
                                             <p style="display:none">already_verified</p>
                                             <button type="button" class="btn btn-info">Sudah terverifikasi</button></td>
