@@ -34,7 +34,7 @@ class StockHilangController extends Controller
         $year = date('Y');
 
         $trmutasihd = Trmutasihd::where('Transaksi', 'RUSAK HILANG')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
-        $stockhilang = Trmutasihd::where('Transaksi','RUSAK HILANG')->get();
+        $stockhilang = Trmutasihd::where('Transaksi', 'RUSAK HILANG')->get();
         $mslokasi = Mslokasi::all();
         $msbarang = Msbarang::all();
 
@@ -284,7 +284,7 @@ class StockHilangController extends Controller
                 'lokasi' => $trstockhilang['lokasi'],
                 'keterangan' => $trstockhilang['keterangan'],
                 'total_harga_sebelum' => $total,
-                'total_harga' =>$total,
+                'total_harga' => $total,
                 'total_harga_setelah_pajak' => $total
             ];
             Session::forget('transaksi_stockhilang');
@@ -295,7 +295,7 @@ class StockHilangController extends Controller
 
             return response()->json([
                 'message' => 'saved',
-                'total_harga' =>$total,
+                'total_harga' => $total,
                 'total_harga_setelah_pajak' => $total
             ]);
         }
@@ -361,25 +361,24 @@ class StockHilangController extends Controller
                 $trmutasidt->Harga = $value['subtotal'];
                 $trmutasidt->save();
 
-                $ceksaldo = Trsaldobarang::where("KodeBarang", $value["barang"])->OrderBy("Tanggal","DESC")->first();
+                $ceksaldo = Trsaldobarang::where("KodeBarang", $value["barang"])->OrderBy("Tanggal", "DESC")->first();
 
                 $trsaldobarang = new Trsaldobarang();
                 $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-                if($ceksaldo){
-                    $trsaldobarang->KodeBarang = $ceksaldo->Saldo - $value["barang"];
-                }else{
-                    $trsaldobarang->KodeBarang = $value["barang"];
-                }
-
+                $trsaldobarang->KodeBarang = $value["barang"];
                 $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
-                $trsaldobarang->Saldo = $value['qty'];
+                if ($ceksaldo) {
+                    $trsaldobarang->Saldo = $ceksaldo->Saldo - $value['qty'];
+                } else {
+                    $trsaldobarang->Saldo = $value['qty'];
+                }
                 $trsaldobarang->save();
             }
             session()->forget('detail_transaksi_stockhilang');
             session()->forget('transaksi_stockhilang');
             session()->save();
             return redirect()->route('pos.stockhilang.index')->with("success", "Detail dan data transaksi stockhilang berhasil disimpan");
-        }else{
+        } else {
             return redirect()->route('pos.stockhilang.index');
         }
     }
@@ -510,8 +509,8 @@ class StockHilangController extends Controller
                 'pajak' => $trstockhilang['pajak'],
                 'lokasi' => $trstockhilang['lokasi'],
                 'keterangan' => $trstockhilang['keterangan'],
-                'total_harga_sebelum' =>$total,
-                'total_harga' =>$total,
+                'total_harga_sebelum' => $total,
+                'total_harga' => $total,
                 'total_harga_setelah_pajak' => $total
             ];
             Session::forget('transaksi_stockhilang');
@@ -569,9 +568,9 @@ class StockHilangController extends Controller
                 'pajak' => $trstockhilang['pajak'],
                 'lokasi' => $trstockhilang['lokasi'],
                 'keterangan' => $trstockhilang['keterangan'],
-                'total_harga_sebelum' =>$total,
+                'total_harga_sebelum' => $total,
                 'total_harga' => $total,
-                'total_harga_setelah_pajak' =>$total
+                'total_harga_setelah_pajak' => $total
             ];
             Session::forget('transaksi_stockhilang');
             Session::put('transaksi_stockhilang', $data);
