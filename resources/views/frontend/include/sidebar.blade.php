@@ -7,7 +7,7 @@
     </div>
     <ul class="sidebar-menu">
         <li class="menu-header"></li>
-        <li class="nav-item active">
+        <li class="nav-item @yield('dashboard')">
             <a class="nav-link" href="{{ route('dashboard.index') }}">
                 <i class="fas fa-columns"></i> <span>Dashboard</span>
             </a>
@@ -18,7 +18,7 @@
                 <i class="fas fa-file-alt"></i> <span>Server Cloud</span>
             </a>
         </li>
-        <li @yield('setting')>
+        <li class="nav-item @yield('setting') ">
             <a class="nav-link" href="{{route('settings.mssetting.index')}}">
                 <i class="fas fa-file-alt"></i> <span>Setting</span>
             </a>

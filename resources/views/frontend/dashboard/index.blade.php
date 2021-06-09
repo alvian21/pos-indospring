@@ -2,7 +2,7 @@
 
 @section('title', 'Dashboard')
 
-@section('dashboard', 'class=active')
+@section('dashboard', 'active')
 
 @section('content')
 <section class="section">
