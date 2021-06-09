@@ -31,6 +31,7 @@
         crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.0.3/css/dataTables.dateTime.min.css">
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
+    @yield('css')
 </head>
 
 <body class="layout-skin skin-cyan">

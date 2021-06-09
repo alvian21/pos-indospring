@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Mssetting extends Model
 {
     protected $table = "mssetting";
+    public $timestamps = false;
 }

@@ -40,6 +40,12 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('saldo_awal', 'SaldoAwalController');
     });
 
+
+       //settings
+    Route::group(['namespace' => 'Settings', 'prefix' => 'settings', 'as' => 'settings.'], function () {
+        Route::resource('mssetting', 'SettingController');
+    });
+
     //koperasi
     Route::group(['namespace' => 'Koperasi\Master', 'prefix' => 'koperasi', 'as' => 'koperasi.'], function () {
 

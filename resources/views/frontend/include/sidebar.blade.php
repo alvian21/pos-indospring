@@ -18,6 +18,11 @@
                 <i class="fas fa-file-alt"></i> <span>Server Cloud</span>
             </a>
         </li>
+        <li @yield('setting')>
+            <a class="nav-link" href="{{route('settings.mssetting.index')}}">
+                <i class="fas fa-file-alt"></i> <span>Setting</span>
+            </a>
+        </li>
         <li class="menu-header">MASTER</li>
         <li @yield('menu')>
             <a class="nav-link" href="#">
