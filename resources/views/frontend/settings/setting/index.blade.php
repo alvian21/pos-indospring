@@ -153,7 +153,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group text-center">
-                                                        <div class="custom-control custom-switch custom-switch-md">
+                                                        <div class="custom-control custom-switch custom-switch-md ">
                                                             <input type="checkbox" class="custom-control-input"
                                                                 @if($MobileBelanjaJamOnOff->aktif == 1 ) checked @endif
                                                             id="belanjaOnline2" name="ckmblbelanjajam">
@@ -198,7 +198,7 @@
                                                 </div>
                                             </div>
                                             @forelse ($MobilePengajuanDay as $item)
-                                            <div class="row">
+                                            <div class="row mt-1">
                                                 <div class="col-md-6">
                                                     <select class="form-control" id="pengajuanday"
                                                         name="pengajuanday[]">
@@ -211,7 +211,7 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group text-center">
-                                                        <div class="custom-control custom-switch custom-switch-md">
+                                                        <div class="custom-control custom-switch custom-switch-md float-right">
                                                             <input type="hidden" name="pengajuandayid[]" value="{{$item->id}}">
                                                             <input type="checkbox" class="custom-control-input"
                                                                 name="ckmblpengajuanday[]"
@@ -251,7 +251,7 @@
                                                         name="inputmblpengajuanmaksanggotanilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="MobilePengajuanMaksAnggota"
                                                             @if($MobilePengajuanMaksAnggota->aktif == 1 ) checked
@@ -279,7 +279,7 @@
                                                         name="inputmblinfopinjamannilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="MobileInfoPinjamanMulaiDari" name="ckmblinfopinjaman"
                                                             @if($MobileInfoPinjamanMulaiDari->aktif == 1 ) checked
@@ -313,7 +313,7 @@
                                                         name="inputmblSaldoMinusMaxnilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="MobileSaldoMinusMax"
                                                             @if($SaldoMinusMax->aktif == 1 ) checked
@@ -341,7 +341,7 @@
                                                         name="inputSaldoMinusBunganilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="SaldoMinusBunga" name="ckSaldoMinusBunga"
                                                             @if($SaldoMinusBunga->aktif == 1 ) checked
@@ -363,13 +363,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="text-center form-control"
-                                                        value="{{$SaldoMinusResetPerBulan->Nilai}}"
-                                                        name="inputSaldoMinusResetPerBulannilai">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md">
+
+                                                <div class="col-md-6">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="SaldoMinusResetPerBulan" name="ckSaldoMinusResetPerBulan"
                                                             @if($SaldoMinusResetPerBulan->aktif == 1 ) checked

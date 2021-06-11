@@ -35,8 +35,8 @@ class CsvImport implements ToCollection
                     $trsaldosimpanan->save();
 
                     $trperiode = Trtransaksiperiode::where('KodeUser', $value[0])->whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->max('Nomor');
-                    if ($trperiode) {
-                        $formatNomor = $trperiode->Nomor;
+                    if (!is_null($trperiode)) {
+                        $formatNomor = $trperiode;
                     } else {
                         $trperiode = Trtransaksiperiode::whereMonth('LastUpdate', $month)->whereYear('LastUpdate', $year)->max('Nomor');
 

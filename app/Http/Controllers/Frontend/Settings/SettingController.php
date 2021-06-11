@@ -181,7 +181,7 @@ class SettingController extends Controller
             }else{
                 $retname8->aktif = 0;
             }
-            $retname8->Nilai = $request->get('inputSaldoMinusResetPerBulannilai');
+            // $retname8->Nilai = $request->get('inputSaldoMinusResetPerBulannilai');
             $retname8->Nama = $request->get('inputSaldoMinusResetPerBulannama');
             $retname8->save();
 
