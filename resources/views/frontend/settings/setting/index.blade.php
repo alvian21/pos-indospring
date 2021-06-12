@@ -203,10 +203,9 @@
                                                     <select class="form-control" id="pengajuanday"
                                                         name="pengajuanday[]">
                                                         <option value="0">Pilih Tanggal</option>
-                                                        @for ($x = 1; $x <= 31; $x++ ) <option value="{{$x}}"
-                                                            @if($item->Nilai == $x) selected @endif>{{$x}}
-                                                            </option>
-                                                            @endfor
+                                                        @for ($x = 1; $x <= 31; $x++ )
+                                                        <option value="{{$x}}" @if($item->Nilai == $x) selected @endif>{{$x}}</option>
+                                                        @endfor
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6">

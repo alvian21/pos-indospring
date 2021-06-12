@@ -316,9 +316,10 @@ class PenjualanController extends Controller
             //hitung diskon persen
             $hasil = $total;
             $total_sebelum = $total;
+            $ds_tunai = str_replace('.','',$trpenjualan["diskon_rp"]);
             $hasil = $this->diskon_persen($hasil, $trpenjualan['diskon_persen']);
             //diskon rp
-            $hasil = $this->diskon_rp($hasil, $trpenjualan['diskon_rp']);
+            $hasil = $this->diskon_rp($hasil, $ds_tunai);
             //pajak
             $pajak = $this->pajak($hasil, $trpenjualan['pajak']);
             if ($pajak <= 0) {
@@ -371,6 +372,7 @@ class PenjualanController extends Controller
             $barcode_cust = $request->get('barcode_cust');
             $tunai = $request->get('ttl_pembayaran_tunai');
             $tunai = str_replace('.','',$tunai);
+
             $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
             if ($trmutasihd) {
                 $nomor = (int) substr($trmutasihd->Nomor, 14);
@@ -387,17 +389,18 @@ class PenjualanController extends Controller
             } else {
                 $nomor = 1;
                 $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "PE-" . date('y-m-d') . "-" . $addzero;
+                $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
             }
 
             $trpenjualan = session('transaksi_penjualan');
+            $ds_tunai = str_replace('.','',$trpenjualan["diskon_rp"]);
             $trmutasihd = new Trmutasihd();
             $trmutasihd->Transaksi = $trpenjualan["transaksi"];
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
             $trmutasihd->KodeSuppCust = $barcode_cust;
             $trmutasihd->DiskonPersen = $trpenjualan["diskon_persen"];
-            $trmutasihd->DiskonTunai = $trpenjualan["diskon_rp"];
+            $trmutasihd->DiskonTunai = $ds_tunai;
             $trmutasihd->Pajak = $trpenjualan["pajak"];
             $trmutasihd->LokasiAwal = $trpenjualan["lokasi"];
             $trmutasihd->TotalHarga = $trpenjualan["total_harga"];

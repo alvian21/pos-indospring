@@ -153,6 +153,16 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     });
 
 
+    Route::group(['namespace'=>'POS\Laporan','prefix'=>'pos/laporan','as'=>'poslaporan.'],function () {
+
+        // Route::get('/penjualan/cetakpdf','PenjualanController@cetakPdf');
+        Route::post('/penjualan/cetakpdf','PenjualanController@cetakPdf')->name('penjualan.cetakpdf');
+        Route::post('/minimumstok/cetak','MinimumStokController@cetak')->name('minimumstok.cetak');
+        Route::resource('penjualan', 'PenjualanController');
+        Route::resource('minimumstok', 'MinimumStokController');
+    });
+
+
     //logout
     Route::post("/logout", "AuthController@logout")->name("logout");
 });

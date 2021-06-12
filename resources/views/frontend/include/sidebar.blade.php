@@ -48,7 +48,8 @@
 
         <li class="menu-header">KOPERASI</li>
         <li class="nav-item dropdown @yield('koperasi')">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Master</span></a>
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Master</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('koperasi.anggota.index')}}">List Anggota</a></li>
                 <li><a class="nav-link" href="#">Transaksi</a></li>
@@ -57,7 +58,8 @@
             </ul>
         </li>
         <li class="nav-item dropdown">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Transaksi</span></a>
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="#">Cek Saldo</a></li>
                 <li><a class="nav-link" href="#">Approval Pinjaman</a></li>
@@ -70,7 +72,8 @@
         </li>
         <li class="menu-header">POS | Point Of Sale</li>
         <li class="nav-item dropdown">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Master</span></a>
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Master</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="#">Lokasi</a></li>
                 <li><a class="nav-link" href="#">Barang - Kategori</a></li>
@@ -79,7 +82,8 @@
             </ul>
         </li>
         <li class="nav-item dropdown @yield('pos')">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Transaksi</span></a>
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('pos.pembelian.index')}}">Pembelian</a></li>
                 <li><a class="nav-link" href="{{route('pos.penjualan.index')}}">Penjualan</a></li>
@@ -88,11 +92,18 @@
                 <li><a class="nav-link" href="{{route('pos.stockhilang.index')}}">Stock Hilang / Rusak</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i><span>Laporan</span></a>
+        <li class="nav-item dropdown @yield('poslaporan')">
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Laporan</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="#">Stok</a></li>
+                <li><a class="nav-link" href="{{route('poslaporan.penjualan.index')}}">Penjualan</a></li>
+                <li><a class="nav-link" href="{{route('poslaporan.minimumstok.index')}}">Minimum Stok</a></li>
             </ul>
         </li>
     </ul>
+
+    <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
+
+    </div>
 </aside>
