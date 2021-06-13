@@ -471,7 +471,7 @@ class PenjualanController extends Controller
                 $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
                 $trmutasidt->LastUpdate = date('Y-m-d H:i');
                 $trmutasidt->Jumlah = $value['qty'];
-                $trmutasidt->Harga = $value['subtotal'];
+                $trmutasidt->Harga = $value['harga'];
                 $trmutasidt->save();
                 $getstok = Trsaldobarang::where('KodeBarang', $value["barang"])->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
                 $trsaldobarang = new Trsaldobarang();

@@ -119,7 +119,7 @@
             <div class="col-md-4">
                 <div class="card ">
                     <div class="card-header d-flex justify-content-center ">
-                        <h4 class="mb-0">Minimum Stok</h4>
+                        <h4 class="mb-0"><a href="{{route('poslaporan.minimumstok.index')}}">Minimum Stok</a></h4>
                     </div>
                     <div class="card-body">
                         <div class="row">

@@ -54,6 +54,7 @@
                             <div class="form-group">
                                 <label for="customer">Customer</label>
                                 <select class="form-control" id="customer" name="customer">
+                                    <option value="semua">Semua</option>
                                     <option value="UMUM">UMUM</option>
                                     @foreach ($msanggota as $item)
                                     <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
@@ -83,11 +84,11 @@
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
-                        <form method="POST" action="{{route('poslaporan.penjualan.cetakdetail')}}">
+                        <form method="POST" action="{{route('poslaporan.penjualan.cetakdetail')}}" target="_blank">
                             @csrf
                             <div class="form-group">
                                 <label for="transaksi">Transaksi</label>
-                                <select class="form-control" id="transaksi" name="transaksi">
+                                <select class="form-control" id="transaksi-detail" name="transaksi">
                                     <option value="semua">Semua</option>
                                     <option value="online">Online</option>
                                     <option value="offline">Offline</option>
@@ -95,7 +96,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="lokasi">Lokasi</label>
-                                <select class="form-control" id="lokasi" name="lokasi">
+                                <select class="form-control" id="lokasi-detail" name="lokasi">
                                     @foreach ($mslokasi as $item)
                                     <option value="{{$item->Kode}}">{{$item->Kode}}</option>
                                     @endforeach
@@ -118,7 +119,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="customer">Customer</label>
-                                <select class="form-control" id="customer" name="customer">
+                                <select class="form-control" id="customer-detail" name="customer">
                                     <option value="UMUM">UMUM</option>
                                     @foreach ($msanggota as $item)
                                     <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
@@ -127,9 +128,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="cetak">Cetak</label>
-                                <select class="form-control" id="cetak" name="cetak">
+                                <select class="form-control" id="cetak-detail" name="cetak">
                                     <option value="pdf">Pdf</option>
-                                    <option value="excel">Excel</option>
+                                    {{-- <option value="excel">Excel</option> --}}
                                 </select>
                             </div>
                             <div class="row">
@@ -153,6 +154,10 @@
         $('#transaksi').select2()
         $('#lokasi').select2()
         $('#cetak').select2()
+        $('#cetak-detail').select2()
+        $('#customer-detail').select2()
+        $('#transaksi-detail').select2()
+        $('#lokasi-detail').select2()
      })
 </script>
 @endsection

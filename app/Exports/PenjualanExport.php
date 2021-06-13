@@ -41,16 +41,11 @@ class PenjualanExport implements FromCollection, WithEvents
     public function registerEvents(): array
     {
         return [
-            // Handle by a closure.
+        
             AfterSheet::class => function (AfterSheet $event) {
-
-                // last column as letter value (e.g., D)
                 $last_column = Coordinate::stringFromColumnIndex(count($this->penjualan[0]));
 
-                // calculate last row + 1 (total results + header rows + column headings row + new row)
                 $last_row = count($this->penjualan) + 2 + 1;
-
-                // set up a style array for cell formatting
                 $style_text_center = [
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,

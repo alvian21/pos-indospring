@@ -18,7 +18,7 @@
 
         body {
             position: relative;
-            width: 35cm;
+            width: 30cm;
             height: 29.7cm;
             margin: 0 auto;
             color: #001028;
@@ -117,6 +117,9 @@
             vertical-align: top;
         }
 
+        table td.sub {
+            border-top: 1px solid #C1CED9;
+        }
 
         table td.grand {
             border-top: 1px solid #5D6975;
@@ -142,6 +145,26 @@
         .center {
             text-align: center;
         }
+
+        .span {
+            font-size: 5rem
+        }
+
+        table td.total {
+            font-size: 1.2em;
+        }
+
+        table td.grand {
+            border-top: 1px solid #5D6975;
+        }
+
+        table td.right {
+            text-align: right;
+        }
+
+        table td.left {
+            text-align: left;
+        }
     </style>
 </head>
 
@@ -152,100 +175,99 @@
             <img src="http://31.220.50.154/toko/assets/img/logo.png">
         </div>
         <h1 style="color: #34abeb">Penjualan - Rincian</h1>
-        <div id="company" class="clearfix">
-            <div>Company Name</div>
-            <div>455 Foggy Heights,<br /> AZ 85004, US</div>
-            <div>(602) 519-0450</div>
-            <div><a href="mailto:company@example.com">company@example.com</a></div>
-        </div>
+        <h3 class="center" style="color: #eb5f34">{{$periode1}} - {{$periode2}}</h3>
+    </header>
+    @forelse ($data as $item)
+
+    <header class="clearfix">
         <div id="project">
-            <div><span>PROJECT</span> Website development</div>
-            <div><span>CLIENT</span> John Doe</div>
-            <div><span>ADDRESS</span> 796 Silver Harbour, TX 79273, US</div>
-            <div><span>EMAIL</span> <a href="mailto:john@example.com">john@example.com</a></div>
-            <div><span>DATE</span> August 17, 2015</div>
-            <div><span>DUE DATE</span> September 17, 2015</div>
+            <div><span style="font-size: 12px">Transaksi</span>{{$item['Transaksi']}}</div>
+            <div><span style="font-size: 12px">Nomor</span>{{$item['Nomor']}}</div>
+            <div><span style="font-size: 12px">Lokasi</span>{{$item['LokasiAwal']}}</div>
+            <div><span style="font-size: 12px">Customer</span>{{$item['Kode']}} - {{$item['Nama']}}</div>
+            <div><span style="font-size: 12px">Tanggal</span>{{$item['Tanggal']}}</div>
         </div>
 
     </header>
     <main>
+
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2">Urut</th>
-                    <th rowspan="2">Barang</th>
-                    <th rowspan="2">Jumlah</th>
-                    <th rowspan="2">@Harga</th>
-                    <th rowspan="2">Diskon %</th>
-                    <th rowspan="2">Diskon Rp</th>
-                    <th rowspan="2">Sub Total</th>
+                    <th>Urut</th>
+                    <th>Barang</th>
+                    <th>Jumlah</th>
+                    <th>@Harga</th>
+                    <th>Diskon %</th>
+                    <th>Diskon Rp</th>
+                    <th>Sub Total</th>
                 </tr>
 
             </thead>
             <tbody>
-                {{-- @forelse ($laporan as $item)
+
+                @php
+                    $total = 0;
+                @endphp
+
+                @forelse ($item['datadetail'] as $row)
                 <tr>
-                    <td>{{$item['Penjualan']}}</td>
-                    <td>{{$item['Lokasi']}}</td>
-                    <td>{{$item['Tanggal']}}</td>
-                    <td>{{$item['Nomor']}}</td>
-                    <td>{{$item['Customer']}}</td>
-                    <td>{{"Rp " . number_format($item['Diskon'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Pajak'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Total'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Ekop'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Tunai'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Kredit'],2,',','.')}}</td>
-                    <td>{{$item['DueDate']}}</td>
-
+                    <td>{{$row['Urut']}}</td>
+                    <td>{{$row['KodeBarang']}} | {{$row['Nama']}}</td>
+                    <td>{{$row['Jumlah']}}</td>
+                    <td>{{"Rp " . number_format($row['Harga'],2,',','.')}}</td>
+                    <td>{{$row['DiskonPersen']}}</td>
+                    <td>{{"Rp " . number_format($row['DiskonTunai'],2,',','.')}}</td>
+                    @php
+                    $subtotal = ($row['Harga'] * $row['Jumlah']) - (($row['Harga']* $row['Jumlah'])*$row['DiskonPersen']/100) - $row['DiskonTunai']
+                    @endphp
+                    <td>{{"Rp " . number_format($subtotal,2,',','.')}}</td>
                 </tr>
-
-
+                @php
+                   $total +=  $subtotal
+                @endphp
                 @empty
 
-                @endforelse --}}
-                {{-- <tr>
-                    <td colspan="4" class="sub">SUBTOTAL</td>
-                    <td class="sub total">$5,200.00</td>
-                  </tr>
-                  <tr>
-                    <td colspan="4">TAX 25%</td>
-                    <td class="total">$1,300.00</td>
-                  </tr>
-                  <tr>
-                    <td colspan="4" class="grand total">GRAND TOTAL</td>
-                    <td class="grand total">$6,500.00</td>
-                  </tr> --}}
-            </tbody>
-            <tfoot>
+                @endforelse
+
+                {{-- diskon dan pajak --}}
+                @php
+                    $diskon = (($item['DiskonPersen']/100) * $total) + $item['DiskonTunai'];
+                    $pajak = ($total - $diskon)* $item['Pajak']/100;
+                @endphp
                 <tr>
-                    {{-- <td colspan="5">Total</td>
-                    <td>{{"Rp " . number_format($diskon,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($pajak,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($total,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($ekop,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($tunai,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($kredit,2,',','.')}}</td>
-                    <td></td> --}}
+                    <td colspan="4" class="left">Pembayaran</td>
+                    <td colspan="2" class="right">Total</td>
+                    <td class="sub total">{{"Rp " . number_format($total,2,',','.')}}</td>
                 </tr>
-            </tfoot>
+                <tr>
+                    <td colspan="1" class="left">Tunai</td>
+                    <td colspan="3" class="left">{{"Rp " . number_format($item['PembayaranTunai'],2,',','.')}}</td>
+                    <td colspan="2" class="right">Diskon Akhir</td>
+                    <td class="sub total">{{"Rp " . number_format($diskon,2,',','.')}}</td>
+                </tr>
+                <tr>
+                    <td colspan="1" class="left">Ekop</td>
+                    <td colspan="3" class="left">{{"Rp " . number_format($item['PembayaranEkop'],2,',','.')}}</td>
+                    <td colspan="2" class="right">Pajak</td>
+                    <td class="sub total">{{"Rp " . number_format($pajak,2,',','.')}}</td>
+                </tr>
+                <tr>
+                    <td colspan="1" class="left">Kredit</td>
+                    <td colspan="3" class="left">{{"Rp " . number_format($item['PembayaranKredit'],2,',','.')}}</td>
+                    <td colspan="2" class="right">Grand Total</td>
+                    <td class="sub total">{{"Rp " . number_format($item['TotalHargaSetelahPajak'],2,',','.')}}</td>
+                </tr>
+
+            </tbody>
+
         </table>
-        <div id="details" class="clearfix">
-            <div id="project">
-              <div class="arrow"><div class="inner-arrow"><span>PROJECT</span> Website development</div></div>
-              <div class="arrow"><div class="inner-arrow"><span>CLIENT</span> John Doe</div></div>
-              <div class="arrow"><div class="inner-arrow"><span>ADDRESS</span> 796 Silver Harbour, TX 79273, US</div></div>
-              <div class="arrow"><div class="inner-arrow"><span>EMAIL</span> <a href="mailto:john@example.com">john@example.com</a></div></div>
-            </div>
-            <div id="company">
-              <div class="arrow back"><div class="inner-arrow">Company Name <span>COMPANY</span></div></div>
-              <div class="arrow back"><div class="inner-arrow">455 Foggy Heights, AZ 85004, US <span>ADDRESS</span></div></div>
-              <div class="arrow back"><div class="inner-arrow">(602) 519-0450 <span>PHONE</span></div></div>
-              <div class="arrow back"><div class="inner-arrow"><a href="mailto:company@example.com">company@example.com</a> <span>EMAIL</span></div></div>
-            </div>
-          </div>
+
     </main>
 
+    @empty
+
+    @endforelse
 </body>
 
 </html>

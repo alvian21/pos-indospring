@@ -18,7 +18,7 @@
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
-                        <form method="POST" action="{{route('poslaporan.minimumstok.cetak')}}">
+                        <form method="POST" action="{{route('poslaporan.minimumstok.cetak')}}" target="_blank">
                             @csrf
 
                             <div class="form-group">

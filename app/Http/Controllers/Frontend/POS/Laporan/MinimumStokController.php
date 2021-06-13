@@ -162,7 +162,7 @@ class MinimumStokController extends Controller
                     'minimumstok' => $reslast
                 ]
             )->setPaper('a3', 'landscape');
-            return $pdf->download('laporan-minimumstok-pdf');
+            return $pdf->stream('laporan-minimumstok-pdf',array('Attachment' => 0));
         } else {
             $data = collect($reslast);
             return    Excel::download(new MinimumStokExport($data), 'laporan-minimumstok.xlsx');
