@@ -176,7 +176,7 @@ class PenjualanController extends Controller
                     'tunai' => $sumtunai, 'kredit' => $sumkredit, 'ekop' => $sumekop
                 ]
             )->setPaper('a3', 'landscape');
-            return $pdf->download('laporan-penjualan-pdf');
+            return $pdf->stream('laporan-penjualan-pdf',array('Attachment'=>0));
         } else {
             $penjualan = collect($arr);
 
@@ -184,5 +184,17 @@ class PenjualanController extends Controller
 
             return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop), 'laporan-penjualan.xlsx');
         }
+    }
+
+    public function cetakDetail(Request $request){
+        $periode1 = $request->get('periode1');
+        $periode2 = $request->get('periode2');
+        if ($request->get('transaksi') == 'online') {
+            $status = 'CHECKOUT';
+        } elseif ($request->get('transaksi') == 'offline') {
+            $status = 'PENJUALAN';
+        }
+
+        return view("frontend.pos.laporan.penjualan.detail.pdf");
     }
 }

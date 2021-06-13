@@ -157,6 +157,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
         // Route::get('/penjualan/cetakpdf','PenjualanController@cetakPdf');
         Route::post('/penjualan/cetakpdf','PenjualanController@cetakPdf')->name('penjualan.cetakpdf');
+        Route::post('/penjualan/cetakdetail','PenjualanController@cetakDetail')->name('penjualan.cetakdetail');
         Route::post('/minimumstok/cetak','MinimumStokController@cetak')->name('minimumstok.cetak');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('minimumstok', 'MinimumStokController');
