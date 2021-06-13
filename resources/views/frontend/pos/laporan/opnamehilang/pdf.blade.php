@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Minimum Stok - Rangkuman</title>
+    <title>Stok {{$status}} - Rangkuman</title>
     <style>
         .clearfix:after {
             content: "";
