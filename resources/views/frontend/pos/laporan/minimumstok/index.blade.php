@@ -30,7 +30,7 @@
                                 </select>
                             </div>
 
-                            {{-- <div class="form-group">
+                            <div class="form-group">
                                 <label for="cetak">Cetak</label>
                                 <select class="form-control" id="cetak" name="cetak">
                                     <option value="pdf">Pdf</option>
@@ -41,7 +41,7 @@
                                 <div class="col-md-12 text-center">
                                     <button type="submit" class="btn btn-primary">Cetak</button>
                                 </div>
-                            </div> --}}
+                            </div>
                         </form>
                     </div>
                 </div>
