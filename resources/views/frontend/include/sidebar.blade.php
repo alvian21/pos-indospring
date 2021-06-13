@@ -99,6 +99,7 @@
                 <li><a class="nav-link" href="#">Stok</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.penjualan.index')}}">Penjualan</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.minimumstok.index')}}">Minimum Stok</a></li>
+                <li><a class="nav-link" href="{{route('poslaporan.opnamehilang.index')}}">Opname | Hilang/Rusak</a></li>
             </ul>
         </li>
     </ul>
