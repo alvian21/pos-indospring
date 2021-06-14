@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Penjualan - Rincian</title>
+    <title>Laporan Penjualan | Detail</title>
     <style>
         .clearfix:after {
             content: "";
@@ -174,7 +174,7 @@
         <div id="logo">
             <img src="http://31.220.50.154/toko/assets/img/logo.png">
         </div>
-        <h1 style="color: #34abeb">Penjualan - Rincian</h1>
+        <h1 style="color: #34abeb">Laporan Penjualan | Detail</h1>
         <h3 class="center" style="color: #eb5f34">{{$periode1}} - {{$periode2}}</h3>
     </header>
     @forelse ($data as $item)
@@ -184,7 +184,7 @@
             <div><span style="font-size: 12px">Transaksi</span>{{$item['Transaksi']}}</div>
             <div><span style="font-size: 12px">Nomor</span>{{$item['Nomor']}}</div>
             <div><span style="font-size: 12px">Lokasi</span>{{$item['LokasiAwal']}}</div>
-            <div><span style="font-size: 12px">Customer</span>{{$item['Kode']}} - {{$item['Nama']}}</div>
+            <div><span style="font-size: 12px">Customer</span>@if(isset($item['Kode'])){{$item['Kode']}} - {{$item['Nama']}}@else{{$item['KodeSuppCust']}}@endif</div>
             <div><span style="font-size: 12px">Tanggal</span>{{$item['Tanggal']}}</div>
         </div>
 

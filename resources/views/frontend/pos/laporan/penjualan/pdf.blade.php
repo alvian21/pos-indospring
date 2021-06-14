@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Penjualan - Rangkuman</title>
+    <title>Laporan Penjualan | Summary</title>
     <style>
         .clearfix:after {
             content: "";
@@ -151,7 +151,7 @@
         <div id="logo">
             <img src="http://31.220.50.154/toko/assets/img/logo.png">
         </div>
-        <h1 style="color: #34abeb">Penjualan - Rangkuman</h1>
+        <h1 style="color: #34abeb">Laporan Penjualan | Summary</h1>
 
         <h3 class="center" style="color: #eb5f34">{{$periode1}} - {{$periode2}}</h3>
 

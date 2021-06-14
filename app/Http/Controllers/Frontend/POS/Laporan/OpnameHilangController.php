@@ -96,7 +96,7 @@ class OpnameHilangController extends Controller
         $periode2 = $request->get('periode2');
         $status = $request->get('transaksi');
         $lokasi = $request->get('lokasi');
-        $trmutasidt = DB::table('trmutasidt')->leftJoin('msbarang', 'trmutasidt.KodeBarang', 'msbarang.Kode')->where('Transaksi', $status)->orderBy('Nomor')->get();
+        $trmutasidt = DB::table('trmutasidt')->leftJoin('msbarang', 'trmutasidt.KodeBarang', 'msbarang.Kode')->select('trmutasidt.*','msbarang.*','trmutasidt.UserUpdate as UpdateUser')->where('Transaksi', $status)->orderBy('Nomor')->get();
         $arr = [];
         foreach ($trmutasidt as $key => $value) {
             $trmutasihd = DB::table('trmutasihd')->where('Nomor', $value->Nomor)->where('LokasiAwal', $lokasi)->where('trmutasihd.Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->orderBy('Nomor')->first();
@@ -107,14 +107,19 @@ class OpnameHilangController extends Controller
             }
         }
 
+        if($status=='OPNAME'){
+            $resstatus = 'Laporan Stok Opname';
+        }else{
+            $resstatus = 'Laporan Stok Hilang / Rusak';
+        }
 
         $periode1 = date("l, F j, Y", strtotime($periode1));
         $periode2 = date("l, F j, Y", strtotime($periode2));
 
         $pdf = PDF::loadview(
             "frontend.pos.laporan.opnamehilang.pdf",
-            ['data' => $arr, 'periode1' => $periode1, 'periode2' => $periode2, 'status' => $status]
-        )->setPaper('a3', 'landscape');
+            ['data' => $arr, 'periode1' => $periode1, 'periode2' => $periode2, 'status' => $resstatus]
+        )->setPaper('a4', 'potrait');
         return $pdf->stream('laporan-opnamehilang-pdf', array('Attachment' => 0));
 
     }

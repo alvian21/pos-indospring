@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Minimum Stok - Rangkuman</title>
+    <title>Laporan Minimum Stok</title>
     <style>
         .clearfix:after {
             content: "";
@@ -151,7 +151,7 @@
         <div id="logo">
             <img src="http://31.220.50.154/toko/assets/img/logo.png">
         </div>
-        <h1 style="color: #34abeb">Minimum Stok - Rangkuman</h1>
+        <h1 style="color: #34abeb">Laporan Minimum Stok</h1>
     </header>
     <main>
         <table>

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Stok {{$status}} - Rangkuman</title>
+    <title>{{$status}}</title>
     <style>
         .clearfix:after {
             content: "";
@@ -18,7 +18,7 @@
 
         body {
             position: relative;
-            width: 40cm;
+            width: 18cm;
             height: 29.7cm;
             margin: 0 auto;
             color: #001028;
@@ -151,7 +151,7 @@
         <div id="logo">
             <img src="http://31.220.50.154/toko/assets/img/logo.png">
         </div>
-        <h1 style="color: #34abeb">Stok {{$status}} - Rangkuman</h1>
+        <h1 style="color: #34abeb">{{$status}}</h1>
         <h3 class="center" style="color: #eb5f34">{{$periode1}} - {{$periode2}}</h3>
     </header>
     <main>
@@ -174,7 +174,7 @@
                     <td>{{$item['KodeBarang']}}</td>
                     <td>{{$item['Nama']}}</td>
                     <td>{{$item['Jumlah']}}</td>
-                    <td>{{$item['UserUpdate']}}</td>
+                    <td>{{$item['UpdateUser']}}</td>
                 </tr>
 
 
