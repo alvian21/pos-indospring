@@ -14,7 +14,7 @@
             <div class="col-6">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Laporan Penjualan</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Laporan Penjualan | Summary</h4>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -80,7 +80,7 @@
             <div class="col-6">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Laporan Detail Penjualan</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Laporan Penjualan | Detail</h4>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -120,6 +120,7 @@
                             <div class="form-group">
                                 <label for="customer">Customer</label>
                                 <select class="form-control" id="customer-detail" name="customer">
+                                    <option value="semua">Semua</option>
                                     <option value="UMUM">UMUM</option>
                                     @foreach ($msanggota as $item)
                                     <option value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
