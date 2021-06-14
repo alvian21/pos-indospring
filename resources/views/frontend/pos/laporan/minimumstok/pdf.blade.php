@@ -18,7 +18,7 @@
 
         body {
             position: relative;
-            width: 40cm;
+            width: 18cm;
             height: 29.7cm;
             margin: 0 auto;
             color: #001028;
@@ -27,6 +27,7 @@
             font-size: 12px;
             font-family: Arial;
         }
+
 
         header {
             padding: 10px 0;
@@ -90,7 +91,7 @@
 
         table th,
         table td {
-            text-align: center;
+            /* text-align: center; */
             font-size: 1.2em;
         }
 
@@ -109,7 +110,7 @@
 
         table td {
             padding: 20px;
-            text-align: center;
+            /* text-align: center; */
         }
 
         table td.service,
@@ -169,13 +170,13 @@
             <tbody>
                 @forelse ($minimumstok as $item)
                 <tr>
-                    <td>{{$loop->iteration}}</td>
-                    <td>{{$item['Kategori']}}</td>
-                    <td>{{$item['NomorGroup']}}</td>
-                    <td>{{$item['Kode']}}</td>
-                    <td>{{$item['Nama']}}</td>
-                    <td>{{$item['MinimumStok']}}</td>
-                    <td>{{$item['Saldo']}}</td>
+                    <td align="right">{{$loop->iteration}}</td>
+                    <td align="left">{{$item['Kategori']}}</td>
+                    <td align="right">{{$item['NomorGroup']}}</td>
+                    <td align="left">{{$item['Kode']}}</td>
+                    <td align="left">{{$item['Nama']}}</td>
+                    <td align="right">{{$item['MinimumStok']}}</td>
+                    <td align="right">{{$item['Saldo']}}</td>
 
                 </tr>
 

@@ -90,7 +90,7 @@
 
         table th,
         table td {
-            text-align: center;
+            /* text-align: center; */
             font-size: 1.2em;
         }
 
@@ -109,7 +109,7 @@
 
         table td {
             padding: 20px;
-            text-align: center;
+            /* text-align: center; */
         }
 
         table td.service,
@@ -180,18 +180,18 @@
             <tbody>
                 @forelse ($laporan as $item)
                 <tr>
-                    <td>{{$item['Penjualan']}}</td>
-                    <td>{{$item['Lokasi']}}</td>
-                    <td>{{$item['Tanggal']}}</td>
-                    <td>{{$item['Nomor']}}</td>
-                    <td>{{$item['Customer']}}</td>
-                    <td>{{"Rp " . number_format($item['Diskon'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Pajak'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Total'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Ekop'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Tunai'],2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item['Kredit'],2,',','.')}}</td>
-                    <td>{{$item['DueDate']}}</td>
+                    <td align="left">{{$item['Penjualan']}}</td>
+                    <td align="left">{{$item['Lokasi']}}</td>
+                    <td align="left">{{$item['Tanggal']}}</td>
+                    <td align="left">{{$item['Nomor']}}</td>
+                    <td align="left">{{$item['Customer']}}</td>
+                    <td align="right">{{"Rp " . number_format($item['Diskon'],2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item['Pajak'],2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item['Total'],2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item['Ekop'],2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item['Tunai'],2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item['Kredit'],2,',','.')}}</td>
+                    <td align="left">{{$item['DueDate']}}</td>
 
                 </tr>
 
@@ -202,13 +202,13 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5">Total</td>
-                    <td>{{"Rp " . number_format($diskon,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($pajak,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($total,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($ekop,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($tunai,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($kredit,2,',','.')}}</td>
+                    <td colspan="5" class="text-center">Total</td>
+                    <td  align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
+                    <td  align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
+                    <td  align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
+                    <td  align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
+                    <td  align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
+                    <td  align="right">{{"Rp " . number_format($kredit,2,',','.')}}</td>
                     <td></td>
                 </tr>
             </tfoot>

@@ -106,19 +106,19 @@ class PenjualanController extends Controller
 
         $lokasi = $request->get('lokasi');
         if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
-            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->where('KodeSuppCust', $request->get('customer'))->orWhere(function($query){
+            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function($query){
                 $query->where('Transaksi','PENJUALAN')
-                ->where('Transaksi','CHECKOUT');
+                ->orWhere('Transaksi','CHECKOUT');
             })->orderBy('Tanggal')->get();
         }elseif ($request->get('transaksi') == 'semua' && $request->get('customer') != 'semua') {
-            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->where('KodeSuppCust', $request->get('customer'))->orWhere(function($query){
+            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function($query){
                 $query->where('Transaksi','PENJUALAN')
-                ->where('Transaksi','CHECKOUT');
+                ->orWhere('Transaksi','CHECKOUT');
             })->orderBy('Tanggal')->get();
         } else if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'semua') {
-            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->orWhere(function($query){
+            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->where(function($query){
                 $query->where('Transaksi','PENJUALAN')
-                ->where('Transaksi','CHECKOUT');
+                ->orWhere('Transaksi','CHECKOUT');
             })->orderBy('Tanggal')->get();
         } else if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'semua') {
             $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->orderBy('Tanggal')->get();
@@ -127,7 +127,6 @@ class PenjualanController extends Controller
         }else {
             $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal',$lokasi)->where('KodeSuppCust', $request->get('customer'))->orderBy('Tanggal')->get();
         }
-
         $arr = [];
         $sumdiskon = 0;
         $sumpajak = 0;
@@ -142,7 +141,7 @@ class PenjualanController extends Controller
                 $transaksi = 'Offline';
             }
 
-            $trmutasidt = Trmutasidt::where('Nomor', $value->Nomor)->get();
+            $trmutasidt = Trmutasidt::where('Nomor', $value->Nomor)->where('Transaksi',$transaksi)->get();
             $subtotal = 0;
 
             foreach ($trmutasidt as $key => $row) {
@@ -215,19 +214,19 @@ class PenjualanController extends Controller
         }
         $lokasi = $request->get('lokasi');
         if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
-            $trmutasihd =  DB::table('trmutasihd')->where('LokasiAwal',$lokasi)->where('trmutasihd.KodeSuppCust', $request->get('customer'))->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->orWhere(function($query){
+            $trmutasihd =  DB::table('trmutasihd')->where('LokasiAwal',$lokasi)->where('trmutasihd.KodeSuppCust', $request->get('customer'))->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where(function($query){
                 $query->where('Transaksi','PENJUALAN')
-                ->where('Transaksi','CHECKOUT');
+                ->orWhere('Transaksi','CHECKOUT');
             })->get();
         }elseif ($request->get('transaksi') == 'semua' && $request->get('customer') != 'semua') {
-            $trmutasihd =  DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal',$lokasi)->where('trmutasihd.KodeSuppCust', $request->get('customer'))->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->orWhere(function($query){
+            $trmutasihd =  DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal',$lokasi)->where('trmutasihd.KodeSuppCust', $request->get('customer'))->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where(function($query){
                 $query->where('Transaksi','PENJUALAN')
-                ->where('Transaksi','CHECKOUT');
+                ->orWhere('Transaksi','CHECKOUT');
             })->get();
         } else if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'semua') {
-            $trmutasihd =  DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal',$lokasi)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->orWhere(function($query){
+            $trmutasihd =  DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal',$lokasi)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where(function($query){
                 $query->where('Transaksi','PENJUALAN')
-                ->where('Transaksi','CHECKOUT');
+                ->orWhere('Transaksi','CHECKOUT');
             })->get();
         } else if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'semua') {
             $trmutasihd =  DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal',$lokasi)->where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->get();
@@ -237,7 +236,7 @@ class PenjualanController extends Controller
             $trmutasihd = DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal',$lokasi)->where('Transaksi', $status)->where('trmutasihd.KodeSuppCust', $request->get('customer'))->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->get();
         }
 
-        // dd($trmutasihd);
+     
 
         $arr = [];
         foreach ($trmutasihd as $key => $value) {

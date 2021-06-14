@@ -90,7 +90,7 @@
 
         table th,
         table td {
-            text-align: center;
+            /* text-align: center; */
             font-size: 1.2em;
         }
 
@@ -109,7 +109,7 @@
 
         table td {
             padding: 20px;
-            text-align: center;
+            /* text-align: center; */
         }
 
         table td.service,
@@ -169,12 +169,12 @@
             <tbody>
                 @forelse ($data as $item)
                 <tr>
-                    <td>{{$item['Tanggal']}}</td>
-                    <td>{{$item['Nomor']}}</td>
-                    <td>{{$item['KodeBarang']}}</td>
-                    <td>{{$item['Nama']}}</td>
-                    <td>{{$item['Jumlah']}}</td>
-                    <td>{{$item['UpdateUser']}}</td>
+                    <td align="left">{{$item['Tanggal']}}</td>
+                    <td align="left">{{$item['Nomor']}}</td>
+                    <td align="left">{{$item['KodeBarang']}}</td>
+                    <td align="left">{{$item['Nama']}}</td>
+                    <td align="right">{{$item['Jumlah']}}</td>
+                    <td align="left">{{$item['UpdateUser']}}</td>
                 </tr>
 
 

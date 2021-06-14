@@ -161,7 +161,7 @@ class MinimumStokController extends Controller
                 [
                     'minimumstok' => $reslast
                 ]
-            )->setPaper('a3', 'landscape');
+            )->setPaper('a4', 'potrait');
             return $pdf->stream('laporan-minimumstok-pdf',array('Attachment' => 0));
         } else {
             $data = collect($reslast);

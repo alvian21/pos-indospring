@@ -90,7 +90,7 @@
 
         table th,
         table td {
-            text-align: center;
+            /* text-align: center; */
             font-size: 1.2em;
         }
 
@@ -109,7 +109,7 @@
 
         table td {
             padding: 20px;
-            text-align: center;
+            /* text-align: center; */
         }
 
         table td.service,
@@ -212,16 +212,16 @@
 
                 @forelse ($item['datadetail'] as $row)
                 <tr>
-                    <td>{{$row['Urut']}}</td>
-                    <td>{{$row['KodeBarang']}} | {{$row['Nama']}}</td>
-                    <td>{{$row['Jumlah']}}</td>
-                    <td>{{"Rp " . number_format($row['Harga'],2,',','.')}}</td>
-                    <td>{{$row['DiskonPersen']}}</td>
-                    <td>{{"Rp " . number_format($row['DiskonTunai'],2,',','.')}}</td>
+                    <td align="right">{{$row['Urut']}}</td>
+                    <td align="left">{{$row['KodeBarang']}} | {{$row['Nama']}}</td>
+                    <td align="right">{{$row['Jumlah']}}</td>
+                    <td align="right">{{"Rp " . number_format($row['Harga'],2,',','.')}}</td>
+                    <td align="right">{{$row['DiskonPersen']}}</td>
+                    <td align="right">{{"Rp " . number_format($row['DiskonTunai'],2,',','.')}}</td>
                     @php
                     $subtotal = ($row['Harga'] * $row['Jumlah']) - (($row['Harga']* $row['Jumlah'])*$row['DiskonPersen']/100) - $row['DiskonTunai']
                     @endphp
-                    <td>{{"Rp " . number_format($subtotal,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($subtotal,2,',','.')}}</td>
                 </tr>
                 @php
                    $total +=  $subtotal
@@ -238,25 +238,25 @@
                 <tr>
                     <td colspan="4" class="left">Pembayaran</td>
                     <td colspan="2" class="right">Total</td>
-                    <td class="sub total">{{"Rp " . number_format($total,2,',','.')}}</td>
+                    <td class="sub total" align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
                 </tr>
                 <tr>
                     <td colspan="1" class="left">Tunai</td>
                     <td colspan="3" class="left">{{"Rp " . number_format($item['PembayaranTunai'],2,',','.')}}</td>
                     <td colspan="2" class="right">Diskon Akhir</td>
-                    <td class="sub total">{{"Rp " . number_format($diskon,2,',','.')}}</td>
+                    <td class="sub total" align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
                 </tr>
                 <tr>
                     <td colspan="1" class="left">Ekop</td>
                     <td colspan="3" class="left">{{"Rp " . number_format($item['PembayaranEkop'],2,',','.')}}</td>
                     <td colspan="2" class="right">Pajak</td>
-                    <td class="sub total">{{"Rp " . number_format($pajak,2,',','.')}}</td>
+                    <td class="sub total" align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
                 </tr>
                 <tr>
                     <td colspan="1" class="left">Kredit</td>
                     <td colspan="3" class="left">{{"Rp " . number_format($item['PembayaranKredit'],2,',','.')}}</td>
                     <td colspan="2" class="right">Grand Total</td>
-                    <td class="sub total">{{"Rp " . number_format($item['TotalHargaSetelahPajak'],2,',','.')}}</td>
+                    <td class="sub total" align="right">{{"Rp " . number_format($item['TotalHargaSetelahPajak'],2,',','.')}}</td>
                 </tr>
 
             </tbody>
