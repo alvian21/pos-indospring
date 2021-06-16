@@ -377,6 +377,85 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="card text-white bg-dark rounded" style="height: 18rem">
+                                        <div class="card-body">
+                                            <div class="row mt-4">
+                                                <input type="hidden" name="name9" value="{{$PajakPenjualan->Kode}}">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <input type="text" class="text-center form-control"
+                                                            value="{{$PajakPenjualan->Nama}}"
+                                                            name="inputmblPajakPenjualannama">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" class="text-center form-control"
+                                                        value="{{$PajakPenjualan->Nilai}}"
+                                                        name="inputmblPajakPenjualannilai">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="MobilePajakPenjualan"
+                                                            @if($PajakPenjualan->aktif == 1 ) checked
+                                                        @endif name="ckmblPajakPenjualan">
+                                                        <label class="custom-control-label"
+                                                            for="MobilePajakPenjualan"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <input type="hidden" name="name10" value="{{$DiskonRpPenjualanReadOnly->Kode}}">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+
+                                                            <input type="text" class="text-center form-control"
+                                                            value="{{$DiskonRpPenjualanReadOnly->Nama}}"
+                                                            name="inputmblDiskonRpPenjualanReadOnlynama">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="DiskonRpPenjualanReadOnly" name="ckDiskonRpPenjualanReadOnly"
+                                                            @if($DiskonRpPenjualanReadOnly->aktif == 1 ) checked
+                                                        @endif>
+                                                        <label class="custom-control-label"
+                                                            for="DiskonRpPenjualanReadOnly"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <input type="hidden" name="name11" value="{{$DiskonPersenPenjualanReadOnly->Kode}}">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+
+                                                            <textarea class="form-control"
+                                                                id="exampleFormControlTextarea1" rows="6"
+                                                                name="inputDiskonPersenPenjualanReadOnlynama">{{$DiskonPersenPenjualanReadOnly->Nama}}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="DiskonPersenPenjualanReadOnly" name="ckDiskonPersenPenjualanReadOnly"
+                                                            @if($DiskonPersenPenjualanReadOnly->aktif == 1 ) checked
+                                                        @endif>
+                                                        <label class="custom-control-label"
+                                                            for="DiskonPersenPenjualanReadOnly"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
 

@@ -58,7 +58,7 @@
                                 <div class="col-2">
                                     <div class="form-group">
                                         <label for="diskon_persen">Diskon (%)</label>
-                                        <input type="number" class="form-control" id="diskon_persen" min="0"
+                                        <input type="number" class="form-control" id="diskon_persen" min="0" @if($DiskonPersenPenjualanReadOnly->aktif  == 1) readonly @endif
                                             value="{{$trpenjualan["diskon_persen"]}}" name="diskon_persen" required>
                                     </div>
 
@@ -66,7 +66,7 @@
                                 <div class="col-2">
                                     <div class="form-group">
                                         <label for="diskon_rp">Diskon (Rp)</label>
-                                        <input type="text" class="form-control" id="diskon_rp" min="0"
+                                        <input type="text" class="form-control" id="diskon_rp" min="0" @if($DiskonRpPenjualanReadOnly->aktif  == 1) readonly @endif
                                             value="{{$trpenjualan["diskon_rp"]}}" name="diskon_rp" required>
                                     </div>
 
@@ -74,7 +74,7 @@
                                 <div class="col-2">
                                     <div class="form-group">
                                         <label for="pajak">Pajak</label>
-                                        <input type="number" class="form-control" id="pajak" name="pajak" min="10"
+                                        <input type="number" class="form-control" id="pajak" @if($PajakPenjualan->aktif == 1) readonly @endif name="pajak" min="10"
                                             value="{{$trpenjualan["pajak"]}}" required>
                                     </div>
                                 </div>
@@ -230,14 +230,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="diskon_persen">Diskon (%)</label>
-                                <input type="number" class="form-control diskon_persen" name="diskon_persen" value="0">
+                                <input type="number" @if($DiskonPersenPenjualanReadOnly->aktif  == 1) readonly @endif class="form-control diskon_persen" name="diskon_persen" value="0">
                             </div>
 
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="diskon_rp">Diskon (Rp)</label>
-                                <input type="number" class="form-control diskon_rp" name="diskon_rp" value="0">
+                                <input type="number" @if($DiskonRpPenjualanReadOnly->aktif  == 1) readonly @endif class="form-control diskon_rp" name="diskon_rp" value="0">
                             </div>
                         </div>
                     </div>

@@ -25,6 +25,9 @@ class SettingController extends Controller
         $SaldoMinusMax = Mssetting::where('Kode', 'SaldoMinusMax')->first();
         $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
         $SaldoMinusResetPerBulan = Mssetting::where('Kode', 'SaldoMinusResetPerBulan')->first();
+        $PajakPenjualan = Mssetting::where('Kode', 'PajakPenjualan')->first();
+        $DiskonRpPenjualanReadOnly = Mssetting::where('Kode', 'DiskonRpPenjualanReadOnly')->first();
+        $DiskonPersenPenjualanReadOnly = Mssetting::where('Kode', 'DiskonPersenPenjualanReadOnly')->first();
 
         return view(
             "frontend.settings.setting.index",
@@ -38,6 +41,9 @@ class SettingController extends Controller
                 'SaldoMinusMax' => $SaldoMinusMax,
                 'SaldoMinusBunga' => $SaldoMinusBunga,
                 'SaldoMinusResetPerBulan' => $SaldoMinusResetPerBulan,
+                'PajakPenjualan' => $PajakPenjualan,
+                'DiskonRpPenjualanReadOnly' => $DiskonRpPenjualanReadOnly,
+                'DiskonPersenPenjualanReadOnly' => $DiskonPersenPenjualanReadOnly
             ]
         );
     }
@@ -187,7 +193,49 @@ class SettingController extends Controller
 
         }
 
+        $name9 = $request->get('name9');
+        $retname9 = Mssetting::where('Kode', $name9)->first();
+        if($retname9){
+            if($request->get('ckmblPajakPenjualan') == "on"){
+                $retname9->aktif = 1;
+            }else{
+                $retname9->aktif = 0;
+            }
+            $retname9->Nilai = $request->get('inputmblPajakPenjualannilai');
+            $retname9->Nama = $request->get('inputmblPajakPenjualannama');
+            $retname9->save();
 
+        }
+
+
+        $name10 = $request->get('name10');
+        $retname10 = Mssetting::where('Kode', $name10)->first();
+        if($retname10){
+            if($request->get('ckDiskonRpPenjualanReadOnly') == "on"){
+                $retname10->aktif = 1;
+            }else{
+                $retname10->aktif = 0;
+            }
+            $retname10->Nama = $request->get('inputmblDiskonRpPenjualanReadOnlynama');
+            $retname10->save();
+
+        }
+
+
+        $name11 = $request->get('name11');
+        $retname11 = Mssetting::where('Kode', $name11)->first();
+        if($retname11){
+            if($request->get('ckDiskonPersenPenjualanReadOnly') == "on"){
+                $retname11->aktif = 1;
+            }else{
+                $retname11->aktif = 0;
+            }
+            $retname11->Nama = $request->get('inputDiskonPersenPenjualanReadOnlynama');
+            $retname11->save();
+
+        }
+
+        session()->forget('transaksi_penjualan');
         return response()->json([
             'message'=> 'true'
         ]);

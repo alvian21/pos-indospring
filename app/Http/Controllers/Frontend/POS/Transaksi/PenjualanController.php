@@ -10,6 +10,7 @@ use App\Mslokasi;
 use App\Msanggota;
 use App\Mssupplier;
 use App\Trmutasidt;
+use App\Mssetting;
 use App\Trsaldoekop;
 use Illuminate\Support\Facades\Session;
 use DataTables;
@@ -32,7 +33,9 @@ class PenjualanController extends Controller
         $day = date('d');
         $month = date('m');
         $year = date('Y');
-
+        $PajakPenjualan = Mssetting::where('Kode', 'PajakPenjualan')->first();
+        $DiskonRpPenjualanReadOnly = Mssetting::where('Kode', 'DiskonRpPenjualanReadOnly')->first();
+        $DiskonPersenPenjualanReadOnly = Mssetting::where('Kode', 'DiskonPersenPenjualanReadOnly')->first();
         $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
         $penjualan = Trmutasihd::where('Transaksi', 'PENJUALAN')->get();
         $mslokasi = Mslokasi::all();
@@ -62,6 +65,15 @@ class PenjualanController extends Controller
             $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
         }
 
+
+        $pajak = 10;
+        $diskon_rp = 0;
+        $diskon_persen = 0;
+        if($PajakPenjualan->aktif == 1){
+            $pajak = $PajakPenjualan->Nilai;
+        }
+
+
         if (session()->has('transaksi_penjualan')) {
             $trpenjualan = session('transaksi_penjualan');
         } else {
@@ -69,9 +81,9 @@ class PenjualanController extends Controller
                 'transaksi' => 'PENJUALAN',
                 'nomor' => $formatNomor,
                 'tanggal' => date('d M y H:i'),
-                'diskon_persen' => '0',
-                'pajak' => '10',
-                'diskon_rp' => '0',
+                'diskon_persen' => $diskon_persen,
+                'pajak' => $pajak,
+                'diskon_rp' => $diskon_rp,
                 'lokasi' => auth()->user()->KodeLokasi,
                 'keterangan' => '',
                 'total_harga_sebelum' => 0,
@@ -91,7 +103,10 @@ class PenjualanController extends Controller
             'mslokasi' => $mslokasi,
             'msbarang' => $msbarang,
             'trpenjualan' => $trpenjualan,
-            'msanggota' => $msanggota
+            'msanggota' => $msanggota,
+            'PajakPenjualan' => $PajakPenjualan,
+            'DiskonRpPenjualanReadOnly' => $DiskonRpPenjualanReadOnly,
+            'DiskonPersenPenjualanReadOnly' => $DiskonPersenPenjualanReadOnly,
         ]);
     }
 

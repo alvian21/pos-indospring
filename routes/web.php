@@ -46,6 +46,11 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('mssetting', 'SettingController');
     });
 
+    //master
+    // Route::group(['prefix'=>'master','namespace'=>'Master','as'=>'master.'],function () {
+
+    // });
+
     //koperasi
     Route::group(['namespace' => 'Koperasi\Master', 'prefix' => 'koperasi', 'as' => 'koperasi.'], function () {
 
