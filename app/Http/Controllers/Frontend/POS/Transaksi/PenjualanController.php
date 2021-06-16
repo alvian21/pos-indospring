@@ -233,10 +233,15 @@ class PenjualanController extends Controller
         if ($request->ajax()) {
             $msbarang = Msbarang::where('Kode', $request->kode_barang)->first();
             $trsaldobarang = Trsaldobarang::where('KodeBarang', $request->kode_barang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+            $saldo = 0;
+            if($trsaldobarang){
+                $saldo = $trsaldobarang->Saldo;
+            }
+
             $data = [
                 'Nama' => $msbarang->Nama,
                 'HargaJual' => $msbarang->HargaJual,
-                'Saldo' => $trsaldobarang->Saldo
+                'Saldo' => $saldo
             ];
             return response()->json($data);
         }
