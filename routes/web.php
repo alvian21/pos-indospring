@@ -47,9 +47,18 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     });
 
     //master
-    // Route::group(['prefix'=>'master','namespace'=>'Master','as'=>'master.'],function () {
+    Route::group(['prefix'=>'master','namespace'=>'Master','as'=>'master.'],function () {
 
-    // });
+        Route::group(['prefix'=>'user','as'=>'user.'],function () {
+            Route::get('/delete_detail/{id}','UserController@delete_detail');
+            Route::get('/check_user','UserController@checkUser')->name('checkuser');
+            Route::get('/data_detail','UserController@getDataDetail')->name('datadetail');
+            Route::post('/data_detail','UserController@saveDetail')->name('savedetail');
+            Route::post('/saveheader','UserController@saveHeader')->name('saveheader');
+            Route::resource('/', 'UserController');
+        });
+
+    });
 
     //koperasi
     Route::group(['namespace' => 'Koperasi\Master', 'prefix' => 'koperasi', 'as' => 'koperasi.'], function () {

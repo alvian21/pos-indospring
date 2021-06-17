@@ -29,8 +29,8 @@
                 <i class="fas fa-file-alt"></i> <span>Menu</span>
             </a>
         </li>
-        <li @yield('user')>
-            <a class="nav-link" href="#">
+        <li class="nav-item @yield('user') ">
+            <a class="nav-link" href="{{route('master.user.index')}}">
                 <i class="fas fa-file-alt"></i> <span>User</span>
             </a>
         </li>

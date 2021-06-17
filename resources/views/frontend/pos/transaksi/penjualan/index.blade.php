@@ -295,7 +295,14 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="total_qty">Total Qty</label>
+                                <input type="number" class="form-control" name="total_qty" id="total_qty"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="total_belanja">Total Belanja</label>
                                 <input type="number" class="form-control" name="total_belanja" id="total_belanja"
@@ -376,7 +383,7 @@
 @endsection
 @section('scripts')
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function(e){
 
         $('#diskon_rp').mask('000.000.000.000', {
             reverse: true
@@ -410,7 +417,7 @@
      var ds_persen;
      var ttl_harga=0;
 
-
+     var TotalQty = 0;
     var table_detail = $("#table-detail").DataTable({
         "scrollX": true,
         processing: true,
@@ -432,7 +439,13 @@
             $('td:eq(4)', nRow).html(convertToRupiah(aData["harga"]));
             $('td:eq(6)', nRow).html(convertToRupiah(aData["diskon_rp"]));
             $('td:eq(7)', nRow).html(convertToRupiah(aData["subtotal"]));
-        }
+        },
+        "footerCallback": function (row, data, start, end, display) {
+
+                for (var i = 0; i < data.length; i++) {
+                    TotalQty += parseInt(data[i]['qty']);
+                }
+       }
     });
 
     // $('.js-example-basic-single').select2();
@@ -466,6 +479,7 @@
     });
 
     $('#barang').on('change', function () {
+
         var kode_barang = $(this).val();
         $('#alert-detail').hide();
         var qty = $('#qty').val();
@@ -492,6 +506,7 @@
                 subtotal = convertToRupiah(subtotal)
                 $('#subtotal').val(subtotal);
                 $('#harga').val(convertToRupiah(harga));
+                $('#qty').focus()
             }
         })
         }
@@ -571,51 +586,56 @@
 
      })
 
-     $(document).on('click','.btnDetailInsert',function () {
 
+     function insertDetail()
+     {
         var barang = $('#barang').val();
-        var stok = $('#stok').val();
-        var qty = $('#qty').val();
-            if(barang == '0'){
-               $('.alert-danger').text('pilih barang terlebih dahulu')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else if(qty == undefined || qty == 0 || qty == ''){
-                $('.alert-danger').text('qty harus diisi')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }
-            else{
-                csrf_ajax();
-               $.ajax({
-                   url:"{{route('pos.detail_transaksi_penjualan.store')}}",
-                   method: "POST",
-                   data: $('#formDetail').serialize(),
-                   success:function(data){
-                       $('.alert-success').text('Data berhasil di tambahkan')
-                       $('.alert-danger').hide()
-                       $('[id=barang]').val('0').trigger('change');
-                       $('#alert-detail').show();
-                       setTimeout(function(){ $('#alert-detail').hide()},3000);
-                       $('#formDetail').trigger("reset");
-                       table_detail.ajax.reload();
-                       setTimeout(function(){ $('#barang').select2('open');},500)
-                       $('.btnSimpan').show();
-                       $('#barang').val('0');
-                       var ttl_harga = convertToRupiah(String(data['total_harga']));
-                       var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
-                       $("#ttl_harga").val(ttl_harga);
-                        $("#ttl_harga_pajak").val(ttl_harga_pajak);
-                   }
-               })
-            }
-      });
+            var stok = $('#stok').val();
+            var qty = $('#qty').val();
+                if(barang == '0'){
+                $('.alert-danger').text('pilih barang terlebih dahulu')
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
+                }else if(qty == undefined || qty == 0 || qty == ''){
+                    $('.alert-danger').text('qty harus diisi')
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
+                }else if(parseInt(qty) > parseInt(stok)){
+                    $('.alert-danger').text('maksimal qty adalah '+stok)
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
+                }
+                else{
+                    csrf_ajax();
+                    $('.alert-success').text('Data berhasil di tambahkan')
+                $.ajax({
+                    url:"{{route('pos.detail_transaksi_penjualan.store')}}",
+                    method: "POST",
+                    data: $('#formDetail').serialize(),
+                    success:function(data){
+                        TotalQty = 0;
+                        $('.alert-danger').hide()
+                        $('[id=barang]').val('0').trigger('change');
+                        $('#alert-detail').show();
+                        setTimeout(function(){ $('#alert-detail').hide()},3000);
+                        $('#formDetail').trigger("reset");
+                        table_detail.ajax.reload();
+                        setTimeout(function(){ $('#barang').select2('open');},500)
+                        $('.btnSimpan').show();
+                        $('#barang').val('0');
+                        var ttl_harga = convertToRupiah(String(data['total_harga']));
+                        var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
+                        $("#ttl_harga").val(ttl_harga);
+                            $("#ttl_harga_pajak").val(ttl_harga_pajak);
+                    }
+                })
+                }
+     }
 
-      $(document).on('click','.btnDetailUpdate',function () {
+
+
+     function updateDetail()
+     {
         var barang = $('#barang').val();
         var stok = $('#stok').val();
         var qty = $('#qty').val();
@@ -639,6 +659,7 @@
                 method: "POST",
                 data: $('#formDetail').serialize(),
                 success:function(data){
+                    TotalQty = 0;
                     $('#formDetail').trigger("reset");
                     table_detail.ajax.reload();
                     // setTimeout(function(){ $('#barang').select2('open');},500)
@@ -649,7 +670,7 @@
                     $('#alert-detail').show();
                     setTimeout(function(){ $('#alert-detail').hide()
                     $('#barangModal').modal('hide')
-                    },3000);
+                    },2000);
                     var ttl_harga = convertToRupiah(String(data['total_harga']));
                        var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
                        $("#ttl_harga").val(ttl_harga);
@@ -657,7 +678,34 @@
                 }
             })
             }
-        });
+     }
+
+
+     $(document).on('keypress','#qty', function(e){
+        var key = e.which;
+        var btn = $(".btnBarangModal").attr('class')
+
+        if (key == 13) {
+            var insert = btn.search('btnDetailInsert');
+            var update = btn.search('btnDetailUpdate');
+            if(insert != -1){
+                 insertDetail()
+            }
+
+            if(update != -1){
+                updateDetail()
+            }
+
+         }
+     })
+
+     $(document).on('click','.btnDetailInsert',function () {
+        insertDetail()
+      });
+
+      $(document).on('click','.btnDetailUpdate',function () {
+            updateDetail()
+    });
 
       $('#barangModal').on('hidden.bs.modal', function() {
                 $(this).find('form').trigger('reset');
@@ -733,6 +781,7 @@
         if(cek){
             $('#alert-total').hide();
              $('#totalModal').modal('show');
+             $('#total_qty').val(TotalQty)
              $('#ttl_pembayaran_tunai').val(ttl_belanja);
              $('#pembayaran_ekop').attr('readonly', true);
              setTimeout(function(){  $('#barcode_cust').select2('open');},500)
@@ -747,7 +796,7 @@
 
         swal({
             title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this imaginary file!",
+            text: "Once deleted, you will not be able to recover this imaginary data!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -755,8 +804,6 @@
             .then((willDelete) => {
             if (willDelete) {
                window.location.href="{{url('/admin/pos/penjualan/delete_detail/')}}/"+urut;
-            } else {
-                swal("Your imaginary file is safe!");
             }
             });
      })
@@ -801,35 +848,7 @@
 
      })
 
-    //  $(document).on('keyup', '#pembayaran_tunai', function(){
-    //      var tunai = $(this).val();
-    //      tunai = tunai.replace('.','');
-    //      var ekop = $('#pembayaran_ekop').val();
-    //      ekop = ekop.replace('.','');
-    //      var ttl_belanja=$('#total_belanja').val();
-    //      ttl_belanja = ttl_belanja.replace('.','');
-    //      var hasil_total_belanja ;
-    //     if(ttl_belanja != ekop){
-    //         hasil_total_belanja = parseInt(ttl_belanja)-parseInt(ekop);
-    //     }else{
-    //         hasil_total_belanja = ttl_belanja;
-    //     }
-
-    //     var saldo_ekop = $('#saldo_ekop').val();
-    //     saldo_ekop = saldo_ekop.replace('.','');
-    //     if(ekop > saldo_ekop ){
-    //         $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
-    //         $('.alertsuccesstotal').hide();
-    //         $('#alert-total').show();
-    //         return false;
-    //     }
-
-    //      if(tunai >= hasil_total_belanja){
-    //         var last_result = tunai-hasil_total_belanja;
-    //         $('#kembalian').val(convertToRupiah(last_result));
-    //      }
-
-    //  });
+    
 
 
      function replace_titik(cek){
