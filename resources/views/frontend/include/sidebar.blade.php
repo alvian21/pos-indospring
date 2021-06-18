@@ -34,8 +34,8 @@
                 <i class="fas fa-file-alt"></i> <span>User</span>
             </a>
         </li>
-        <li @yield('barang')>
-            <a class="nav-link" href="#">
+        <li class="nav-item @yield('barang')">
+            <a class="nav-link" href="{{route('master.barang.index')}}">
                 <i class="fas fa-file-alt"></i> <span>Barang</span>
             </a>
         </li>

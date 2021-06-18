@@ -168,7 +168,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="barangModalLabel">Input Detail Barang</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close btnIconClose" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -262,7 +262,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary btnBarangModal">Insert</button>
                     {{-- <input type="submit" value="submit" class="btn btn-primary" name="submit"> --}}
 
@@ -762,7 +762,7 @@
       })
 
 
-    $('.btnsimpan').on('click', function(){
+      function simpan() {
         var ttl_belanja = $("#ttl_harga_pajak").val();
         $("#total_belanja").val(ttl_belanja);
         var cek = "";
@@ -788,8 +788,34 @@
         }else{
             swal("Detail Belum Diisi!");
         }
+       }
 
+    $('.btnsimpan').on('click', function(){
+
+        simpan()
     })
+
+
+    $('.btnIconClose, .btnClose').on('click',function () {
+        setTimeout(function(){
+            if(TotalQty > 0){
+                simpan()
+            }
+
+        },1200)
+
+     })
+
+     $("#barangModal").keyup(function(e) {
+        if (e.key === "Escape") {
+                setTimeout(function(){
+                    if(TotalQty > 0){
+                        simpan()
+                    }
+
+            },1800)
+        }
+    });
 
     $(document).on('click','.btnDelete', function () {
        var urut = $(this).data('urut')
@@ -848,7 +874,7 @@
 
      })
 
-    
+
 
 
      function replace_titik(cek){
