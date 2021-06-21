@@ -419,7 +419,12 @@ class PenjualanController extends Controller
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
             $trmutasihd->KodeSuppCust = $barcode_cust;
-            $trmutasihd->DiskonPersen = $trpenjualan["diskon_persen"];
+            if($trpenjualan["diskon_persen"] == null || $trpenjualan["diskon_persen"] == '' ||  $trpenjualan["diskon_persen"] < 0){
+                $trmutasihd->DiskonPersen = 0;
+            }else{
+                $trmutasihd->DiskonPersen = $trpenjualan["diskon_persen"];
+            }
+
             $trmutasihd->DiskonTunai = $ds_tunai;
             $trmutasihd->Pajak = $trpenjualan["pajak"];
             $trmutasihd->LokasiAwal = $trpenjualan["lokasi"];
