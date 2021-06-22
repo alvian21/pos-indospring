@@ -215,7 +215,7 @@
                                 </div>
                             </div>
                         </div>
-                    
+
                     </div>
 
 
@@ -360,6 +360,8 @@
                                 table_detail.ajax.reload();
                         }
                     })
+            }else{
+                      table_detail.ajax.reload();
             }
         });
 
