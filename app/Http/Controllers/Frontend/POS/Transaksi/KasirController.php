@@ -1,0 +1,850 @@
+<?php
+
+namespace App\Http\Controllers\Frontend\POS\Transaksi;
+
+use App\Http\Controllers\Controller;
+use App\Msbarang;
+use Illuminate\Http\Request;
+use App\Trmutasihd;
+use App\Mslokasi;
+use App\Msanggota;
+use App\Mssupplier;
+use App\Trmutasidt;
+use App\Mssetting;
+use App\Trsaldoekop;
+use Illuminate\Support\Facades\Session;
+use DataTables;
+use App\Trsaldobarang;
+use App\Trsaldototalbelanja;
+use App\Trsaldototalbelanjakredit;
+use App\Trsaldototalbelanjatunai;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+
+class KasirController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $day = date('d');
+        $month = date('m');
+        $year = date('Y');
+        $Pajakkasir = Mssetting::where('Kode', 'PajakPenjualan')->first();
+        $DiskonRpkasirReadOnly = Mssetting::where('Kode', 'DiskonRpPenjualanReadOnly')->first();
+        $DiskonPersenkasirReadOnly = Mssetting::where('Kode', 'DiskonPersenPenjualanReadOnly')->first();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'kasir')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+        $kasir = Trmutasihd::where('Transaksi', 'kasir')->get();
+        $mslokasi = Mslokasi::all();
+        $msbarang = Msbarang::all();
+        $SaldoMinusMax = Mssetting::where('Kode', 'SaldoMinusMax')->first();
+        $msanggota = DB::table('msanggota')->select('msanggota.Kode', 'traktifasi.NoEkop', 'msanggota.Nama')
+            ->leftJoin('traktifasi', function ($join) {
+                $join->where('traktifasi.Status', 'aktif')
+                    ->on('msanggota.Kode', 'traktifasi.Kode');
+            })
+            ->get();
+        if ($trmutasihd) {
+            $nomor = (int) substr($trmutasihd->Nomor, 14);
+            if ($nomor != 0) {
+                if ($nomor >= 9999) {
+                    $nomor = $nomor + 1;
+                    $formatNomor = "PE-" . date('Y-m-d') . "-" . $nomor;
+                } else {
+                    $nomor = $nomor + 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+                }
+            }
+        } else {
+            $nomor = 1;
+            $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+            $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+        }
+
+
+        $pajak = 10;
+        $diskon_rp = 0;
+        $diskon_persen = 0;
+        if ($Pajakkasir->aktif == 1) {
+            $pajak = $Pajakkasir->Nilai;
+        }
+
+
+        if (session()->has('transaksi_kasir')) {
+            $trkasir = session('transaksi_kasir');
+        } else {
+            $data = [
+                'transaksi' => 'PENJUALAN',
+                'nomor' => $formatNomor,
+                'tanggal' => date('d M y H:i'),
+                'diskon_persen' => $diskon_persen,
+                'pajak' => $pajak,
+                'diskon_rp' => $diskon_rp,
+                'lokasi' => auth()->user()->KodeLokasi,
+                'keterangan' => '',
+                'total_harga_sebelum' => 0,
+                'total_harga' => 0,
+                'total_harga_setelah_pajak' => 0
+            ];
+            $trkasir = session(['transaksi_kasir' => $data]);
+            $trkasir = session('transaksi_kasir');
+        }
+        // session()->forget('detail_transaksi_kasir');
+        // session()->forget('transaksi_kasir');
+
+
+
+        return view("frontend.pos.transaksi.kasir.index", [
+            'formatNomor' => $formatNomor, 'kasir' => $kasir,
+            'mslokasi' => $mslokasi,
+            'msbarang' => $msbarang,
+            'trkasir' => $trkasir,
+            'msanggota' => $msanggota,
+            'Pajakkasir' => $Pajakkasir,
+            'DiskonRpkasirReadOnly' => $DiskonRpkasirReadOnly,
+            'DiskonPersenkasirReadOnly' => $DiskonPersenkasirReadOnly,
+            'SaldoMinusMax' => $SaldoMinusMax,
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+
+
+    public function store_transaksi(Request $request)
+    {
+        $total = 0;
+        $trkasir = Session::get('transaksi_kasir');
+        if (session()->has('detail_transaksi_kasir')) {
+            $datadetail = Session::get('detail_transaksi_kasir');
+            foreach ($datadetail as $key => $value) {
+                $total = $total + $value["subtotal"];
+            }
+        }
+        //hitung diskon persen
+        $hasil = $total;
+        $total_sebelum = $total;
+
+        if ($hasil <= 0) {
+            $hasil = 0;
+        }
+        //cek session
+        $data = [
+            'transaksi' => $trkasir['transaksi'],
+            'nomor' => $trkasir['nomor'],
+            'tanggal' => $trkasir['tanggal'],
+            'diskon_persen' => $trkasir['diskon_persen'],
+            'pajak' => $trkasir['pajak'],
+            'diskon_rp' => $trkasir['diskon_rp'],
+            'lokasi' => auth()->user()->KodeLokasi,
+            'keterangan' => $trkasir['keterangan'],
+            'total_harga_sebelum' => $total_sebelum,
+            'total_harga' => $hasil,
+            'total_harga_setelah_pajak' => $hasil
+        ];
+
+        session(['transaksi_kasir' => $data]);
+        session()->save();
+
+        return true;
+    }
+
+    public function get_data_barang(Request $request)
+    {
+        if ($request->ajax()) {
+            $msbarang = Msbarang::where('Kode', $request->kode_barang)->first();
+            $trsaldobarang = Trsaldobarang::where('KodeBarang', $request->kode_barang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+            $saldo = 0;
+            if ($trsaldobarang) {
+                $saldo = $trsaldobarang->Saldo;
+            }
+            $hasil =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $msbarang->HargaJual);
+            $data = [
+                'Nama' => $msbarang->Nama,
+                'HargaJual' => $msbarang->HargaJual,
+                'Saldo' => $saldo,
+                'Hasil' => $hasil
+            ];
+            return response()->json($data);
+        }
+    }
+
+    public function store_detail($kode, $nama, $harga)
+    {
+        //cek sisa barang
+        $trkasir = Session::get('transaksi_kasir');
+        $total = 0;
+        $subtotal = 1 * $harga;
+        $arr = [];
+        if (Session::has('detail_transaksi_kasir')) {
+            $datadetail = Session::get('detail_transaksi_kasir');
+            $no = 0;
+            $cek =  false;
+            foreach ($datadetail as $key => $value) {
+                $total = $total + $value["subtotal"];
+                if ($value['barang'] == $kode) {
+                    $cek = true;
+                    $value['qty'] = 1 + $value['qty'];
+                    $value['subtotal'] = $value['qty'] * $value['harga'];
+                }
+
+                $no = $value["urut"];
+                array_push($arr, $value);
+            }
+            if (!$cek) {
+                $data = [
+                    'urut' => $no + 1,
+                    'barang' => $kode,
+                    'nama_barang' => $nama,
+                    'harga' => $harga,
+                    'qty' => 1,
+                    'diskon_persen' => 0,
+                    'subtotal' => $subtotal,
+                    'diskon_rp' =>  0,
+                    'keterangan' => null,
+                ];
+                array_push($arr, $data);
+            }
+
+            $total = $total + $subtotal;
+
+            Session::forget('detail_transaksi_kasir');
+            Session::put('detail_transaksi_kasir', $arr);
+            Session::save();
+        } else {
+            $data = [
+                'urut' =>  1,
+                'barang' => $kode,
+                'nama_barang' => $nama,
+                'harga' => $harga,
+                'qty' => 1,
+                'diskon_persen' => 0,
+                'subtotal' => $subtotal,
+                'diskon_rp' =>  0,
+                'keterangan' => null,
+            ];
+            $total = $total + $subtotal;
+            array_push($arr, $data);
+            Session::forget('detail_transaksi_kasir');
+            Session::put('detail_transaksi_kasir', $arr);
+            Session::save();
+        }
+
+        //hitung diskon persen
+        $hasil = $total;
+        $total_sebelum = $total;
+        if ($hasil <= 0) {
+            $hasil = 0;
+        }
+        $total_sebelum = round($total_sebelum);
+        $hasil = round($hasil);
+        $data = [
+            'transaksi' => $trkasir['transaksi'],
+            'nomor' => $trkasir['nomor'],
+            'tanggal' => $trkasir['tanggal'],
+            'diskon_persen' => $trkasir['diskon_persen'],
+            'pajak' => $trkasir['pajak'],
+            'diskon_rp' => $trkasir['diskon_rp'],
+            'lokasi' => $trkasir['lokasi'],
+            'keterangan' => $trkasir['keterangan'],
+            'total_harga_sebelum' => $total_sebelum,
+            'total_harga' => $hasil,
+            'total_harga_setelah_pajak' => $hasil
+        ];
+        Session::forget('transaksi_kasir');
+        Session::put('transaksi_kasir', $data);
+        Session::save();
+
+        return $hasil;
+    }
+
+
+
+    public function save_data_transaksi(Request $request)
+    {
+
+        if (session()->has('detail_transaksi_kasir') && session()->has('transaksi_kasir')) {
+
+            $day = date('d');
+            $month = date('m');
+            $year = date('Y');
+            $pembayaran_ekop = $request->get('pembayaran_ekop');
+            $pembayaran_ekop = str_replace('.', '', $pembayaran_ekop);
+            $pembayaran_tunai = $request->get('pembayaran_tunai');
+            $pembayaran_tunai = str_replace('.', '', $pembayaran_tunai);
+            $pembayaran_kredit = $request->get('pembayaran_kredit');
+            $pembayaran_kredit = str_replace('.', '', $pembayaran_kredit);
+            $barcode_cust = $request->get('barcode_cust');
+            $tunai = $request->get('ttl_pembayaran_tunai');
+            $tunai = str_replace('.', '', $tunai);
+            $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
+
+            $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+            if ($trmutasihd) {
+                $nomor = (int) substr($trmutasihd->Nomor, 14);
+                if ($nomor != 0) {
+                    if ($nomor >= 9999) {
+                        $nomor = $nomor + 1;
+                        $formatNomor = "PE-" . date('Y-m-d') . "-" . $nomor;
+                    } else {
+                        $nomor = $nomor + 1;
+                        $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                        $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+                    }
+                }
+            } else {
+                $nomor = 1;
+                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+            }
+
+            $trkasir = session('transaksi_kasir');
+            $ds_tunai = str_replace('.', '', $trkasir["diskon_rp"]);
+            $trmutasihd = new Trmutasihd();
+            $trmutasihd->Transaksi = $trkasir["transaksi"];
+            $trmutasihd->Nomor = $formatNomor;
+            $trmutasihd->Tanggal = date('Y-m-d H:i');
+            $trmutasihd->KodeSuppCust = $barcode_cust;
+            if ($trkasir["diskon_persen"] == null || $trkasir["diskon_persen"] == '' ||  $trkasir["diskon_persen"] < 0) {
+                $trmutasihd->DiskonPersen = 0;
+            } else {
+                $trmutasihd->DiskonPersen = $trkasir["diskon_persen"];
+            }
+
+            $trmutasihd->DiskonTunai = $ds_tunai;
+            $trmutasihd->Pajak =0;
+            $trmutasihd->LokasiAwal = $trkasir["lokasi"];
+            $trmutasihd->TotalHarga = $trkasir["total_harga"];
+            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+            if (($tunai != '' || $tunai > 0) && $pembayaran_ekop != $trkasir["total_harga_setelah_pajak"] && $pembayaran_kredit != $trkasir["total_harga_setelah_pajak"]) {
+                $trmutasihd->PembayaranTunai = $tunai;
+                //saldototalbelanjatunai
+                $cektunai = Trsaldototalbelanjatunai::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+                $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
+                $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
+                $trsaldobelanjatunai->KodeUser = $barcode_cust;
+                if ($cektunai) {
+                    $trsaldobelanjatunai->Saldo = $tunai + $cektunai->Saldo;
+                } else {
+                    $trsaldobelanjatunai->Saldo = $tunai;
+                }
+                $trsaldobelanjatunai->save();
+            }
+            if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
+                $cek = DB::select('call CEKSALDOEKOP(?)', [
+                    $barcode_cust
+                ]);
+                $trmutasihd->PembayaranEkop = $pembayaran_ekop;
+                $trsaldoekop = new Trsaldoekop();
+                $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                $trsaldoekop->KodeUser = $barcode_cust;
+                $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
+                $trsaldoekop->save();
+
+                // $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+                // $trsaldokredit = new Trsaldototalbelanjakredit();
+                // $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
+                // $trsaldokredit->KodeUser = $barcode_cust;
+                // if ($cekkredit) {
+                //     $trsaldokredit->Saldo = $pembayaran_tunai + $cekkredit->Saldo;
+                // } else {
+                //     $trsaldokredit->Saldo = $pembayaran_tunai;
+                // }
+                // $trsaldokredit->save();
+            }
+            if (($pembayaran_kredit != '' || $pembayaran_kredit > 0) && $pembayaran_kredit != 0) {
+                $cek = DB::select('call CEKSALDOEKOP(?)', [
+                    $barcode_cust
+                ]);
+                $trmutasihd->PembayaranEkop = 0;
+                $trsaldoekop = new Trsaldoekop();
+                $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                $trsaldoekop->KodeUser = $barcode_cust;
+                $trsaldoekop->Saldo = -1 * (abs($cek[0]->Saldo) -  $pembayaran_kredit);
+                $trsaldoekop->save();
+                $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
+                if($SaldoMinusBunga->aktif == 1 ){
+                    $bayar_kredit = $pembayaran_kredit + ($pembayaran_kredit*($SaldoMinusBunga->Nilai/100));
+                    $trmutasihd->PembayaranKredit = $bayar_kredit;
+                }else{
+                    $bayar_kredit = $pembayaran_kredit;
+                    $trmutasihd->PembayaranKredit = $bayar_kredit;
+                }
+
+                $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+                $trsaldokredit = new Trsaldototalbelanjakredit();
+                $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
+                $trsaldokredit->KodeUser = $barcode_cust;
+                if ($cekkredit) {
+                    $trsaldokredit->Saldo = $pembayaran_kredit + $cekkredit->Saldo;
+                } else {
+                    $trsaldokredit->Saldo = $pembayaran_kredit;
+                }
+                $trsaldokredit->save();
+
+            }
+
+            $trmutasihd->DueDate = date('Y-m-d');
+            $trmutasihd->StatusPesanan = "Barang Telah Diambil";
+            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+            $trmutasihd->TotalHargaSetelahPajak = $trkasir["total_harga_setelah_pajak"];
+            $trmutasihd->save();
+
+            //trsaldototalbelanja
+            $cektotalbelanja = Trsaldototalbelanja::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+            $trsaldototalbelanja = new Trsaldototalbelanja();
+            $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
+            $trsaldototalbelanja->KodeUser = $barcode_cust;
+            if ($cektotalbelanja) {
+                $trsaldototalbelanja->Saldo = $trkasir["total_harga_setelah_pajak"] + $cektotalbelanja->Saldo;
+            } else {
+                $trsaldototalbelanja->Saldo = $trkasir["total_harga_setelah_pajak"];
+            }
+            $trsaldototalbelanja->save();
+
+            $datadetail = session('detail_transaksi_kasir');
+            foreach ($datadetail as $key => $value) {
+                $trmutasidt = new Trmutasidt();
+                $trmutasidt->Transaksi = 'kasir';
+                $trmutasidt->Nomor = $formatNomor;
+                $trmutasidt->Urut = $value["urut"];
+                $trmutasidt->KodeBarang = $value["barang"];
+                $trmutasidt->Keterangan = $value["keterangan"];
+                $trmutasidt->DiskonPersen = $value["diskon_persen"];
+                $trmutasidt->DiskonTunai = $value["diskon_rp"];
+                $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
+                $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                $trmutasidt->Jumlah = $value['qty'];
+                $trmutasidt->Harga = $value['harga'];
+                $trmutasidt->save();
+                $getstok = Trsaldobarang::where('KodeBarang', $value["barang"])->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
+                $trsaldobarang = new Trsaldobarang();
+                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                $trsaldobarang->KodeBarang = $value["barang"];
+                $trsaldobarang->Saldo = $getstok->Saldo - $value["qty"];
+                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                $trsaldobarang->save();
+            }
+            session()->forget('detail_transaksi_kasir');
+            session()->forget('transaksi_kasir');
+            session()->save();
+            return redirect()->route('pos.kasir.index')->with("success", "Detail dan data transaksi kasir berhasil disimpan");
+        }
+    }
+
+    public function getDataDetail(Request $request)
+    {
+        if ($request->ajax()) {
+            $datadetail = session('detail_transaksi_kasir');
+            $data2 = array();
+            if ($datadetail != null) {
+                $count = count($datadetail);
+                $no = 1;
+                foreach ($datadetail as $row) {
+                    $sub = array();
+                    $sub["urut"] = $row['urut'];
+                    $sub["barang"] = $row['barang'];
+                    $sub["nama_barang"] = $row['nama_barang'];
+                    $sub["harga"] = $row['harga'];
+                    $sub["qty"] = $row['qty'];
+                    $sub["diskon_persen"] = $row['diskon_persen'];
+                    $sub["subtotal"] = $row['subtotal'];
+                    $sub["diskon_rp"] = $row['diskon_rp'];
+                    $sub["keterangan"] = $row['keterangan'];
+                    $sub["action"] = '<button data-urut="' . $row['urut'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
+        }
+    }
+
+
+    public function getDataKasir(Request $request)
+    {
+        if ($request->ajax()) {
+            $datapembelian = [];
+            $data2 = array();
+            if (session()->has('transaksi_kasir')) {
+                $pembelian = session('transaksi_kasir');
+                array_push($datapembelian, $pembelian);
+                $count = count($datapembelian);
+                $no = 1;
+                foreach ($datapembelian as $row) {
+                    $sub = array();
+                    $sub["transaksi"] = $row['transaksi'];
+                    $sub["nomor"] = $row['nomor'];
+                    $sub["tanggal"] = $row['tanggal'];
+                    $sub["diskon_persen"] = $row['diskon_persen'];
+                    $sub["pajak"] = $row['pajak'];
+                    $sub["diskon_rp"] = $row['diskon_rp'];
+                    $sub["lokasi"] = $row['lokasi'];
+                    $sub["keterangan"] = $row['keterangan'];
+                    $sub["total_harga_sebelum"] = $row['total_harga_sebelum'];
+                    $sub["total_harga"] = $row['total_harga'];
+                    $sub["total_harga_setelah_pajak"] = $row['total_harga_setelah_pajak'];
+                    $sub["action"] = '<button class="edit btn btn-warning btnedittr">Edit</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
+        }
+    }
+
+    public function update_transaksi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'transaksi' => 'required',
+            'nomor' => 'required',
+            'tanggal' => 'required',
+            'diskon_persen' => 'required',
+            'pajak' => 'required',
+            'diskon_rp' => 'required',
+            'lokasi' => 'required',
+            'keterangan' => 'nullable',
+
+        ]);
+
+        if ($validator->fails()) {
+
+            return redirect()->back()->withErrors($validator->errors());
+        } else {
+
+            $trkasir = Session::get('transaksi_kasir');
+            $total = 0;
+            if (session()->has('detail_transaksi_kasir')) {
+                $datadetail = Session::get('detail_transaksi_kasir');
+                foreach ($datadetail as $key => $value) {
+                    $total = $total + $value["subtotal"];
+                }
+            }
+
+
+            //hitung diskon persen
+            $hasil = $total;
+            $total_sebelum = $total;
+            $diskon_rp = $request->get('diskon_rp');
+            $diskon_rp = str_replace('.', '', $diskon_rp);
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $request->get('diskon_persen'));
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $diskon_rp);
+            //pajak
+            $pajak = $this->pajak($hasil, $request->get('pajak'));
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $total_sebelum = round($total_sebelum);
+            $hasil = round($hasil);
+            $pajak = round($pajak);
+            $data = [
+                'transaksi' => $request->get('transaksi'),
+                'nomor' => $request->get('nomor'),
+                'tanggal' => $request->get('tanggal'),
+                'diskon_persen' => $request->get('diskon_persen'),
+                'pajak' => $request->get('pajak'),
+                'diskon_rp' => $request->get('diskon_rp'),
+                'lokasi' => $request->get('lokasi'),
+                'keterangan' => $request->get('keterangan'),
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ];
+            session(['transaksi_kasir' => $data]);
+
+            return redirect()->route('pos.pembelian.index')->with("success", "Transaksi pembelian berhasil diupdate");
+        }
+    }
+
+    public function update_detail_barang(Request $request)
+    {
+        if ($request->ajax()) {
+            $validator = Validator::make($request->all(), [
+                'id_barang' => 'required',
+                'qty' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            } else {
+                $trkasir = Session::get('transaksi_kasir');
+                $total = 0;
+                $subtotal = 0;
+                $arr = [];
+                if (Session::has('detail_transaksi_kasir')) {
+                    $datadetail = Session::get('detail_transaksi_kasir');
+                    foreach ($datadetail as $key => $value) {
+                        if ($value['barang'] == $request->get('id_barang')) {
+                            $value['qty'] = $request->get('qty');
+                            $value['subtotal'] = $request->get('qty') * $value['harga'];
+                        }
+                        $total = $total + $value["subtotal"];
+                        array_push($arr, $value);
+                    }
+
+                    $total = $total + $subtotal;
+
+                    Session::forget('detail_transaksi_kasir');
+                    Session::put('detail_transaksi_kasir', $arr);
+                    Session::save();
+                }
+                //hitung diskon persen
+                $hasil = $total;
+                $total_sebelum = $total;
+                if ($hasil <= 0) {
+                    $hasil = 0;
+                }
+                $total_sebelum = round($total_sebelum);
+                $hasil = round($hasil);
+                $data = [
+                    'transaksi' => $trkasir['transaksi'],
+                    'nomor' => $trkasir['nomor'],
+                    'tanggal' => $trkasir['tanggal'],
+                    'diskon_persen' => $trkasir['diskon_persen'],
+                    'pajak' => $trkasir['pajak'],
+                    'diskon_rp' => $trkasir['diskon_rp'],
+                    'lokasi' => $trkasir['lokasi'],
+                    'keterangan' => $trkasir['keterangan'],
+                    'total_harga_sebelum' => $total_sebelum,
+                    'total_harga' => $hasil,
+                    'total_harga_setelah_pajak' => $hasil
+                ];
+                Session::forget('transaksi_kasir');
+                Session::put('transaksi_kasir', $data);
+                Session::save();
+            }
+
+            return response()->json(['Hasil' => $hasil]);
+        }
+    }
+
+    public function check_session_detail(Request $request)
+    {
+        if ($request->ajax()) {
+            $message = "";
+            if (Session::has('detail_transaksi_kasir')) {
+                $message = "true";
+            } else {
+                $message = "false";
+            }
+
+            return response()->json([
+                'message' => $message
+            ]);
+        }
+    }
+
+    public function delete_data($id)
+    {
+        if (session()->has('detail_transaksi_kasir')) {
+            $datadetail = Session::get('detail_transaksi_kasir');
+            $arr = [];
+            $total  = 0;
+            $trkasir = Session::get('transaksi_kasir');
+            foreach ($datadetail as $key => $value) {
+                if ($value["urut"] != $id) {
+                    $total = $total + $value["subtotal"];
+                    array_push($arr, $value);
+                }
+            }
+
+            if ($total == 0) {
+                Session::forget('detail_transaksi_kasir');
+            } else {
+                Session::put('detail_transaksi_kasir', $arr);
+                Session::save();
+            }
+
+            $hasil = $total;
+            $total_sebelum = $total;
+            //hitung diskon persen
+            $hasil = $this->diskon_persen($hasil, $trkasir['diskon_persen']);
+            //diskon rp
+            $hasil = $this->diskon_rp($hasil, $trkasir['diskon_rp']);
+            //pajak
+            $pajak = $this->pajak($hasil, $trkasir['pajak']);
+            if ($pajak <= 0) {
+                $pajak = 0;
+            }
+
+            if ($hasil <= 0) {
+                $hasil = 0;
+            }
+            $data = [
+                'transaksi' => $trkasir['transaksi'],
+                'nomor' => $trkasir['nomor'],
+                'tanggal' => $trkasir['tanggal'],
+                'diskon_persen' => $trkasir['diskon_persen'],
+                'pajak' => $trkasir['pajak'],
+                'diskon_rp' => $trkasir['diskon_rp'],
+                'lokasi' => $trkasir['lokasi'],
+                'keterangan' => $trkasir['keterangan'],
+                'total_harga_sebelum' => $total_sebelum,
+                'total_harga' => $hasil,
+                'total_harga_setelah_pajak' => $pajak
+            ];
+            Session::forget('transaksi_kasir');
+            Session::put('transaksi_kasir', $data);
+            Session::save();
+            return redirect()->route('pos.kasir.index')->with("success", "Detail barang berhasil dihapus");
+        }
+    }
+
+    public function diskon_persen($total, $diskon)
+    {
+        if ($diskon > 0 || $diskon != '') {
+            $diskon_persen = $diskon;
+            $hitung = ($diskon_persen / 100) * $total;
+            $hasil = $total - $hitung;
+            return round($hasil);
+        } else {
+            return $total;
+        }
+    }
+
+    public function diskon_rp($total, $diskon)
+    {
+        if ($diskon > 0 || $diskon != '') {
+            $diskon_rp = $diskon;
+            $hasil = $total - $diskon_rp;
+            return round($hasil);
+        } else {
+            return $total;
+        }
+    }
+
+    public function pajak($total, $pajak)
+    {
+        if ($pajak > 0  || $pajak != '') {
+            $pajak = $total + (($pajak / 100) * $total);
+            return round($pajak);
+        } else {
+            return $total;
+        }
+    }
+
+    public function CekSaldoEkop(Request $request)
+    {
+
+        $kode = $request->get('kode');
+        $cek = DB::select('call CEKSALDOEKOP(?)', [
+            $kode
+        ]);
+        $saldokredit = Trsaldototalbelanjakredit::where('KodeUser', $kode)->orderBy('Tanggal', 'DESC')->first();
+
+        if ($saldokredit) {
+            $saldo = $saldokredit->Saldo;
+        } else {
+            $saldo = 0;
+        }
+
+        if (isset($cek[0])) {
+            $saldoEkop = $cek[0]->Saldo;
+        } else {
+            $saldoEkop = 0;
+        }
+
+
+        if ($saldoEkop < 0) {
+            $saldoEkop = abs($saldoEkop);
+            $status = 'minus';
+        } elseif ($saldoEkop > 0) {
+            $status = 'plus';
+        } else {
+            $status = 'nol';
+        }
+
+        return response()->json([
+            'SaldoEkop' => $saldoEkop,
+            'SaldoKredit' => $saldo,
+            'status' => $status
+        ]);
+    }
+}

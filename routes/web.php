@@ -166,11 +166,26 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/saldo_ekop','StockOpnameController@CekSaldoEkop')->name('opname.ceksaldo');
         });
 
+
+        Route::group(['prefix' => 'kasir'], function () {
+            Route::get('/data_detail','KasirController@getDataDetail')->name('kasir.datadetail');
+            Route::get('/data_kasir','KasirController@getDataKasir')->name('kasir.transaksi');
+            Route::post('/transaksi_kasir', 'KasirController@store_transaksi')->name('transaksi_kasir.store');
+            Route::post('/detail_transaksi_kasir', 'KasirController@store_detail')->name('detail_transaksi_kasir.store');
+            Route::get('/data_barang', 'KasirController@get_data_barang')->name('kasir.databarang');
+            Route::post('/save_transaksi_kasir', 'KasirController@save_data_transaksi')->name('kasir.save');
+            Route::post('/detail_transaksi_pembelian_update', 'KasirController@update_detail_barang')->name('detail_transaksi_kasir.update');
+            Route::get('/check_session', 'KasirController@check_session_detail')->name('kasir.check');
+            Route::get('/delete_detail/{id}', 'KasirController@delete_data');
+            Route::get('/saldo_ekop','KasirController@CekSaldoEkop')->name('kasir.ceksaldo');
+        });
+
         Route::resource('pembelian', 'PembelianController');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('tfantartoko', 'TfAntarTokoController');
         Route::resource('stockopname', 'StockOpnameController');
         Route::resource('stockhilang', 'StockHilangController');
+        Route::resource('kasir', 'KasirController');
     });
 
 
