@@ -121,10 +121,10 @@
 {{-- modal total --}}
 <div class="modal fade " id="totalModal" tabindex="-1" role="dialog" aria-labelledby="totalModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog " role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="totalModalLabel">Total Belanja</h5>
+                <h5 class="modal-title text-center" id="totalModalLabel">Total Belanja</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -173,58 +173,68 @@
                     </div>
 
                     <div class="row">
+
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="pembayaran_ekop">Pembayaran Ekop</label>
-                                <input type="text" class="form-control" value="0" name="pembayaran_ekop"
-                                    id="pembayaran_ekop">
+                            <label for="pembayaran_ekop" class="text-dark">Ekop</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pembayaran_ekop">Pembayaran </label>
+                                        <input type="text" class="form-control" value="0" name="pembayaran_ekop"
+                                            id="pembayaran_ekop">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="saldo_ekop">Saldo</label>
+                                        <input type="text" class="form-control" value="0" readonly name="saldo_ekop"
+                                            id="saldo_ekop">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="pembayaran_kredit" class="text-dark">Kredit</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pembayaran_kredit">Pembayaran</label>
+                                        <input type="text" class="form-control" @if($SaldoMinusMax->aktif ==0) readonly="true"
+                                        @endif value="0" name="pembayaran_kredit"
+                                        id="pembayaran_kredit">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="saldo_kredit">Saldo</label>
+                                        <input type="text" class="form-control" value="0" readonly name="saldo_kredit"
+                                            id="saldo_kredit">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="saldo_ekop">Saldo Ekop</label>
-                                <input type="text" class="form-control" value="0" readonly name="saldo_ekop"
-                                    id="saldo_ekop">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="pembayaran_kredit">Pembayaran Kredit</label>
-                                <input type="text" class="form-control" @if($SaldoMinusMax->aktif ==0) readonly="true"
-                                @endif value="0" name="pembayaran_kredit"
-                                id="pembayaran_kredit">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="saldo_kredit">Saldo Kredit</label>
-                                <input type="text" class="form-control" value="0" readonly name="saldo_kredit"
-                                    id="saldo_kredit">
-                            </div>
-                        </div>
+                    
                     </div>
 
+
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="ttl_pembayaran_tunai">Total Pembayaran Tunai</label>
                                 <input type="text" class="form-control" readonly name="ttl_pembayaran_tunai" value="0"
                                     id="ttl_pembayaran_tunai">
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="pembayaran_tunai">Pembayaran Tunai</label>
                                 <input type="text" class="form-control" name="pembayaran_tunai" value="0"
                                     id="pembayaran_tunai">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="kembalian">Kembalian</label>
                                 <input type="text" class="form-control" readonly name="kembalian" value="0"
@@ -232,6 +242,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -249,7 +260,7 @@
 @section('scripts')
 <script type="text/javascript">
     $(document).ready(function(e){
-
+        setTimeout(function(){ $('#barang').select2('open');},500)
         $('#diskon_rp').mask('000.000.000.000', {
             reverse: true
         });
@@ -322,24 +333,36 @@
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
 
-    $(document).on('blur', '.updateqty', function(){
+    $(document).on('blur change', '.updateqty', function(){
         var id_barang = $(this).data('idbarang');
         var qty = $(this).text()
         csrf_ajax();
-        $.ajax({
-            url:"{{route('pos.detail_transaksi_kasir.update')}}",
-            method:"POST",
-            data:{
-                'id_barang':id_barang,
-                'qty':qty
-            },success:function(data){
-                swal("Detail barang berhasil diupdate", {
-                        icon: "success",
-                    });
-                    $('#ttl_harga_pajak').val(convertToRupiah(data['Hasil']))
-                    table_detail.ajax.reload();
+        TotalQty = 0;
+        swal({
+            text: "Apa anda yakin mengubah qty barang ?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            })
+            .then((willUpdate) => {
+            if (willUpdate) {
+                $.ajax({
+                        url:"{{route('pos.detail_transaksi_kasir.update')}}",
+                        method:"POST",
+                        async:false,
+                        data:{
+                            'id_barang':id_barang,
+                            'qty':qty
+                        },success:function(data){
+
+                            TotalQty = data['TotalQty']
+                                $('#ttl_harga_pajak').val(convertToRupiah(data['Hasil']))
+                                table_detail.ajax.reload();
+                        }
+                    })
             }
-        })
+        });
+
     });
 
     // transaksi post
@@ -362,9 +385,11 @@
     $('#barang').on('change', function () {
         var kode_barang = $(this).val();
         if(kode_barang != 0){
+            TotalQty = 0;
             $.ajax({
             url:"{{route('pos.kasir.databarang')}}",
             method:"GET",
+            async:false,
             data:{
                 'kode_barang':kode_barang
             },
@@ -373,6 +398,9 @@
                 $('#stok').val(data["Saldo"]);
                 harga = data["HargaJual"];
                 table_detail.ajax.reload();
+                TotalQty = data['TotalQty']
+                setTimeout(function(){ $('#barang').select2('open');},500)
+                $('[id=barang]').val('0').trigger('change');
                 $('#ttl_harga_pajak').val(convertToRupiah(data['Hasil']))
                 $('#harga').val(convertToRupiah(harga));
             }
@@ -634,6 +662,7 @@
         var ttl_belanja = $("#ttl_harga_pajak").val();
         $("#total_belanja").val(ttl_belanja);
         var cek = "";
+        var totalQty = 0;
         $.ajax({
             url:"{{route('pos.kasir.check')}}",
             async:false,
@@ -641,6 +670,7 @@
             success:function(data){
                 if(data['message']=='true'){
                     cek = true;
+                    totalQty = data['TotalQty']
                 }else{
                     cek = false;
                 }
@@ -649,7 +679,7 @@
         if(cek){
             $('#alert-total').hide();
              $('#totalModal').modal('show');
-             $('#total_qty').val(TotalQty)
+             $('#total_qty').val(totalQty)
              $('#ttl_pembayaran_tunai').val(ttl_belanja);
              $('#pembayaran_ekop').attr('readonly', true);
              $('#pembayaran_kredit').attr('readonly', true);

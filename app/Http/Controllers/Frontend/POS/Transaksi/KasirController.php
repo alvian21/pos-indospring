@@ -225,12 +225,13 @@ class KasirController extends Controller
             if ($trsaldobarang) {
                 $saldo = $trsaldobarang->Saldo;
             }
-            $hasil =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $msbarang->HargaJual);
+            $res =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $msbarang->HargaJual);
             $data = [
                 'Nama' => $msbarang->Nama,
                 'HargaJual' => $msbarang->HargaJual,
                 'Saldo' => $saldo,
-                'Hasil' => $hasil
+                'Hasil' => $res['hasil'],
+                'TotalQty' => $res['totalqty']
             ];
             return response()->json($data);
         }
@@ -243,6 +244,7 @@ class KasirController extends Controller
         $total = 0;
         $subtotal = 1 * $harga;
         $arr = [];
+        $totalqty = 0;
         if (Session::has('detail_transaksi_kasir')) {
             $datadetail = Session::get('detail_transaksi_kasir');
             $no = 0;
@@ -254,7 +256,7 @@ class KasirController extends Controller
                     $value['qty'] = 1 + $value['qty'];
                     $value['subtotal'] = $value['qty'] * $value['harga'];
                 }
-
+                $totalqty += $value['qty'];
                 $no = $value["urut"];
                 array_push($arr, $value);
             }
@@ -270,6 +272,7 @@ class KasirController extends Controller
                     'diskon_rp' =>  0,
                     'keterangan' => null,
                 ];
+                $totalqty += 1;
                 array_push($arr, $data);
             }
 
@@ -290,6 +293,7 @@ class KasirController extends Controller
                 'diskon_rp' =>  0,
                 'keterangan' => null,
             ];
+            $totalqty += 1;
             $total = $total + $subtotal;
             array_push($arr, $data);
             Session::forget('detail_transaksi_kasir');
@@ -321,8 +325,11 @@ class KasirController extends Controller
         Session::forget('transaksi_kasir');
         Session::put('transaksi_kasir', $data);
         Session::save();
-
-        return $hasil;
+        $res = [
+            'hasil' => $hasil,
+            'totalqty' => $totalqty
+        ];
+        return $res;
     }
 
 
@@ -379,7 +386,7 @@ class KasirController extends Controller
             }
 
             $trmutasihd->DiskonTunai = $ds_tunai;
-            $trmutasihd->Pajak =0;
+            $trmutasihd->Pajak = 0;
             $trmutasihd->LokasiAwal = $trkasir["lokasi"];
             $trmutasihd->TotalHarga = $trkasir["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
@@ -430,10 +437,10 @@ class KasirController extends Controller
                 $trsaldoekop->Saldo = -1 * (abs($cek[0]->Saldo) -  $pembayaran_kredit);
                 $trsaldoekop->save();
                 $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
-                if($SaldoMinusBunga->aktif == 1 ){
-                    $bayar_kredit = $pembayaran_kredit + ($pembayaran_kredit*($SaldoMinusBunga->Nilai/100));
+                if ($SaldoMinusBunga->aktif == 1) {
+                    $bayar_kredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
                     $trmutasihd->PembayaranKredit = $bayar_kredit;
-                }else{
+                } else {
                     $bayar_kredit = $pembayaran_kredit;
                     $trmutasihd->PembayaranKredit = $bayar_kredit;
                 }
@@ -448,7 +455,6 @@ class KasirController extends Controller
                     $trsaldokredit->Saldo = $pembayaran_kredit;
                 }
                 $trsaldokredit->save();
-
             }
 
             $trmutasihd->DueDate = date('Y-m-d');
@@ -472,7 +478,7 @@ class KasirController extends Controller
             $datadetail = session('detail_transaksi_kasir');
             foreach ($datadetail as $key => $value) {
                 $trmutasidt = new Trmutasidt();
-                $trmutasidt->Transaksi = 'kasir';
+                $trmutasidt->Transaksi = 'PENJUALAN';
                 $trmutasidt->Nomor = $formatNomor;
                 $trmutasidt->Urut = $value["urut"];
                 $trmutasidt->KodeBarang = $value["barang"];
@@ -658,6 +664,7 @@ class KasirController extends Controller
                 $total = 0;
                 $subtotal = 0;
                 $arr = [];
+                $totalqty = 0;
                 if (Session::has('detail_transaksi_kasir')) {
                     $datadetail = Session::get('detail_transaksi_kasir');
                     foreach ($datadetail as $key => $value) {
@@ -665,6 +672,7 @@ class KasirController extends Controller
                             $value['qty'] = $request->get('qty');
                             $value['subtotal'] = $request->get('qty') * $value['harga'];
                         }
+                        $totalqty += $value['qty'];
                         $total = $total + $value["subtotal"];
                         array_push($arr, $value);
                     }
@@ -701,7 +709,7 @@ class KasirController extends Controller
                 Session::save();
             }
 
-            return response()->json(['Hasil' => $hasil]);
+            return response()->json(['Hasil' => $hasil, 'TotalQty' => $totalqty]);
         }
     }
 
@@ -710,13 +718,19 @@ class KasirController extends Controller
         if ($request->ajax()) {
             $message = "";
             if (Session::has('detail_transaksi_kasir')) {
+                $datadetail = Session::get('detail_transaksi_kasir');
+                $totalqty = 0;
+                foreach ($datadetail as $key => $value) {
+                    $totalqty += $value['qty'];
+                }
                 $message = "true";
             } else {
                 $message = "false";
             }
 
             return response()->json([
-                'message' => $message
+                'message' => $message,
+                'TotalQty' => $totalqty
             ]);
         }
     }
