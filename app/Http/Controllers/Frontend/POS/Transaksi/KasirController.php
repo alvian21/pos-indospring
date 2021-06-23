@@ -375,7 +375,7 @@ class KasirController extends Controller
             $trkasir = session('transaksi_kasir');
             $ds_tunai = str_replace('.', '', $trkasir["diskon_rp"]);
             $trmutasihd = new Trmutasihd();
-            $trmutasihd->Transaksi = $trkasir["transaksi"];
+            $trmutasihd->Transaksi = 'PENJUALAN';
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
             $trmutasihd->KodeSuppCust = $barcode_cust;
@@ -385,7 +385,7 @@ class KasirController extends Controller
                 $trmutasihd->DiskonPersen = $trkasir["diskon_persen"];
             }
 
-            $trmutasihd->DiskonTunai = $ds_tunai;
+            $trmutasihd->DiskonTunai = 0;
             $trmutasihd->Pajak = 0;
             $trmutasihd->LokasiAwal = $trkasir["lokasi"];
             $trmutasihd->TotalHarga = $trkasir["total_harga"];
@@ -457,7 +457,7 @@ class KasirController extends Controller
                 $trsaldokredit->save();
             }
 
-            $trmutasihd->DueDate = date('Y-m-d');
+            $trmutasihd->DueDate = date('Y-m-t');
             $trmutasihd->StatusPesanan = "Barang Telah Diambil";
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->TotalHargaSetelahPajak = $trkasir["total_harga_setelah_pajak"];
@@ -483,8 +483,8 @@ class KasirController extends Controller
                 $trmutasidt->Urut = $value["urut"];
                 $trmutasidt->KodeBarang = $value["barang"];
                 $trmutasidt->Keterangan = $value["keterangan"];
-                $trmutasidt->DiskonPersen = $value["diskon_persen"];
-                $trmutasidt->DiskonTunai = $value["diskon_rp"];
+                $trmutasidt->DiskonPersen = 0;
+                $trmutasidt->DiskonTunai = 0;
                 $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
                 $trmutasidt->LastUpdate = date('Y-m-d H:i');
                 $trmutasidt->Jumlah = $value['qty'];
