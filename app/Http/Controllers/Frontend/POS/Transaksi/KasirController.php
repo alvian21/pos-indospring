@@ -444,7 +444,7 @@ class KasirController extends Controller
                     $bayar_kredit = $pembayaran_kredit;
                     $trmutasihd->PembayaranKredit = $bayar_kredit;
                 }
-
+                $trmutasihd->DueDate = date('Y-m-t');
                 $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
                 $trsaldokredit = new Trsaldototalbelanjakredit();
                 $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
@@ -457,7 +457,7 @@ class KasirController extends Controller
                 $trsaldokredit->save();
             }
 
-            $trmutasihd->DueDate = date('Y-m-t');
+
             $trmutasihd->StatusPesanan = "Barang Telah Diambil";
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
             $trmutasihd->TotalHargaSetelahPajak = $trkasir["total_harga_setelah_pajak"];
