@@ -328,7 +328,7 @@
                 }
        },
        createdRow:function (row, data, dataIndex) {
-           console.log(data)
+        //    console.log(data)
         $(row).find('td:eq(3)').addClass('updateqty');
         $(row).find('td:eq(3)').attr('data-idbarang',data['barang']);
         $.each($('td:eq(3)', row), function (colIndex) {
@@ -765,7 +765,7 @@
                     var ekop = 0;
                     var pembayaran_tunai  = 0;
                     var ttl_pembayaran_tunai = 0;
-                    console.log(data)
+                    // console.log(data)
 
                     if(kode != 'UMUM'){
 
@@ -784,7 +784,7 @@
                     }
 
                     if(data['status']=='minus'){
-                        console.log(data)
+                        // console.log(data)
                         $('#saldo_kredit').val(convertToRupiah(data['Saldo']));
                         $('#saldo_ekop').val(0);
                         if(parseInt(saldo) > parseInt(data['Total'])){
@@ -886,6 +886,7 @@
         var barcode_cust = $('#barcode_cust').val();
         var bayar_kredit = $('#pembayaran_kredit').val()
         var chk_tunai = $("#chk_tunai").is(':checked');
+        var kode = $('#barcode_cust').val();
         var att_kredit = $('#pembayaran_kredit').prop('readonly');
         var att_ekop = $('#pembayaran_ekop').prop('readonly');
         if(barcode_cust == '0'){
@@ -904,13 +905,14 @@
             ttl_belanja = convertToAngka(ttl_belanja);
             tunai = convertToAngka(tunai);
             saldo_ekop = convertToAngka(saldo_ekop);
+
             var hasil_total = 0;
-            console.log(ekop)
-            console.log(tunai)
+            // console.log(kode)
+            // console.log(tunai)
             if(chk_tunai == true){
                 if( tunai >= 0 && get_kredit > 0){
                     var res_bayar_kredit = 0;
-                    var kode = $('#barcode_cust').val();
+
                     $.ajax({
                         url:"{{route('pos.kasir.ceksaldo')}}",
                         method:'GET',
@@ -997,7 +999,15 @@
 
                     }
                 }
-
+            if(kode ==="UMUM"){
+                hasil_total = tunai - ttl_belanja;
+                if(tunai < ttl_belanja){
+                            hasil_total = 0;
+                }
+                if(hasil_total >= 0){
+                            $('#kembalian').val(convertToRupiah(hasil_total));
+                }
+            }
             // if(parseInt(ekop) > parseInt(saldo_ekop)){
             //     $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
             //     $('.alertsuccesstotal').hide();

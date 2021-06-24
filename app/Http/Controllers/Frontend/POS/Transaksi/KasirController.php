@@ -726,9 +726,9 @@ class KasirController extends Controller
     {
         if ($request->ajax()) {
             $message = "";
+            $totalqty = 0;
             if (Session::has('detail_transaksi_kasir')) {
                 $datadetail = Session::get('detail_transaksi_kasir');
-                $totalqty = 0;
                 foreach ($datadetail as $key => $value) {
                     $totalqty += $value['qty'];
                 }
