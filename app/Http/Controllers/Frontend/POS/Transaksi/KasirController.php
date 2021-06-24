@@ -338,7 +338,7 @@ class KasirController extends Controller
     {
 
         if (session()->has('detail_transaksi_kasir') && session()->has('transaksi_kasir')) {
-
+            // dd($request->all());
             $day = date('d');
             $month = date('m');
             $year = date('Y');
@@ -348,6 +348,8 @@ class KasirController extends Controller
             $pembayaran_tunai = str_replace('.', '', $pembayaran_tunai);
             $pembayaran_kredit = $request->get('pembayaran_kredit');
             $pembayaran_kredit = str_replace('.', '', $pembayaran_kredit);
+            $pembayaran_kredit = str_replace(',', '.', $pembayaran_kredit);
+            $chk_tunai = $request->get('chk_tunai');
             $barcode_cust = $request->get('barcode_cust');
             $tunai = $request->get('ttl_pembayaran_tunai');
             $tunai = str_replace('.', '', $tunai);
@@ -414,17 +416,6 @@ class KasirController extends Controller
                 $trsaldoekop->KodeUser = $barcode_cust;
                 $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
                 $trsaldoekop->save();
-
-                // $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
-                // $trsaldokredit = new Trsaldototalbelanjakredit();
-                // $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
-                // $trsaldokredit->KodeUser = $barcode_cust;
-                // if ($cekkredit) {
-                //     $trsaldokredit->Saldo = $pembayaran_tunai + $cekkredit->Saldo;
-                // } else {
-                //     $trsaldokredit->Saldo = $pembayaran_tunai;
-                // }
-                // $trsaldokredit->save();
             }
             if (($pembayaran_kredit != '' || $pembayaran_kredit > 0) && $pembayaran_kredit != 0) {
                 $cek = DB::select('call CEKSALDOEKOP(?)', [
@@ -434,26 +425,44 @@ class KasirController extends Controller
                 $trsaldoekop = new Trsaldoekop();
                 $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
                 $trsaldoekop->KodeUser = $barcode_cust;
-                $trsaldoekop->Saldo = -1 * (abs($cek[0]->Saldo) -  $pembayaran_kredit);
-                $trsaldoekop->save();
+                // $trsaldoekop->Saldo = -1 * (abs($cek[0]->Saldo) -  $pembayaran_kredit);
+
                 $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
-                if ($SaldoMinusBunga->aktif == 1) {
-                    $bayar_kredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
-                    $trmutasihd->PembayaranKredit = $bayar_kredit;
-                } else {
-                    $bayar_kredit = $pembayaran_kredit;
-                    $trmutasihd->PembayaranKredit = $bayar_kredit;
-                }
-                $trmutasihd->DueDate = date('Y-m-t');
-                $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+
                 $trsaldokredit = new Trsaldototalbelanjakredit();
                 $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
                 $trsaldokredit->KodeUser = $barcode_cust;
-                if ($cekkredit) {
-                    $trsaldokredit->Saldo = $pembayaran_kredit + $cekkredit->Saldo;
-                } else {
-                    $trsaldokredit->Saldo = $pembayaran_kredit;
-                }
+
+                $bayar_kredit = $pembayaran_kredit;
+                $trmutasihd->PembayaranKredit = $bayar_kredit;
+                $trsaldokredit->Saldo = $pembayaran_kredit;
+                $trsaldoekop->Saldo = $cek[0]->Saldo + $bayar_kredit;
+                // if ($SaldoMinusBunga->aktif == 1) {
+                //     $hitungkredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
+                //     $bayar_kredit = $hitungkredit;
+                //     $trmutasihd->PembayaranKredit = $bayar_kredit;
+                //     $trsaldokredit->Saldo = $hitungkredit;
+
+                //     //hitung trsaldoekop
+                //     $trsaldoekop->Saldo = $cek[0]->Saldo + $hitungkredit;
+
+                // } else {
+                //     $bayar_kredit = $pembayaran_kredit;
+                //     $trmutasihd->PembayaranKredit = $bayar_kredit;
+                //     $trsaldokredit->Saldo = $pembayaran_kredit;
+                //     $trsaldoekop->Saldo = $cek[0]->Saldo + $bayar_kredit;
+                // }
+                $trmutasihd->DueDate = date('Y-m-t');
+                // $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+                // $trsaldokredit = new Trsaldototalbelanjakredit();
+                // $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
+                // $trsaldokredit->KodeUser = $barcode_cust;
+                // if ($cekkredit) {
+                //     $trsaldokredit->Saldo = $pembayaran_kredit + $cekkredit->Saldo;
+                // } else {
+                //     $trsaldokredit->Saldo = $pembayaran_kredit;
+                // }
+                $trsaldoekop->save();
                 $trsaldokredit->save();
             }
 
@@ -469,9 +478,9 @@ class KasirController extends Controller
             $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
             $trsaldototalbelanja->KodeUser = $barcode_cust;
             if ($cektotalbelanja) {
-                $trsaldototalbelanja->Saldo = $trkasir["total_harga_setelah_pajak"] + $cektotalbelanja->Saldo;
+                $trsaldototalbelanja->Saldo = $pembayaran_kredit + $tunai + $pembayaran_ekop + $cektotalbelanja->Saldo;
             } else {
-                $trsaldototalbelanja->Saldo = $trkasir["total_harga_setelah_pajak"];
+                $trsaldototalbelanja->Saldo = $pembayaran_kredit + $tunai + $pembayaran_ekop;
             }
             $trsaldototalbelanja->save();
 
@@ -828,22 +837,41 @@ class KasirController extends Controller
     {
 
         $kode = $request->get('kode');
+        $ttl = $request->get('ttl_belanja');
+        $tunai = $request->get('pembayaran_tunai');
+        $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
         $cek = DB::select('call CEKSALDOEKOP(?)', [
             $kode
         ]);
-        $saldokredit = Trsaldototalbelanjakredit::where('KodeUser', $kode)->orderBy('Tanggal', 'DESC')->first();
-
-        if ($saldokredit) {
-            $saldo = $saldokredit->Saldo;
-        } else {
-            $saldo = 0;
-        }
 
         if (isset($cek[0])) {
             $saldoEkop = $cek[0]->Saldo;
         } else {
             $saldoEkop = 0;
         }
+        $total_belanja = $ttl;
+        if($saldoEkop < 0){
+            if ($SaldoMinusBunga->aktif == 1 && $ttl >= $tunai) {
+                $ttl = $ttl - $tunai;
+                $ttl = $ttl + (($SaldoMinusBunga->Nilai / 100) * $ttl);
+                $ttl = number_format($ttl, 2, ',', '.');
+            } elseif ($ttl < $tunai) {
+                $ttl = 0;
+            } elseif ($SaldoMinusBunga->aktif == 0 && $ttl >= $tunai) {
+                $ttl = $ttl - $tunai;
+                $ttl = number_format($ttl, 2, ',', '.');
+            }
+
+            if ($tunai == 0 || $tunai == '') {
+                if ($SaldoMinusBunga->aktif == 1 && $total_belanja >= $tunai) {
+                    $ttl = $total_belanja + (($SaldoMinusBunga->Nilai / 100) * $total_belanja);
+                    $ttl = number_format($ttl, 2, ',', '.');
+                } elseif ($SaldoMinusBunga->aktif == 0 && $total_belanja >= $tunai) {
+                    $ttl = number_format($total_belanja, 2, ',', '.');
+                }
+            }
+        }
+
 
 
         if ($saldoEkop < 0) {
@@ -856,8 +884,8 @@ class KasirController extends Controller
         }
 
         return response()->json([
-            'SaldoEkop' => $saldoEkop,
-            'SaldoKredit' => $saldo,
+            'Saldo' => $saldoEkop,
+            'Total' => $ttl,
             'status' => $status
         ]);
     }
