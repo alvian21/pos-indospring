@@ -349,6 +349,8 @@ class KasirController extends Controller
             $pembayaran_kredit = $request->get('pembayaran_kredit');
             $pembayaran_kredit = str_replace('.', '', $pembayaran_kredit);
             $pembayaran_kredit = str_replace(',', '.', $pembayaran_kredit);
+            $pembayaran_kredit = floatval($pembayaran_kredit);
+            $pembayaran_kredit = round($pembayaran_kredit,2);
             $chk_tunai = $request->get('chk_tunai');
             $barcode_cust = $request->get('barcode_cust');
             $tunai = $request->get('ttl_pembayaran_tunai');
@@ -433,10 +435,8 @@ class KasirController extends Controller
                 $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
                 $trsaldokredit->KodeUser = $barcode_cust;
 
-                $bayar_kredit = $pembayaran_kredit;
-                $trmutasihd->PembayaranKredit = $bayar_kredit;
-                $trsaldokredit->Saldo = $pembayaran_kredit;
-                $trsaldoekop->Saldo = $cek[0]->Saldo + $bayar_kredit;
+                $trmutasihd->PembayaranKredit = $pembayaran_kredit;
+                $trsaldoekop->Saldo = round($cek[0]->Saldo,2) + $pembayaran_kredit;
                 // if ($SaldoMinusBunga->aktif == 1) {
                 //     $hitungkredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
                 //     $bayar_kredit = $hitungkredit;
@@ -453,15 +453,12 @@ class KasirController extends Controller
                 //     $trsaldoekop->Saldo = $cek[0]->Saldo + $bayar_kredit;
                 // }
                 $trmutasihd->DueDate = date('Y-m-t');
-                // $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
-                // $trsaldokredit = new Trsaldototalbelanjakredit();
-                // $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
-                // $trsaldokredit->KodeUser = $barcode_cust;
-                // if ($cekkredit) {
-                //     $trsaldokredit->Saldo = $pembayaran_kredit + $cekkredit->Saldo;
-                // } else {
-                //     $trsaldokredit->Saldo = $pembayaran_kredit;
-                // }
+                $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
+                if ($cekkredit) {
+                    $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo,2);
+                } else {
+                    $trsaldokredit->Saldo = $pembayaran_kredit;
+                }
                 $trsaldoekop->save();
                 $trsaldokredit->save();
             }
@@ -883,6 +880,7 @@ class KasirController extends Controller
             $status = 'nol';
         }
 
+        $saldoEkop = number_format($saldoEkop, 2, ',', '.');
         return response()->json([
             'Saldo' => $saldoEkop,
             'Total' => $ttl,

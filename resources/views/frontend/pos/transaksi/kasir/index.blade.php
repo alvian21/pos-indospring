@@ -785,9 +785,9 @@
 
                     if(data['status']=='minus'){
                         // console.log(data)
-                        $('#saldo_kredit').val(convertToRupiah(data['Saldo']));
+                        $('#saldo_kredit').val(saldo);
                         $('#saldo_ekop').val(0);
-                        if(parseInt(saldo) > parseInt(data['Total'])){
+                        if(convertToAngka(saldo) > parseInt(data['Total'])){
                             $('#pembayaran_tunai').val(0);
                             $('#ttl_pembayaran_tunai').val(0);
                             $('#pembayaran_ekop').val(0);
@@ -1071,7 +1071,7 @@
             tunai = convertToAngka(tunai);
             saldo_ekop = convertToAngka(saldo_ekop);
             var hasil_total = 0;
-            console.log(att_ekop)
+            // console.log(att_ekop)
             // return false;
             if(parseInt(ekop) > parseInt(saldo_ekop)){
                 $('.alertdangertotal').text('Maaf saldo ekop tidak cukup');
