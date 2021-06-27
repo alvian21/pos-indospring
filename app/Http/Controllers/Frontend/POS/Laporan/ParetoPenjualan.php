@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Trmutasidt;
 use Illuminate\Support\Facades\DB;
 use App\Msbarang;
+use App\Mskategori;
 use App\Trsaldobarang;
 use PDF;
 
@@ -121,12 +122,24 @@ class ParetoPenjualan extends Controller
 
 
         foreach ($trmutasihd as $key => $value) {
-            $barang = Msbarang::select('mskategori.*', 'msbarang.*','mskategori.Nama as Kategori')->join('mskategori', 'msbarang.KodeKategori', 'mskategori.Kode')->where('msbarang.Kode', $value->KodeBarang)->first()->toArray();
+            $barang = Msbarang::select('msbarang.*','msbarang.Kode as KodeBarang','msbarang.Nama as NamaBarang')->where('msbarang.Kode', $value->KodeBarang)->first()->toArray();
+
+            if($barang['KodeKategori']== null){
+                $kategori = [
+                    "Kategori" => "none",
+                    "KodeKategori" => "100"
+                ];
+            }else{
+                $kategori = Mskategori::select('mskategori.*','mskategori.Nama as Kategori')->where('Kode', $barang['KodeKategori'])->first()->toArray();
+            }
+
             $value = json_decode(json_encode($value), true);
             $res = array_merge($value, $barang);
+            $res = array_merge($res, $kategori);
+            // dd($res);
             array_push($arr, $res);
         }
-
+        // dd($arr);
         // $no = 1;
         $count = array_count_values(array_column($arr, "KodeKategori"));
         $lastres = [];
