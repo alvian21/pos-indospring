@@ -161,7 +161,6 @@
                 <tr>
                     <th>No</th>
                     <th>Kategori</th>
-                    <th>No</th>
                     <th>Kode</th>
                     <th>Nama</th>
                     <th>Jumlah Penjualan</th>
@@ -172,7 +171,6 @@
                 <tr>
                     <td align="right">{{$loop->iteration}}</td>
                     <td align="left">{{$item['Kategori']}}</td>
-                    <td align="right">{{$item['NomorGroup']}}</td>
                     <td align="left">{{$item['KodeBarang']}}</td>
                     <td align="left">{{$item['NamaBarang']}}</td>
                     <td align="right">{{$item['Total']}}</td>

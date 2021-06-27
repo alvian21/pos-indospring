@@ -139,29 +139,6 @@ class ParetoPenjualan extends Controller
             // dd($res);
             array_push($arr, $res);
         }
-        // dd($arr);
-        // $no = 1;
-        $count = array_count_values(array_column($arr, "KodeKategori"));
-        $lastres = [];
-        foreach ($count as $kode => $value) {
-            $no = 1;
-            foreach ($arr as $key => $row) {
-               if($kode == $row['KodeKategori']){
-                    $x['NomorGroup'] = $no;
-                    $no++;
-                    $data = array_merge($x, $row);
-                    array_push($lastres, $data);
-               }
-            }
-        }
-
-        $cekjumlah = [];
-        for ($i=0; $i < $jumlah ; $i++) {
-            if(isset($lastres[$i])){
-                array_push($cekjumlah, $lastres[$i]);
-            }
-
-        }
 
         $periode1 = date("l, F j, Y", strtotime($periode1));
         $periode2 = date("l, F j, Y", strtotime($periode2));
@@ -170,7 +147,7 @@ class ParetoPenjualan extends Controller
             $pdf = PDF::loadview(
                 "frontend.pos.laporan.paretopenjualan.pdf",
                 [
-                    'laporan' => $cekjumlah, 'periode1' => $periode1, 'periode2' => $periode2,
+                    'laporan' => $arr, 'periode1' => $periode1, 'periode2' => $periode2,
                 ]
             )->setPaper('a4', 'potrait');
             return $pdf->stream('laporan-paretopenjualan-pdf', array('Attachment' => 0));
