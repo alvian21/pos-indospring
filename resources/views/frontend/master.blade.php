@@ -73,6 +73,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
         integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA=="
         crossorigin="anonymous"></script>
+
+    <script>
+    //     myFunction()
+    //    function myFunction() {
+    //     if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ){
+    //         alert('Opera');
+    //     }
+    //     else if(navigator.userAgent.indexOf("Chrome") != -1 ){
+    //         alert('Chrome');
+    //     }
+    //     else if(navigator.userAgent.indexOf("Safari") != -1){
+    //         alert('Safari');
+    //     }
+    //     else if(navigator.userAgent.indexOf("Firefox") != -1 ){
+    //          alert('Firefox');
+    //     }
+    //     else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )){
+    //       alert('IE');
+    //     }
+    //     else{
+    //        alert('unknown');
+    //     }
+    // }
+    </script>
     @include('frontend.include.toastr')
     @yield('scripts')
 </body>

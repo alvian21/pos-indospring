@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Frontend\Settings;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Mssetting;
+use App\Msanggota;
+use App\Trsaldoekop;
 use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
@@ -285,5 +287,22 @@ class SettingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function generateSaldoMinus()
+    {
+        $anggota = Msanggota::all();
+
+        foreach ($anggota as $key => $value) {
+                $ekop = new Trsaldoekop();
+                $ekop->Tanggal = date('Y-m-d H:i:s');
+                $ekop->KodeUser = $value->Kode;
+                $ekop->Saldo = -500000;
+                $ekop->save();
+        }
+
+        return response()->json([
+            'message'=>'saved'
+        ]);
     }
 }
