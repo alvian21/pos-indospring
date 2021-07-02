@@ -43,7 +43,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
        //settings
     Route::group(['namespace' => 'Settings', 'prefix' => 'settings', 'as' => 'settings.'], function () {
-        Route::get('/mssetting/generatesaldominus','SettingController@generateSaldoMinus');
+        // Route::get('/mssetting/generatesaldominus','SettingController@generateSaldoMinus');
         Route::resource('mssetting', 'SettingController');
     });
 

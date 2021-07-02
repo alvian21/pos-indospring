@@ -72,10 +72,10 @@ class SettingController extends Controller
         //mobilebelanjaonoff
         $name1 = $request->get('name1');
         $retname1 = Mssetting::where('Kode', $name1)->first();
-        if($retname1){
-            if($request->get('ckmblbelanjaonoff') == "on"){
+        if ($retname1) {
+            if ($request->get('ckmblbelanjaonoff') == "on") {
                 $retname1->aktif = 1;
-            }else{
+            } else {
                 $retname1->aktif = 0;
             }
 
@@ -86,162 +86,152 @@ class SettingController extends Controller
 
         $name2 = $request->get('name2');
         $retname2 = Mssetting::where('Kode', $name2)->first();
-        if($retname2){
-            if($request->get('ckmblbelanjajam') == "on"){
+        if ($retname2) {
+            if ($request->get('ckmblbelanjajam') == "on") {
                 $retname2->aktif = 1;
-            }else{
+            } else {
                 $retname2->aktif = 0;
             }
             $retname2->MobileTimeOn = $request->get('inputmblbelanjajamon');
             $retname2->MobileTimeOff = $request->get('inputmblbelanjajamoff');
             $retname2->Nama = $request->get('inputmblbelanjajam');
             $retname2->save();
-
         }
 
 
         $name3 = $request->get('name3');
         $retname3 = Mssetting::where('Kode', $name3)->first();
-        if($retname3){
+        if ($retname3) {
             $pengajuandayid = $request->get('pengajuandayid');
             $pengajuanday = $request->get('pengajuanday');
             $ckpengajuanday = $request->get('ckmblpengajuanday');
-            foreach($pengajuandayid as $key => $row){
+            foreach ($pengajuandayid as $key => $row) {
                 $findpengajuan = Mssetting::find($row);
 
-                if($findpengajuan){
+                if ($findpengajuan) {
                     $findpengajuan->Nilai = $pengajuanday[$key];
                     $findpengajuan->Nama = $request->get('inputmblpengajuan');
-                    if(isset($ckpengajuanday[$key])){
-                        if($ckpengajuanday[$key] == "on"){
+                    if (isset($ckpengajuanday[$key])) {
+                        if ($ckpengajuanday[$key] == "on") {
                             $findpengajuan->aktif = 1;
                         }
-                    }else{
+                    } else {
                         $findpengajuan->aktif = 0;
                     }
                     $findpengajuan->save();
                 }
             }
-
         }
 
 
 
         $name4 = $request->get('name4');
         $retname4 = Mssetting::where('Kode', $name4)->first();
-        if($retname4){
-            if($request->get('ckmblpengajuanmaksanggota') == "on"){
+        if ($retname4) {
+            if ($request->get('ckmblpengajuanmaksanggota') == "on") {
                 $retname4->aktif = 1;
-            }else{
+            } else {
                 $retname4->aktif = 0;
             }
             $retname4->Nilai = $request->get('inputmblpengajuanmaksanggotanilai');
             $retname4->Nama = $request->get('inputmblpengajuanmaksanggotanama');
             $retname4->save();
-
         }
 
         $name5 = $request->get('name5');
         $retname5 = Mssetting::where('Kode', $name5)->first();
-        if($retname5){
-            if($request->get('ckmblinfopinjaman') == "on"){
+        if ($retname5) {
+            if ($request->get('ckmblinfopinjaman') == "on") {
                 $retname5->aktif = 1;
-            }else{
+            } else {
                 $retname5->aktif = 0;
             }
             $retname5->Nilai = $request->get('inputmblinfopinjamannilai');
             $retname5->Nama = $request->get('inputmblinfopinjamannama');
             $retname5->save();
-
         }
 
         $name6 = $request->get('name6');
         $retname6 = Mssetting::where('Kode', $name6)->first();
-        if($retname6){
-            if($request->get('ckmblSaldoMinusMax') == "on"){
+        if ($retname6) {
+            if ($request->get('ckmblSaldoMinusMax') == "on") {
                 $retname6->aktif = 1;
-            }else{
+                $this->generateSaldoMinus($retname6->Nilai);
+            } else {
                 $retname6->aktif = 0;
             }
             $retname6->Nilai = $request->get('inputmblSaldoMinusMaxnilai');
             $retname6->Nama = $request->get('inputmblSaldoMinusMaxnama');
             $retname6->save();
-
         }
         $name7 = $request->get('name7');
         $retname7 = Mssetting::where('Kode', $name7)->first();
-        if($retname7){
-            if($request->get('ckSaldoMinusBunga') == "on"){
+        if ($retname7) {
+            if ($request->get('ckSaldoMinusBunga') == "on") {
                 $retname7->aktif = 1;
-            }else{
+            } else {
                 $retname7->aktif = 0;
             }
             $retname7->Nilai = $request->get('inputSaldoMinusBunganilai');
             $retname7->Nama = $request->get('inputmblSaldoMinusBunganama');
             $retname7->save();
-
         }
         $name8 = $request->get('name8');
         $retname8 = Mssetting::where('Kode', $name8)->first();
-        if($retname8){
-            if($request->get('ckSaldoMinusResetPerBulan') == "on"){
+        if ($retname8) {
+            if ($request->get('ckSaldoMinusResetPerBulan') == "on") {
                 $retname8->aktif = 1;
-            }else{
+            } else {
                 $retname8->aktif = 0;
             }
             // $retname8->Nilai = $request->get('inputSaldoMinusResetPerBulannilai');
             $retname8->Nama = $request->get('inputSaldoMinusResetPerBulannama');
             $retname8->save();
-
         }
 
         $name9 = $request->get('name9');
         $retname9 = Mssetting::where('Kode', $name9)->first();
-        if($retname9){
-            if($request->get('ckmblPajakPenjualan') == "on"){
+        if ($retname9) {
+            if ($request->get('ckmblPajakPenjualan') == "on") {
                 $retname9->aktif = 1;
-            }else{
+            } else {
                 $retname9->aktif = 0;
             }
             $retname9->Nilai = $request->get('inputmblPajakPenjualannilai');
             $retname9->Nama = $request->get('inputmblPajakPenjualannama');
             $retname9->save();
-
         }
 
 
         $name10 = $request->get('name10');
         $retname10 = Mssetting::where('Kode', $name10)->first();
-        if($retname10){
-            if($request->get('ckDiskonRpPenjualanReadOnly') == "on"){
+        if ($retname10) {
+            if ($request->get('ckDiskonRpPenjualanReadOnly') == "on") {
                 $retname10->aktif = 1;
-            }else{
+            } else {
                 $retname10->aktif = 0;
             }
             $retname10->Nama = $request->get('inputmblDiskonRpPenjualanReadOnlynama');
             $retname10->save();
-
         }
 
 
         $name11 = $request->get('name11');
         $retname11 = Mssetting::where('Kode', $name11)->first();
-        if($retname11){
-            if($request->get('ckDiskonPersenPenjualanReadOnly') == "on"){
+        if ($retname11) {
+            if ($request->get('ckDiskonPersenPenjualanReadOnly') == "on") {
                 $retname11->aktif = 1;
-            }else{
+            } else {
                 $retname11->aktif = 0;
             }
             $retname11->Nama = $request->get('inputDiskonPersenPenjualanReadOnlynama');
             $retname11->save();
-
         }
 
         session()->forget('transaksi_penjualan');
         return response()->json([
-            'message'=> 'true'
+            'message' => 'true'
         ]);
-
     }
 
     /**
@@ -289,20 +279,41 @@ class SettingController extends Controller
         //
     }
 
-    public function generateSaldoMinus()
+    public function generateSaldoMinus($jumlah)
     {
-        $anggota = Msanggota::all();
+        $grp = [
+            "ISP",
+            "IPS",
+            "SIJ",
+        ];
 
+        $pangkat = [
+            "MANAGER",
+            "ASST. MANAGER",
+            "KARYAWAN",
+            "KARYAWAN KONTRAK",
+            "STAFF",
+        ];
+        $anggota = Msanggota::whereIn('Grp', $grp)->whereIn('Pangkat', $pangkat)->get();
+
+
+        $month = date('m');
+        $year = date('Y');
+        $arr = [];
         foreach ($anggota as $key => $value) {
-                $ekop = new Trsaldoekop();
-                $ekop->Tanggal = date('Y-m-d H:i:s');
-                $ekop->KodeUser = $value->Kode;
-                $ekop->Saldo = -500000;
-                $ekop->save();
+            $ekop = Trsaldoekop::where('KodeUser', $value->Kode)->whereMonth('Tanggal', $month)->whereYear('Tanggal', $year)->where('Saldo', '<=', 0)->orderBy('Tanggal', 'DESC')->first();
+            if (!$ekop) {
+                array_push($arr, $value);
+            }
         }
 
-        return response()->json([
-            'message'=>'saved'
-        ]);
+        if (!empty($arr)) {
+            foreach ($arr as $key => $value) {
+                $ekop = new Trsaldoekop();
+                $ekop->Tanggal = date('Y-m-d');
+                $ekop->KodeUser = $value->Kode;
+                $ekop->Saldo = $jumlah;
+            }
+        }
     }
 }
