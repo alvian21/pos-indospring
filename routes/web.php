@@ -199,12 +199,14 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::post('/opnamehilang/cetak','OpnameHilangController@cetakDetail')->name('opnamehilang.cetak');
         Route::post('/realtimestok/cetak','RealtimeStokController@cetak')->name('realtimestok.cetak');
         Route::post('/paretopenjualan/cetakpdf','ParetoPenjualan@cetakPdf')->name('paretopenjualan.cetakpdf');
+        Route::post('/tracestok/cetak','TraceStokController@cetak')->name('tracestok.cetak');
         // Route::post('/paretopenjualan/cetakdetail','ParetoPenjualan@cetakDetail')->name('paretopenjualan.cetakdetail');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('minimumstok', 'MinimumStokController');
         Route::resource('opnamehilang', 'OpnameHilangController');
         Route::resource('realtimestok', 'RealtimeStokController');
         Route::resource('paretopenjualan', 'ParetoPenjualan');
+        Route::resource('tracestok', 'TraceStokController');
     });
 
 
