@@ -91,38 +91,29 @@ class TraceStokController extends Controller
     public function cetak(Request $request)
     {
         $barang = $request->get('barang');
-        $lokasi = auth()->user()->KodeLokasi;
-        $trsaldobarang = Trsaldobarang::where('KodeBarang', $barang)->where('KodeLokasi', $lokasi)->OrderBy('Tanggal')->get();
         $trmutasidt = Trmutasidt::where('KodeBarang', $barang)->OrderBy('LastUpdate')->get();
-
-      
         $arr = [];
-        foreach ($trsaldobarang as $key => $value) {
-            $tanggal = date('Y-m-d', strtotime($value->Tanggal));
-            $trmutasidt = Trmutasidt::where('KodeBarang', $barang)->whereDate('LastUpdate', $tanggal)->first();
-
-            if ($trmutasidt) {
-                if ($trmutasidt->Transaksi == "OPNAME") {
-                    $x['Saldo'] = $value->Saldo;
-                    $x['Masuk'] = null;
-                    $x['Keluar'] = null;
-                } elseif ($trmutasidt->Transaksi == "PENJUALAN" || $trmutasidt->Transaksi == "RUSAK HILANG") {
-                    $x['Saldo'] = $value->Saldo;
-                    $x['Masuk'] = null;
-                    $x['Keluar'] = $trmutasidt->Jumlah;
-                } elseif ($trmutasidt->Transaksi == "PEMBELIAN") {
-                    $x['Saldo'] = null;
-                    $x['Masuk'] = $trmutasidt->Jumlah;
-                    $x['Keluar'] = null;
-                }
-                $x["Transaksi"]= $trmutasidt->Transaksi;
-                $x["Nomor"]= $trmutasidt->Nomor;
-                $x["UserUpdate"]= $trmutasidt->UserUpdate;
-                $x["LastUpdate"]= $trmutasidt->LastUpdate;
-                array_push($arr, $x);
-
+        foreach ($trmutasidt as $key => $value) {
+            if ($value->Transaksi == "OPNAME") {
+                $x['Saldo'] = $value->Jumlah;
+                $x['Masuk'] = null;
+                $x['Keluar'] = null;
+            } elseif ($value->Transaksi == "PENJUALAN" || $value->Transaksi == "RUSAK HILANG") {
+                $x['Saldo'] = null;
+                $x['Masuk'] = null;
+                $x['Keluar'] = $value->Jumlah;
+            } elseif ($value->Transaksi == "PEMBELIAN") {
+                $x['Saldo'] = null;
+                $x['Masuk'] = $value->Jumlah;
+                $x['Keluar'] = null;
             }
+            $x["Transaksi"] = $value->Transaksi;
+            $x["Nomor"] = $value->Nomor;
+            $x["UserUpdate"] = $value->UserUpdate;
+            $x["LastUpdate"] = $value->LastUpdate;
+            array_push($arr, $x);
         }
+
 
 
         $pdf = PDF::loadview(
