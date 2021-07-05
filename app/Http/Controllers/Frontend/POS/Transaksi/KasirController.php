@@ -500,7 +500,12 @@ class KasirController extends Controller
                 $trsaldobarang = new Trsaldobarang();
                 $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
                 $trsaldobarang->KodeBarang = $value["barang"];
-                $trsaldobarang->Saldo = $getstok->Saldo - $value["qty"];
+                if($getstok){
+                    $trsaldobarang->Saldo = $getstok->Saldo - $value["qty"];
+                }else{
+                    $trsaldobarang->Saldo = 0;
+                }
+
                 $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
                 $trsaldobarang->save();
             }
