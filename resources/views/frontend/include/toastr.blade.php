@@ -19,7 +19,7 @@
             });
         } else if (error) {
             iziToast.error({
-                title: 'Auch!',
+                title: 'Error!',
                 message: '{{ Session::get('error') }}',
                 position: 'topRight'
             });
