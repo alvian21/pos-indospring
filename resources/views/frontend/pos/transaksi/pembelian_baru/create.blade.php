@@ -220,7 +220,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="harga">Harga</label>
-                                <input type="number" class="form-control" name="harga" readonly id="harga">
+                                <input type="number" class="form-control" name="harga" value="0" id="harga">
                             </div>
                         </div>
 
@@ -404,9 +404,9 @@
                 if(subtotal <=0){
                     subtotal = 0;
                 }
-                subtotal = convertToRupiah(subtotal)
-                $('#subtotal').val(subtotal);
-                $('#harga').val(convertToRupiah(harga));
+                // subtotal = convertToRupiah(subtotal)
+                // $('#subtotal').val(subtotal);
+                // $('#harga').val(convertToRupiah(harga));
             }
         })
         }

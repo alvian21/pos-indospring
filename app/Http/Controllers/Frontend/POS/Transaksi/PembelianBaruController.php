@@ -29,7 +29,7 @@ class PembelianBaruController extends Controller
      */
     public function index()
     {
-        $trmutasihd = Trmutasihd::all()->where('Transaksi','PEMBELIAN');
+        $trmutasihd = Trmutasihd::all()->where('Transaksi', 'PEMBELIAN')->where('LokasiTujuan', auth()->user()->KodeLokasi);
         return view("frontend.pos.transaksi.pembelian_baru.index", ['trmutasihd' => $trmutasihd]);
     }
 
@@ -123,7 +123,8 @@ class PembelianBaruController extends Controller
      */
     public function show($id)
     {
-        //
+        $trmutasidt = Trmutasidt::where('Nomor', $id)->get();
+        return view("frontend.pos.transaksi.pembelian_baru.show", ['trmutasidt' => $trmutasidt]);
     }
 
     /**
@@ -739,7 +740,7 @@ class PembelianBaruController extends Controller
             Session::forget('transaksi_pembelian_baru');
             Session::put('transaksi_pembelian_baru', $data);
             Session::save();
-            return redirect()->route('pos.tfantartoko.index')->with("success", "Detail barang berhasil dihapus");
+            return redirect()->route('pos.pembelianbaru.create')->with("success", "Detail barang berhasil dihapus");
         }
     }
 
@@ -790,6 +791,41 @@ class PembelianBaruController extends Controller
             return response()->json([
                 'Saldo' => 0
             ]);
+        }
+    }
+
+    public function updatePost(Request $request)
+    {
+        if ($request->ajax()) {
+            if ($request->get('update') == 1) {
+                $nomor = $request->get('nomor');
+                $trmutasidt = Trmutasidt::where('Nomor', $nomor)->get();
+                $trmutasihd = Trmutasihd::where('Nomor', $nomor)->first();
+                if ($trmutasihd->StatusPesanan != 'POST') {
+                    foreach ($trmutasidt as $key => $value) {
+                        $cek = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->where('KodeLokasi', auth()->user()->KodeLokasi)->orderBy('Tanggal', 'DESC')->first();
+                        $trsaldobarang = new Trsaldobarang();
+                        if ($cek) {
+                            $trsaldobarang->Saldo = $cek->Saldo + $value->Jumlah;
+                        } else {
+                            $trsaldobarang->Saldo =  $value->Jumlah;
+                        }
+                        $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                        $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                        $trsaldobarang->KodeBarang = $value->KodeBarang;
+                        $trsaldobarang->save();
+                    }
+
+
+                    $trmutasihd->StatusPesanan = 'POST';
+                    $trmutasihd->save();
+                }
+
+                session()->flash('success','Transaksi pembelian berhasil diupdate');
+                return response()->json([
+                    'message' => 'success'
+                ]);
+            }
         }
     }
 }

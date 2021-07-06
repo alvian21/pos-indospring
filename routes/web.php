@@ -99,6 +99,15 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('pesanan', 'StatusPesananController');
     });
 
+    //POS-master
+    Route::group(['namespace'=> 'POS\Master','prefix' => 'pos', 'as' => 'pos.'],function () {
+
+        Route::group(['prefix' => 'master', 'as' => 'master.'],function () {
+
+            Route::resource('supplier', 'SupplierController');
+        });
+    });
+
     //POS-transaksi
     Route::group(['namespace' => 'POS\Transaksi', 'prefix' => 'pos', 'as' => 'pos.'], function () {
 
@@ -191,6 +200,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::post('/detail_transaksi_pembelian_update', 'PembelianBaruController@update_detail_barang')->name('detail_transaksi_pembelianbaru.update');
             Route::get('/check_session', 'PembelianBaruController@check_session_detail')->name('pembelianbaru.check');
             Route::get('/delete_detail/{id}', 'PembelianBaruController@delete_data');
+            Route::get('/update_status', 'PembelianBaruController@updatePost')->name('pembelianbaru.updatestatus');
+
         });
 
 
