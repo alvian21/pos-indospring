@@ -20,7 +20,7 @@ use App\Trsaldototalbelanjatunai;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
-class TfAntarTokoController extends Controller
+class PembelianBaruController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,15 +29,26 @@ class TfAntarTokoController extends Controller
      */
     public function index()
     {
+        $trmutasihd = Trmutasihd::all()->where('Transaksi','PEMBELIAN');
+        return view("frontend.pos.transaksi.pembelian_baru.index", ['trmutasihd' => $trmutasihd]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
         $day = date('d');
         $month = date('m');
         $year = date('Y');
 
-        $trmutasihd = Trmutasihd::where('Transaksi', 'MUTASI')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
-        $mutasi = Trmutasihd::where('Transaksi', 'MUTASI')->get();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+        $mutasi = Trmutasihd::where('Transaksi', 'PEMBELIAN')->get();
         $mslokasi = Mslokasi::all();
         $msbarang = Msbarang::all();
-
+        $mssupplier = Mssupplier::all();
         $msanggota = DB::table('msanggota')->select('msanggota.Kode', 'traktifasi.NoEkop', 'msanggota.Nama')
             ->leftJoin('traktifasi', function ($join) {
                 $join->where('traktifasi.Status', 'aktif')
@@ -49,25 +60,26 @@ class TfAntarTokoController extends Controller
             if ($nomor != 0) {
                 if ($nomor >= 9999) {
                     $nomor = $nomor + 1;
-                    $formatNomor = "MU-" . date('Y-m-d') . "-" . $nomor;
+                    $formatNomor = "BE-" . date('Y-m-d') . "-" . $nomor;
                 } else {
                     $nomor = $nomor + 1;
                     $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                    $formatNomor = "MU-" . date('Y-m-d') . "-" . $addzero;
+                    $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
                 }
             }
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "MU-" . date('Y-m-d') . "-" . $addzero;
+            $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
         }
 
-        if (session()->has('transaksi_mutasi')) {
-            $trmutasi = session('transaksi_mutasi');
+        if (session()->has('transaksi_pembelian_baru')) {
+            $trmutasi = session('transaksi_pembelian_baru');
         } else {
             $data = [
-                'transaksi' => 'mutasi',
+                'transaksi' => 'PEMBELIAN',
                 'nomor' => $formatNomor,
+                'kode' => 0,
                 'tanggal' => date('d M y H:i'),
                 'diskon_persen' => '0',
                 'pajak' => '10',
@@ -78,27 +90,18 @@ class TfAntarTokoController extends Controller
                 'total_harga' => 0,
                 'total_harga_setelah_pajak' => 0
             ];
-            $trmutasi = session(['transaksi_mutasi' => $data]);
-            $trmutasi = session('transaksi_mutasi');
+            $trmutasi = session(['transaksi_pembelian_baru' => $data]);
+            $trmutasi = session('transaksi_pembelian_baru');
         }
 
-        return view("frontend.pos.transaksi.transfer_antar_toko.index", [
+        return view("frontend.pos.transaksi.pembelian_baru.create", [
             'formatNomor' => $formatNomor, 'mutasi' => $mutasi,
             'mslokasi' => $mslokasi,
             'msbarang' => $msbarang,
-            'trmutasi' => $trmutasi,
-            'msanggota' => $msanggota
+            'trpembelianbaru' => $trmutasi,
+            'msanggota' => $msanggota,
+            'mssupplier' => $mssupplier
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -169,7 +172,7 @@ class TfAntarTokoController extends Controller
                 'diskon_rp' => 'required',
                 'lokasi' => 'required',
                 'keterangan' => 'nullable',
-
+                'supplier' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -177,8 +180,8 @@ class TfAntarTokoController extends Controller
                 return response()->json($validator->errors());
             } else {
                 $total = 0;
-                if (session()->has('detail_transaksi_mutasi')) {
-                    $datadetail = Session::get('detail_transaksi_mutasi');
+                if (session()->has('detail_transaksi_pembelian_baru')) {
+                    $datadetail = Session::get('detail_transaksi_pembelian_baru');
                     foreach ($datadetail as $key => $value) {
                         $total = $total + $value["subtotal"];
                     }
@@ -205,6 +208,7 @@ class TfAntarTokoController extends Controller
                 $data = [
                     'transaksi' => $request->get('transaksi'),
                     'nomor' => $request->get('nomor'),
+                    'kode' => $request->get('supplier'),
                     'tanggal' => $request->get('tanggal'),
                     'diskon_persen' => $request->get('diskon_persen'),
                     'pajak' => $request->get('pajak'),
@@ -216,7 +220,7 @@ class TfAntarTokoController extends Controller
                     'total_harga_setelah_pajak' => $pajak
                 ];
 
-                session(['transaksi_mutasi' => $data]);
+                session(['transaksi_pembelian_baru' => $data]);
                 session()->save();
 
                 return response()->json($data);
@@ -263,7 +267,7 @@ class TfAntarTokoController extends Controller
 
             //cek sisa barang
 
-            $trmutasi = Session::get('transaksi_mutasi');
+            $trmutasi = Session::get('transaksi_pembelian_baru');
             $total = 0;
             $diskon_rp = $request->get('diskon_rp');
             $diskon_rp = str_replace('.', '', $diskon_rp);
@@ -271,8 +275,8 @@ class TfAntarTokoController extends Controller
             $harga = str_replace('.', '', $harga);
             $subtotal = $request->get('subtotal');
             $subtotal = str_replace('.', '', $subtotal);
-            if (Session::has('detail_transaksi_mutasi')) {
-                $datadetail = Session::get('detail_transaksi_mutasi');
+            if (Session::has('detail_transaksi_pembelian_baru')) {
+                $datadetail = Session::get('detail_transaksi_pembelian_baru');
                 $no = 0;
                 foreach ($datadetail as $key => $value) {
                     $total = $total + $value["subtotal"];
@@ -292,8 +296,8 @@ class TfAntarTokoController extends Controller
                 ];
                 $total = $total + $subtotal;
                 array_push($arr, $data);
-                Session::forget('detail_transaksi_mutasi');
-                Session::put('detail_transaksi_mutasi', $arr);
+                Session::forget('detail_transaksi_pembelian_baru');
+                Session::put('detail_transaksi_pembelian_baru', $arr);
                 Session::save();
             } else {
                 $data = [
@@ -309,8 +313,8 @@ class TfAntarTokoController extends Controller
                 ];
                 $total = $total + $subtotal;
                 array_push($arr, $data);
-                Session::forget('detail_transaksi_mutasi');
-                Session::put('detail_transaksi_mutasi', $arr);
+                Session::forget('detail_transaksi_pembelian_baru');
+                Session::put('detail_transaksi_pembelian_baru', $arr);
                 Session::save();
             }
 
@@ -335,6 +339,7 @@ class TfAntarTokoController extends Controller
             $data = [
                 'transaksi' => $trmutasi['transaksi'],
                 'nomor' => $trmutasi['nomor'],
+                'kode' => $trmutasi['kode'],
                 'tanggal' => $trmutasi['tanggal'],
                 'diskon_persen' => $trmutasi['diskon_persen'],
                 'pajak' => $trmutasi['pajak'],
@@ -345,8 +350,8 @@ class TfAntarTokoController extends Controller
                 'total_harga' => $hasil,
                 'total_harga_setelah_pajak' => $pajak
             ];
-            Session::forget('transaksi_mutasi');
-            Session::put('transaksi_mutasi', $data);
+            Session::forget('transaksi_pembelian_baru');
+            Session::put('transaksi_pembelian_baru', $data);
             Session::save();
 
             return response()->json([
@@ -360,106 +365,50 @@ class TfAntarTokoController extends Controller
     public function save_data_transaksi(Request $request)
     {
 
-        if (session()->has('detail_transaksi_mutasi') && session()->has('transaksi_mutasi')) {
+        if (session()->has('detail_transaksi_pembelian_baru') && session()->has('transaksi_pembelian_baru')) {
 
             $day = date('d');
             $month = date('m');
             $year = date('Y');
-            $pembayaran_ekop = $request->get('pembayaran_ekop');
-            $pembayaran_ekop = str_replace('.', '', $pembayaran_ekop);
-            $pembayaran_tunai = $request->get('pembayaran_tunai');
-            $pembayaran_tunai = str_replace('.', '', $pembayaran_tunai);
-            $barcode_cust = $request->get('barcode_cust');
-            $tunai = $request->get('ttl_pembayaran_tunai');
-            $tunai = str_replace('.', '', $tunai);
-            $trmutasihd = Trmutasihd::where('Transaksi', 'MUTASI')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+
+            $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
             if ($trmutasihd) {
                 $nomor = (int) substr($trmutasihd->Nomor, 14);
                 if ($nomor != 0) {
                     if ($nomor >= 9999) {
                         $nomor = $nomor + 1;
-                        $formatNomor = "PE-" . date('Y-m-d') . "-" . $nomor;
+                        $formatNomor = "BE-" . date('Y-m-d') . "-" . $nomor;
                     } else {
                         $nomor = $nomor + 1;
                         $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                        $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
+                        $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
                     }
                 }
             } else {
                 $nomor = 1;
                 $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "PE-" . date('y-m-d') . "-" . $addzero;
+                $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
             }
-
-            $trmutasi = session('transaksi_mutasi');
+            $trpembelian = session('transaksi_pembelian_baru');
             $trmutasihd = new Trmutasihd();
-            $trmutasihd->Transaksi = $trmutasi["transaksi"];
+            $trmutasihd->Transaksi = $trpembelian["transaksi"];
             $trmutasihd->Nomor = $formatNomor;
             $trmutasihd->Tanggal = date('Y-m-d H:i');
-            $trmutasihd->KodeSuppCust = $barcode_cust;
-            $trmutasihd->DiskonPersen = $trmutasi["diskon_persen"];
-            $trmutasihd->DiskonTunai = $trmutasi["diskon_rp"];
-            $trmutasihd->Pajak = $trmutasi["pajak"];
-            $trmutasihd->LokasiAwal = $trmutasi["lokasi"];
-            $trmutasihd->TotalHarga = $trmutasi["total_harga"];
+            $trmutasihd->KodeSuppCust = $trpembelian["kode"];
+            $trmutasihd->DiskonPersen = $trpembelian["diskon_persen"];
+            $trmutasihd->DiskonTunai = $trpembelian["diskon_rp"];
+            $trmutasihd->Pajak = $trpembelian["pajak"];
+            $trmutasihd->LokasiTujuan = $trpembelian["lokasi"];
+            $trmutasihd->TotalHarga = $trpembelian["total_harga"];
             $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            if (($tunai != '' || $tunai > 0) && $pembayaran_ekop != $trmutasi["total_harga_setelah_pajak"]) {
-                $trmutasihd->PembayaranTunai = $tunai;
-                //saldototalbelanjatunai
-                $cektunai = Trsaldototalbelanjatunai::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
-                $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
-                $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
-                $trsaldobelanjatunai->KodeUser = $barcode_cust;
-                if ($cektunai) {
-                    $trsaldobelanjatunai->Saldo = $tunai + $cektunai->Saldo;
-                } else {
-                    $trsaldobelanjatunai->Saldo = $tunai;
-                }
-                $trsaldobelanjatunai->save();
-            }
-            if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
-                $cek = DB::select('call CEKSALDOEKOP(?)', [
-                    $barcode_cust
-                ]);
-                $trmutasihd->PembayaranEkop = $pembayaran_ekop;
-                $trsaldoekop = new Trsaldoekop();
-                $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
-                $trsaldoekop->KodeUser = $barcode_cust;
-                $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
-                $trsaldoekop->save();
-
-                $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
-                $trsaldokredit = new Trsaldototalbelanjakredit();
-                $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
-                $trsaldokredit->KodeUser = $barcode_cust;
-                if ($cekkredit) {
-                    $trsaldokredit->Saldo = $pembayaran_tunai + $cekkredit->Saldo;
-                } else {
-                    $trsaldokredit->Saldo = $pembayaran_tunai;
-                }
-                $trsaldokredit->save();
-            }
-            $trmutasihd->StatusPesanan = "Barang Telah Diambil";
-            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            $trmutasihd->TotalHargaSetelahPajak = $trmutasi["total_harga_setelah_pajak"];
+            $trmutasihd->StatusPesanan = "Dalam Proses";
+            $trmutasihd->TotalHargaSetelahPajak = $trpembelian["total_harga_setelah_pajak"];
             $trmutasihd->save();
 
-            //trsaldototalbelanja
-            $cektotalbelanja = Trsaldototalbelanja::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
-            $trsaldototalbelanja = new Trsaldototalbelanja();
-            $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
-            $trsaldototalbelanja->KodeUser = $barcode_cust;
-            if ($cektotalbelanja) {
-                $trsaldototalbelanja->Saldo = $trmutasi["total_harga_setelah_pajak"] + $cektotalbelanja->Saldo;
-            } else {
-                $trsaldototalbelanja->Saldo = $trmutasi["total_harga_setelah_pajak"];
-            }
-            $trsaldototalbelanja->save();
-
-            $datadetail = session('detail_transaksi_mutasi');
+            $datadetail = session('detail_transaksi_pembelian_baru');
             foreach ($datadetail as $key => $value) {
                 $trmutasidt = new Trmutasidt();
-                $trmutasidt->Transaksi = 'MUTASI';
+                $trmutasidt->Transaksi = 'PEMBELIAN';
                 $trmutasidt->Nomor = $formatNomor;
                 $trmutasidt->Urut = $value["urut"];
                 $trmutasidt->KodeBarang = $value["barang"];
@@ -471,25 +420,20 @@ class TfAntarTokoController extends Controller
                 $trmutasidt->Jumlah = $value['qty'];
                 $trmutasidt->Harga = $value['subtotal'];
                 $trmutasidt->save();
-                $getstok = Trsaldobarang::where('KodeBarang', $value["barang"])->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
-                $trsaldobarang = new Trsaldobarang();
-                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-                $trsaldobarang->KodeBarang = $value["barang"];
-                $trsaldobarang->Saldo = $getstok->Saldo - $value["qty"];
-                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
-                $trsaldobarang->save();
             }
-            session()->forget('detail_transaksi_mutasi');
-            session()->forget('transaksi_mutasi');
+            session()->forget('detail_transaksi_pembelian_baru');
+            session()->forget('transaksi_pembelian_baru');
             session()->save();
-            return redirect()->route('pos.tfantartoko.index')->with("success", "Detail dan data transaksi mutasi berhasil disimpan");
+            return redirect()->route('pos.pembelianbaru.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
+        } else {
+            return redirect()->route('pos.pembelianbaru.index');
         }
     }
 
     public function getDataDetail(Request $request)
     {
         if ($request->ajax()) {
-            $datadetail = session('detail_transaksi_mutasi');
+            $datadetail = session('detail_transaksi_pembelian_baru');
             $data2 = array();
             if ($datadetail != null) {
                 $count = count($datadetail);
@@ -527,8 +471,8 @@ class TfAntarTokoController extends Controller
         if ($request->ajax()) {
             $datapembelian = [];
             $data2 = array();
-            if (session()->has('transaksi_mutasi')) {
-                $pembelian = session('transaksi_mutasi');
+            if (session()->has('transaksi_pembelian_baru')) {
+                $pembelian = session('transaksi_pembelian_baru');
                 array_push($datapembelian, $pembelian);
                 $count = count($datapembelian);
                 $no = 1;
@@ -580,10 +524,10 @@ class TfAntarTokoController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         } else {
 
-            $trmutasi = Session::get('transaksi_mutasi');
+            $trmutasi = Session::get('transaksi_pembelian_baru');
             $total = 0;
-            if (session()->has('detail_transaksi_mutasi')) {
-                $datadetail = Session::get('detail_transaksi_mutasi');
+            if (session()->has('detail_transaksi_pembelian_baru')) {
+                $datadetail = Session::get('detail_transaksi_pembelian_baru');
                 foreach ($datadetail as $key => $value) {
                     $total = $total + $value["subtotal"];
                 }
@@ -614,6 +558,7 @@ class TfAntarTokoController extends Controller
             $data = [
                 'transaksi' => $request->get('transaksi'),
                 'nomor' => $request->get('nomor'),
+                'kode' => $request->get('supplier'),
                 'tanggal' => $request->get('tanggal'),
                 'diskon_persen' => $request->get('diskon_persen'),
                 'pajak' => $request->get('pajak'),
@@ -624,9 +569,9 @@ class TfAntarTokoController extends Controller
                 'total_harga' => $hasil,
                 'total_harga_setelah_pajak' => $pajak
             ];
-            session(['transaksi_mutasi' => $data]);
+            session(['transaksi_pembelian_baru' => $data]);
 
-            return redirect()->route('pos.pembelian.index')->with("success", "Transaksi pembelian berhasil diupdate");
+            return redirect()->route('pos.pembelianbaru.index')->with("success", "Transaksi pembelian berhasil diupdate");
         }
     }
 
@@ -648,7 +593,7 @@ class TfAntarTokoController extends Controller
             return response()->json($validator->errors());
         } else {
             $arr = [];
-            $trmutasi = Session::get('transaksi_mutasi');
+            $trmutasi = Session::get('transaksi_pembelian_baru');
             $total = 0;
             $diskon_rp = $request->get('diskon_rp');
             $diskon_rp = str_replace('.', '', $diskon_rp);
@@ -656,8 +601,8 @@ class TfAntarTokoController extends Controller
             $harga = str_replace('.', '', $harga);
             $subtotal = $request->get('subtotal');
             $subtotal = str_replace('.', '', $subtotal);
-            if (Session::has('detail_transaksi_mutasi')) {
-                $datadetail = Session::get('detail_transaksi_mutasi');
+            if (Session::has('detail_transaksi_pembelian_baru')) {
+                $datadetail = Session::get('detail_transaksi_pembelian_baru');
                 foreach ($datadetail as $key => $value) {
                     if ($value["urut"] == $request->get('id_urut')) {
                         $value["urut"] = $value["urut"];
@@ -676,8 +621,8 @@ class TfAntarTokoController extends Controller
                         array_push($arr, $value);
                     }
                 }
-                Session::forget('detail_transaksi_mutasi');
-                Session::put('detail_transaksi_mutasi', $arr);
+                Session::forget('detail_transaksi_pembelian_baru');
+                Session::put('detail_transaksi_pembelian_baru', $arr);
                 Session::save();
             }
 
@@ -703,6 +648,7 @@ class TfAntarTokoController extends Controller
             $data = [
                 'transaksi' => $trmutasi['transaksi'],
                 'nomor' => $trmutasi['nomor'],
+                'kode' => $trmutasi['kode'],
                 'tanggal' => $trmutasi['tanggal'],
                 'diskon_persen' => $trmutasi['diskon_persen'],
                 'pajak' => $trmutasi['pajak'],
@@ -713,8 +659,8 @@ class TfAntarTokoController extends Controller
                 'total_harga' => $hasil,
                 'total_harga_setelah_pajak' => $pajak
             ];
-            Session::forget('transaksi_mutasi');
-            Session::put('transaksi_mutasi', $data);
+            Session::forget('transaksi_pembelian_baru');
+            Session::put('transaksi_pembelian_baru', $data);
             Session::save();
             return response()->json([
                 'message' => 'saved',
@@ -728,7 +674,7 @@ class TfAntarTokoController extends Controller
     {
         if ($request->ajax()) {
             $message = "";
-            if (Session::has('detail_transaksi_mutasi')) {
+            if (Session::has('detail_transaksi_pembelian_baru')) {
                 $message = "true";
             } else {
                 $message = "false";
@@ -742,11 +688,11 @@ class TfAntarTokoController extends Controller
 
     public function delete_data($id)
     {
-        if (session()->has('detail_transaksi_mutasi')) {
-            $datadetail = Session::get('detail_transaksi_mutasi');
+        if (session()->has('detail_transaksi_pembelian_baru')) {
+            $datadetail = Session::get('detail_transaksi_pembelian_baru');
             $arr = [];
             $total  = 0;
-            $trmutasi = Session::get('transaksi_mutasi');
+            $trmutasi = Session::get('transaksi_pembelian_baru');
             foreach ($datadetail as $key => $value) {
                 if ($value["urut"] != $id) {
                     $total = $total + $value["subtotal"];
@@ -755,9 +701,9 @@ class TfAntarTokoController extends Controller
             }
 
             if ($total == 0) {
-                Session::forget('detail_transaksi_mutasi');
+                Session::forget('detail_transaksi_pembelian_baru');
             } else {
-                Session::put('detail_transaksi_mutasi', $arr);
+                Session::put('detail_transaksi_pembelian_baru', $arr);
                 Session::save();
             }
 
@@ -779,6 +725,7 @@ class TfAntarTokoController extends Controller
             $data = [
                 'transaksi' => $trmutasi['transaksi'],
                 'nomor' => $trmutasi['nomor'],
+                'kode' => $trmutasi['kode'],
                 'tanggal' => $trmutasi['tanggal'],
                 'diskon_persen' => $trmutasi['diskon_persen'],
                 'pajak' => $trmutasi['pajak'],
@@ -789,8 +736,8 @@ class TfAntarTokoController extends Controller
                 'total_harga' => $hasil,
                 'total_harga_setelah_pajak' => $pajak
             ];
-            Session::forget('transaksi_mutasi');
-            Session::put('transaksi_mutasi', $data);
+            Session::forget('transaksi_pembelian_baru');
+            Session::put('transaksi_pembelian_baru', $data);
             Session::save();
             return redirect()->route('pos.tfantartoko.index')->with("success", "Detail barang berhasil dihapus");
         }

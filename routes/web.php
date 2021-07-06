@@ -181,7 +181,21 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/saldo_ekop','KasirController@CekSaldoEkop')->name('kasir.ceksaldo');
         });
 
+        Route::group(['prefix' => 'pembelianbaru'], function () {
+            Route::get('/data_detail','PembelianBaruController@getDataDetail')->name('pembelianbaru.datadetail');
+            Route::get('/data_pembelianbaru','PembelianBaruController@getDataMutasi')->name('pembelianbaru.transaksi');
+            Route::post('/transaksi_pembelianbaru', 'PembelianBaruController@store_transaksi')->name('transaksi_pembelianbaru.store');
+            Route::post('/detail_transaksi_pembelianbaru', 'PembelianBaruController@store_detail')->name('detail_transaksi_pembelianbaru.store');
+            Route::get('/data_barang', 'PembelianBaruController@get_data_barang')->name('pembelianbaru.databarang');
+            Route::get('/save_transaksi_pembelianbaru', 'PembelianBaruController@save_data_transaksi')->name('pembelianbaru.save');
+            Route::post('/detail_transaksi_pembelian_update', 'PembelianBaruController@update_detail_barang')->name('detail_transaksi_pembelianbaru.update');
+            Route::get('/check_session', 'PembelianBaruController@check_session_detail')->name('pembelianbaru.check');
+            Route::get('/delete_detail/{id}', 'PembelianBaruController@delete_data');
+        });
+
+
         Route::resource('pembelian', 'PembelianController');
+        Route::resource('pembelianbaru', 'PembelianBaruController');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('tfantartoko', 'TfAntarTokoController');
         Route::resource('stockopname', 'StockOpnameController');

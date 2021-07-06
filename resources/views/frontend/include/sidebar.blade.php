@@ -86,6 +86,7 @@
                     class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('pos.pembelian.index')}}">Pembelian</a></li>
+                <li><a class="nav-link" href="{{route('pos.pembelianbaru.index')}}">Pembelian - Baru</a></li>
                 <li><a class="nav-link" href="{{route('pos.penjualan.index')}}">Penjualan</a></li>
                 <li><a class="nav-link" href="{{route('pos.tfantartoko.index')}}">Transfer Antar Toko</a></li>
                 <li><a class="nav-link" href="{{route('pos.stockopname.index')}}">Stock Opname</a></li>
