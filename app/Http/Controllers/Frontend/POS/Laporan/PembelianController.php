@@ -103,13 +103,14 @@ class PembelianController extends Controller
         if ($request->get('supplier') == 'UMUM') {
             $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->where('KodeSuppCust', $request->get('supplier'))->orderBy('Tanggal')->get();
         } elseif ($request->get('supplier') != 'semua') {
-            $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->where('KodeSuppCust', $request->get('supplier'))->orderBy('Tanggal')->get();
+            $trmutasihd = Trmutasihd::join('mssupplier','mssupplier.Kode','trmutasihd.KodeSuppCust')->where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->where('KodeSuppCust', $request->get('supplier'))->orderBy('Tanggal')->get();
         } else if ($request->get('supplier') == 'semua') {
-            $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->orderBy('Tanggal')->get();
+            $trmutasihd = Trmutasihd::join('mssupplier','mssupplier.Kode','trmutasihd.KodeSuppCust')->where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->orderBy('Tanggal')->get();
         } else {
-            $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->where('KodeSuppCust', $request->get('supplier'))->orderBy('Tanggal')->get();
+            $trmutasihd = Trmutasihd::join('mssupplier','mssupplier.Kode','trmutasihd.KodeSuppCust')->where('Transaksi', 'PEMBELIAN')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiTujuan', $lokasi)->where('KodeSuppCust', $request->get('supplier'))->orderBy('Tanggal')->get();
         }
         $arr = [];
+      
         $sumdiskon = 0;
         $sumpajak = 0;
         $sumtotal = 0;
@@ -131,6 +132,7 @@ class PembelianController extends Controller
             $x['Tanggal'] = $value->Tanggal;
             $x['Nomor'] = $value->Nomor;
             $x['Supplier'] = $value->KodeSuppCust;
+            $x['Nama'] = $value->Nama;
 
             //hitung total diskon
             $diskonpersen = ($value->DiskonPersen / 100) * $subtotal;

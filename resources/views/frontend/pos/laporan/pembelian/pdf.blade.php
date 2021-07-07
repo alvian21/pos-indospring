@@ -179,7 +179,7 @@
                     <td align="left">{{$item['Lokasi']}}</td>
                     <td align="left">{{$item['Tanggal']}}</td>
                     <td align="left">{{$item['Nomor']}}</td>
-                    <td align="left">{{$item['Supplier']}}</td>
+                    <td align="left">{{$item['Supplier']}} - {{$item['Nama']}}</td>
                     <td align="right">{{"Rp " . number_format($item['Diskon'],2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($item['Pajak'],2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($item['Total'],2,',','.')}}</td>
@@ -198,7 +198,7 @@
                     <td  align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
                     <td  align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
                     <td  align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
-              
+
                     <td></td>
                 </tr>
             </tfoot>
