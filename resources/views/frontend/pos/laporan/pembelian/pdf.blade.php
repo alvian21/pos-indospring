@@ -160,22 +160,17 @@
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2">Transaksi</th>
-                    <th rowspan="2">Lokasi</th>
-                    <th rowspan="2">Tanggal</th>
-                    <th rowspan="2">Nomor</th>
-                    <th rowspan="2">Supplier</th>
-                    <th rowspan="2">Diskon</th>
-                    <th rowspan="2">Pajak</th>
-                    <th rowspan="2">Total</th>
-                    <th colspan="3">Pembayaran</th>
-                    <th rowspan="2">DueDate</th>
+                    <th>Transaksi</th>
+                    <th>Lokasi</th>
+                    <th>Tanggal</th>
+                    <th>Nomor</th>
+                    <th>Supplier</th>
+                    <th>Diskon</th>
+                    <th>Pajak</th>
+                    <th>Total</th>
+                    <th>DueDate</th>
                 </tr>
-                <tr>
-                    <th>eKop</th>
-                    <th>Tunai</th>
-                    <th>Kredit</th>
-                </tr>
+
             </thead>
             <tbody>
                 @forelse ($laporan as $item)
@@ -188,9 +183,6 @@
                     <td align="right">{{"Rp " . number_format($item['Diskon'],2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($item['Pajak'],2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($item['Total'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Ekop'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Tunai'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Kredit'],2,',','.')}}</td>
                     <td align="left">{{$item['DueDate']}}</td>
 
                 </tr>
@@ -206,9 +198,7 @@
                     <td  align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
                     <td  align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
                     <td  align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($kredit,2,',','.')}}</td>
+              
                     <td></td>
                 </tr>
             </tfoot>
