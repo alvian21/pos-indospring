@@ -23,22 +23,25 @@
                             <table class="table table-striped" id="tabel">
                                 <thead>
                                     <tr>
-                                        <th>Transaksi</th>
-                                        <th>Nomor</th>
                                         <th>Kode Barang</th>
+                                        <th>Nama Barang</th>
                                         <th>Jumlah</th>
-                                        <th>Harga</th>
+                                        <th>Harga (setelah diskon)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($trmutasidt as $row)
-                                       <tr>
-                                           <td>{{$row->Transaksi}}</td>
-                                           <td>{{$row->Nomor}}</td>
-                                           <td>{{$row->KodeBarang}}</td>
-                                           <td>{{$row->Jumlah}}</td>
-                                           <td>{{$row->Harga}}</td>
-                                       </tr>
+                                    @php
+                                        $total = $row->Jumlah * $row->Harga;
+                                        $diskon = $row->DiskonTunai + ($row->DiskonPersen/100 * $total);
+                                        $res = $total - $diskon;
+                                    @endphp
+                                    <tr>
+                                        <td>{{$row->KodeBarang}}</td>
+                                        <td>{{$row->Nama}}</td>
+                                        <td>{{$row->Jumlah}}</td>
+                                        <td>{{$res}}</td>
+                                    </tr>
                                     @empty
 
                                     @endforelse

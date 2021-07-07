@@ -123,7 +123,7 @@ class PembelianBaruController extends Controller
      */
     public function show($id)
     {
-        $trmutasidt = Trmutasidt::where('Nomor', $id)->get();
+        $trmutasidt = Trmutasidt::join('msbarang','msbarang.Kode','trmutasidt.KodeBarang')->where('Nomor', $id)->get();
         return view("frontend.pos.transaksi.pembelian_baru.show", ['trmutasidt' => $trmutasidt]);
     }
 
@@ -419,7 +419,7 @@ class PembelianBaruController extends Controller
                 $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
                 $trmutasidt->LastUpdate = date('Y-m-d H:i');
                 $trmutasidt->Jumlah = $value['qty'];
-                $trmutasidt->Harga = $value['subtotal'];
+                $trmutasidt->Harga = $value['harga'];
                 $trmutasidt->save();
             }
             session()->forget('detail_transaksi_pembelian_baru');
