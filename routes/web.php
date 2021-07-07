@@ -220,6 +220,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         // Route::get('/penjualan/cetakpdf','PenjualanController@cetakPdf');
         Route::post('/penjualan/cetakpdf','PenjualanController@cetakPdf')->name('penjualan.cetakpdf');
         Route::post('/penjualan/cetakdetail','PenjualanController@cetakDetail')->name('penjualan.cetakdetail');
+        Route::post('/pembelian/cetakpdf','PembelianController@cetakPdf')->name('pembelian.cetakpdf');
+        Route::post('/pembelian/cetakdetail','PembelianController@cetakDetail')->name('pembelian.cetakdetail');
         Route::post('/minimumstok/cetak','MinimumStokController@cetak')->name('minimumstok.cetak');
         Route::post('/opnamehilang/cetak','OpnameHilangController@cetakDetail')->name('opnamehilang.cetak');
         Route::post('/realtimestok/cetak','RealtimeStokController@cetak')->name('realtimestok.cetak');
@@ -227,6 +229,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::post('/tracestok/cetak','TraceStokController@cetak')->name('tracestok.cetak');
         // Route::post('/paretopenjualan/cetakdetail','ParetoPenjualan@cetakDetail')->name('paretopenjualan.cetakdetail');
         Route::resource('penjualan', 'PenjualanController');
+        Route::resource('pembelian', 'PembelianController');
         Route::resource('minimumstok', 'MinimumStokController');
         Route::resource('opnamehilang', 'OpnameHilangController');
         Route::resource('realtimestok', 'RealtimeStokController');

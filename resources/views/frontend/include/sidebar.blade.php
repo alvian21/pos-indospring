@@ -100,6 +100,7 @@
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('poslaporan.realtimestok.index')}}">Realtime Stok</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.penjualan.index')}}">Penjualan</a></li>
+                <li><a class="nav-link" href="{{route('poslaporan.pembelian.index')}}">Pembelian</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.minimumstok.index')}}">Minimum Stok</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.opnamehilang.index')}}">Opname | Hilang/Rusak</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.paretopenjualan.index')}}">Pareto Penjualan</a></li>

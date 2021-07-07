@@ -499,10 +499,6 @@
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
-                $('#alert-detail').show();
-                $('.alert-success').hide();
             }
             else{
                 csrf_ajax();
@@ -541,10 +537,6 @@
 
             }else if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
                 $('#alert-detail').show();
                 $('.alert-success').hide();
             }else{
