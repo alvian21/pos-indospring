@@ -1069,9 +1069,9 @@
             else{
                 // console.log("mantap")
                 $('#formTotal').submit();
-                var url = "{{route('pos.kasir.receipt')}}"
-                window.open(url, "_blank").focus();
-                setTimeout(window.close, 0);
+                // var url = "{{route('pos.kasir.receipt')}}"
+                // window.open(url, "_blank").focus();
+                // setTimeout(window.close, 0);
                 return true
             }
 
