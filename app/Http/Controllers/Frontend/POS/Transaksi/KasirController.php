@@ -484,6 +484,7 @@ class KasirController extends Controller
                 $trsaldototalbelanja->save();
 
                 $datadetail = session('detail_transaksi_kasir');
+                session()->forget('receipt_kasir');
                 foreach ($datadetail as $key => $value) {
                     $trmutasidt = new Trmutasidt();
                     $trmutasidt->Transaksi = 'PENJUALAN';
@@ -511,6 +512,7 @@ class KasirController extends Controller
                     $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
                     $trsaldobarang->save();
                 }
+                session(['receipt_kasir'=>$formatNomor]);
                 session()->forget('detail_transaksi_kasir');
                 session()->forget('transaksi_kasir');
                 session()->save();
@@ -902,5 +904,14 @@ class KasirController extends Controller
             'Total' => $ttl,
             'status' => $status
         ]);
+    }
+
+
+    public function receipt()
+    {
+        $nomor = session('receipt_kasir');
+        $trmutasidt = Trmutasidt::join('msbarang','msbarang.Kode','trmutasidt.KodeBarang')->where('Nomor',$nomor)->get();
+        // dd($trmutasidt);
+        return view("frontend.pos.transaksi.kasir.receipt",['data'=>$trmutasidt]);
     }
 }
