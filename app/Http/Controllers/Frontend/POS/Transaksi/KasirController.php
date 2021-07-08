@@ -20,6 +20,7 @@ use App\Trsaldototalbelanjakredit;
 use App\Trsaldototalbelanjatunai;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Svg\Tag\Rect;
 
 class KasirController extends Controller
 {
@@ -350,7 +351,7 @@ class KasirController extends Controller
             $pembayaran_kredit = str_replace('.', '', $pembayaran_kredit);
             $pembayaran_kredit = str_replace(',', '.', $pembayaran_kredit);
             $pembayaran_kredit = floatval($pembayaran_kredit);
-            $pembayaran_kredit = round($pembayaran_kredit,2);
+            $pembayaran_kredit = round($pembayaran_kredit, 2);
             $chk_tunai = $request->get('chk_tunai');
             $barcode_cust = $request->get('barcode_cust');
             $tunai = $request->get('ttl_pembayaran_tunai');
@@ -438,7 +439,7 @@ class KasirController extends Controller
                     $trsaldokredit->KodeUser = $barcode_cust;
 
                     $trmutasihd->PembayaranKredit = $pembayaran_kredit;
-                    $trsaldoekop->Saldo = round($cek[0]->Saldo,2) + $pembayaran_kredit;
+                    $trsaldoekop->Saldo = round($cek[0]->Saldo, 2) + $pembayaran_kredit;
                     // if ($SaldoMinusBunga->aktif == 1) {
                     //     $hitungkredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
                     //     $bayar_kredit = $hitungkredit;
@@ -457,7 +458,7 @@ class KasirController extends Controller
                     $trmutasihd->DueDate = date('Y-m-t');
                     $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
                     if ($cekkredit) {
-                        $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo,2);
+                        $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo, 2);
                     } else {
                         $trsaldokredit->Saldo = $pembayaran_kredit;
                     }
@@ -503,16 +504,16 @@ class KasirController extends Controller
                     $trsaldobarang = new Trsaldobarang();
                     $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
                     $trsaldobarang->KodeBarang = $value["barang"];
-                    if($getstok){
+                    if ($getstok) {
                         $trsaldobarang->Saldo = $getstok->Saldo - $value["qty"];
-                    }else{
+                    } else {
                         $trsaldobarang->Saldo = 0;
                     }
 
                     $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
                     $trsaldobarang->save();
                 }
-                session(['receipt_kasir'=>$formatNomor]);
+                session(['receipt_kasir' => $formatNomor]);
                 session()->forget('detail_transaksi_kasir');
                 session()->forget('transaksi_kasir');
                 session()->save();
@@ -523,9 +524,6 @@ class KasirController extends Controller
                 DB::rollback();
                 return redirect()->route('pos.kasir.index')->with("error", "Maaf ada yang error");
             }
-
-
-
         }
     }
 
@@ -865,7 +863,7 @@ class KasirController extends Controller
             $saldoEkop = 0;
         }
         $total_belanja = $ttl;
-        if($saldoEkop < 0){
+        if ($saldoEkop < 0) {
             if ($SaldoMinusBunga->aktif == 1 && $ttl >= $tunai) {
                 $ttl = $ttl - $tunai;
                 $ttl = $ttl + (($SaldoMinusBunga->Nilai / 100) * $ttl);
@@ -910,8 +908,25 @@ class KasirController extends Controller
     public function receipt()
     {
         $nomor = session('receipt_kasir');
-        $trmutasidt = Trmutasidt::join('msbarang','msbarang.Kode','trmutasidt.KodeBarang')->where('Nomor',$nomor)->get();
+        $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $nomor)->get();
         // dd($trmutasidt);
-        return view("frontend.pos.transaksi.kasir.receipt",['data'=>$trmutasidt]);
+        return view("frontend.pos.transaksi.kasir.receipt", ['data' => $trmutasidt]);
+    }
+
+    public function getStatus(Request $request)
+    {
+        if ($request->ajax()) {
+            $cetak = Mssetting::where('Kode', 'Cetak')->first();
+            $status = false;
+            if ($cetak->aktif == 1) {
+                $status = true;
+            } else {
+                $status = false;
+            }
+
+            return response()->json([
+                'status' => $status
+            ]);
+        }
     }
 }

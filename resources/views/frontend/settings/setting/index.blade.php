@@ -457,6 +457,29 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card text-white bg-dark rounded" style="height: 14rem">
+                                        <div class="card-body">
+                                            <input type="hidden" name="name12" value="{{$cetak->Kode}}">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control text-center"
+                                                    value="{{$cetak->Nama}}" readonly name="inputcetak">
+                                            </div>
+                                            <div class="form-group text-center">
+                                                <div class="custom-control custom-switch custom-switch-md">
+                                                    <input type="checkbox" class="custom-control-input cetak"
+                                                        name="ckcetak" id="cetak"
+                                                        @if($cetak->aktif == 1 ) checked @endif>
+                                                    <label class="custom-control-label" for="cetak"></label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </form>
 
                     </div>

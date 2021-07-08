@@ -189,6 +189,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/delete_detail/{id}', 'KasirController@delete_data');
             Route::get('/saldo_ekop','KasirController@CekSaldoEkop')->name('kasir.ceksaldo');
             Route::get('/receipt','KasirController@receipt')->name('kasir.receipt');
+            Route::get('/getstatus','KasirController@getStatus')->name('kasir.status');
         });
 
         Route::group(['prefix' => 'pembelianbaru'], function () {

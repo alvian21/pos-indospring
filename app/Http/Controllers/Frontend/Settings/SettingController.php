@@ -30,7 +30,7 @@ class SettingController extends Controller
         $PajakPenjualan = Mssetting::where('Kode', 'PajakPenjualan')->first();
         $DiskonRpPenjualanReadOnly = Mssetting::where('Kode', 'DiskonRpPenjualanReadOnly')->first();
         $DiskonPersenPenjualanReadOnly = Mssetting::where('Kode', 'DiskonPersenPenjualanReadOnly')->first();
-
+        $cetak = Mssetting::where('Kode', 'Cetak')->first();
         return view(
             "frontend.settings.setting.index",
             [
@@ -45,7 +45,8 @@ class SettingController extends Controller
                 'SaldoMinusResetPerBulan' => $SaldoMinusResetPerBulan,
                 'PajakPenjualan' => $PajakPenjualan,
                 'DiskonRpPenjualanReadOnly' => $DiskonRpPenjualanReadOnly,
-                'DiskonPersenPenjualanReadOnly' => $DiskonPersenPenjualanReadOnly
+                'DiskonPersenPenjualanReadOnly' => $DiskonPersenPenjualanReadOnly,
+                'cetak' => $cetak
             ]
         );
     }
@@ -226,6 +227,20 @@ class SettingController extends Controller
             }
             $retname11->Nama = $request->get('inputDiskonPersenPenjualanReadOnlynama');
             $retname11->save();
+        }
+
+
+
+        $name12 = $request->get('name12');
+        $retname12 = Mssetting::where('Kode', $name12)->first();
+        if ($retname12) {
+            if ($request->get('ckcetak') == "on") {
+                $retname12->aktif = 1;
+            } else {
+                $retname12->aktif = 0;
+            }
+
+            $retname12->save();
         }
 
         session()->forget('transaksi_penjualan');

@@ -338,6 +338,21 @@
         }
     });
 
+    //get status print
+    var status = false;
+    $.ajax({
+        url:"{{route('pos.kasir.status')}}",
+        method:"GET",
+        async:false,
+        success:function(data){
+            if(data["status"] == true){
+                status = true;
+            }else{
+                status = false;
+            }
+        }
+    })
+
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
 
@@ -1069,14 +1084,15 @@
             else{
                 // console.log("mantap")
                 $('#formTotal').submit();
-                // var url = "{{route('pos.kasir.receipt')}}"
-                // window.open(url, "_blank").focus();
-                // setTimeout(window.close, 0);
+                if(status){
+                    var url = "{{route('pos.kasir.receipt')}}"
+                    window.open(url, "_blank").focus();
+                }
+
                 return true
             }
 
         }
-
 
      })
 
