@@ -62,7 +62,7 @@
                                            <td>{{$row->TotalHargaSetelahPajak}}</td>
                                            <td>
                                             <a href="{{route('pos.pembelianbaru.show',[$row->Nomor])}}" class="btn btn-success">Detail</a>
-                                            <button type="button" data-nomor="{{$row->Nomor}}" class="btn btn-danger btnpost" @if($row->StatusPesanan == 'POST' ) disabled @endif>POST</button>
+                                            <button type="button" data-nomor="{{$row->Nomor}}" class="btn btn-danger btnpost" @if($row->StatusPesanan == 'POST' ) disabled @endif>@if($row->StatusPesanan == 'POST' ) POSTED @else POST @endif</button>
                                         </td>
                                        </tr>
                                     @empty
