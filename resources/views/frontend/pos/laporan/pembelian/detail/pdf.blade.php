@@ -234,7 +234,9 @@
                 {{-- diskon dan pajak --}}
                 @php
                 $diskon = (($item['DiskonPersen']/100) * $total) + $item['DiskonTunai'];
-                $pajak = ($total - $diskon)* $item['Pajak']/100;
+                $ttldis = $total - $diskon;
+                $pajak = ($ttldis)* $item['Pajak']/100;
+                $totalharga = $pajak + $ttldis;
                 @endphp
                 <tr>
                     <td colspan="6" class="right">Total</td>
@@ -256,7 +258,7 @@
 
                     <td colspan="6" class="right">Grand Total</td>
                     <td class="sub total" align="right">
-                        {{"Rp " . number_format($item['TotalHargaSetelahPajak'],2,',','.')}}</td>
+                        {{"Rp " . number_format($totalharga,2,',','.')}}</td>
                 </tr>
 
             </tbody>

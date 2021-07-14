@@ -391,6 +391,7 @@ class PembelianBaruController extends Controller
                 $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
             }
             $trpembelian = session('transaksi_pembelian_baru');
+            
             $trmutasihd = new Trmutasihd();
             $trmutasihd->Transaksi = $trpembelian["transaksi"];
             $trmutasihd->Nomor = $formatNomor;
