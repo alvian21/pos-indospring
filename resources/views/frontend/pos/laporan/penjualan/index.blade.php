@@ -68,6 +68,13 @@
                                     <option value="excel">Excel</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="grup">Group By Customer</label>
+                                <select class="form-control" id="grup" name="grup">
+                                    <option value="ya">Ya</option>
+                                    <option value="tidak">Tidak</option>
+                                </select>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12 text-center">
                                     <button type="submit" class="btn btn-primary">Cetak</button>
@@ -159,6 +166,7 @@
         $('#customer-detail').select2()
         $('#transaksi-detail').select2()
         $('#lokasi-detail').select2()
+        $('#grup').select2()
      })
 </script>
 @endsection

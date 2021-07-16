@@ -103,103 +103,143 @@ class PenjualanController extends Controller
         } elseif ($request->get('transaksi') == 'offline') {
             $status = 'PENJUALAN';
         }
-
         $lokasi = $request->get('lokasi');
-        if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
-            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function ($query) {
-                $query->where('Transaksi', 'PENJUALAN')
-                    ->orWhere('Transaksi', 'CHECKOUT');
-            })->orderBy('Tanggal')->get();
-        } elseif ($request->get('transaksi') == 'semua' && $request->get('customer') != 'semua') {
-            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function ($query) {
-                $query->where('Transaksi', 'PENJUALAN')
-                    ->orWhere('Transaksi', 'CHECKOUT');
-            })->orderBy('Tanggal')->get();
-        } else if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'semua') {
-            $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where(function ($query) {
-                $query->where('Transaksi', 'PENJUALAN')
-                    ->orWhere('Transaksi', 'CHECKOUT');
-            })->orderBy('Tanggal')->get();
-        } else if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'semua') {
-            $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->orderBy('Tanggal')->get();
-        } else  if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'UMUM') {
-            $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->orderBy('Tanggal')->get();
-        } else {
-            $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->orderBy('Tanggal')->get();
-        }
-        $arr = [];
-        $sumdiskon = 0;
-        $sumpajak = 0;
-        $sumtotal = 0;
-        $sumekop = 0;
-        $sumtunai = 0;
-        $sumkredit = 0;
-        foreach ($trmutasihd as $key => $value) {
-            if ($value->Transaksi == 'CHECKOUT') {
-                $transaksi = 'Online';
-            } else if ($value->Transaksi == 'PENJUALAN') {
-                $transaksi = 'Offline';
+        $grup = $request->get('grup');
+
+        if ($grup == 'ya') {
+            if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
+                $trmutasihd = Trmutasihd::select('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat', DB::raw('sum(TotalHarga) as TotalHarga'), DB::raw('sum(PembayaranTunai) as PembayaranTunai'), DB::raw('sum(PembayaranKredit) as PembayaranKredit'), DB::raw('sum(PembayaranEkop) as PembayaranEkop'))->leftJoin('msanggota', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function ($query) {
+                    $query->where('Transaksi', 'PENJUALAN')
+                        ->orWhere('Transaksi', 'CHECKOUT');
+                })->groupBy('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat')->get();
+            } elseif ($request->get('transaksi') == 'semua' && $request->get('customer') != 'semua') {
+                $trmutasihd = Trmutasihd::select('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat', DB::raw('sum(TotalHarga) as TotalHarga'), DB::raw('sum(PembayaranTunai) as PembayaranTunai'), DB::raw('sum(PembayaranKredit) as PembayaranKredit'), DB::raw('sum(PembayaranEkop) as PembayaranEkop'))->leftJoin('msanggota', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function ($query) {
+                    $query->where('Transaksi', 'PENJUALAN')
+                        ->orWhere('Transaksi', 'CHECKOUT');
+                })->groupBy('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat')->get();
+            } else if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'semua') {
+                $trmutasihd = Trmutasihd::select('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat', DB::raw('sum(TotalHarga) as TotalHarga'), DB::raw('sum(PembayaranTunai) as PembayaranTunai'), DB::raw('sum(PembayaranKredit) as PembayaranKredit'), DB::raw('sum(PembayaranEkop) as PembayaranEkop'))->leftJoin('msanggota', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where(function ($query) {
+                    $query->where('Transaksi', 'PENJUALAN')
+                        ->orWhere('Transaksi', 'CHECKOUT');
+                })->groupBy('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat')->get();
+            } else if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'semua') {
+                $trmutasihd = Trmutasihd::select('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat', DB::raw('sum(TotalHarga) as TotalHarga'), DB::raw('sum(PembayaranTunai) as PembayaranTunai'), DB::raw('sum(PembayaranKredit) as PembayaranKredit'), DB::raw('sum(PembayaranEkop) as PembayaranEkop'))->leftJoin('msanggota', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->groupBy('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat')->get();
+            } else  if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'UMUM') {
+                $trmutasihd = Trmutasihd::select('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat', DB::raw('sum(TotalHarga) as TotalHarga'), DB::raw('sum(PembayaranTunai) as PembayaranTunai'), DB::raw('sum(PembayaranKredit) as PembayaranKredit'), DB::raw('sum(PembayaranEkop) as PembayaranEkop'))->leftJoin('msanggota', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->groupBy('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat')->get();
+            } else {
+                $trmutasihd = Trmutasihd::select('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat', DB::raw('sum(TotalHarga) as TotalHarga'), DB::raw('sum(PembayaranTunai) as PembayaranTunai'), DB::raw('sum(PembayaranKredit) as PembayaranKredit'), DB::raw('sum(PembayaranEkop) as PembayaranEkop'))->leftJoin('msanggota', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->groupBy('KodeSuppCust', 'Nama', 'SubDept', 'Pangkat')->get();
             }
 
-            $trmutasidt = Trmutasidt::where('Nomor', $value->Nomor)->where('Transaksi', $transaksi)->get();
-            $subtotal = 0;
 
-            foreach ($trmutasidt as $key => $row) {
-                $subtotal += $row->Harga;
-            }
-
-            $x['Penjualan'] = $transaksi;
-            $x['Lokasi'] = $value->LokasiAwal;
-            $x['Tanggal'] = $value->Tanggal;
-            $x['Nomor'] = $value->Nomor;
-            $x['Customer'] = $value->KodeSuppCust;
-
-            //hitung total diskon
-            $diskonpersen = ($value->DiskonPersen / 100) * $subtotal;
-            $totaldiskon = $value->DiskonTunai + $diskonpersen;
-            $sumdiskon += $totaldiskon;
-            $x['Diskon'] = $totaldiskon;
-
-            //hitung pajak
-            $totalhargasetelahdiskon = $value->TotalHarga;
-            $totalhargasetelahpajak =  ($totalhargasetelahdiskon * ($value->Pajak / 100));
-            $sumpajak += $totalhargasetelahpajak;
-            $x['Pajak'] = $totalhargasetelahpajak;
-
-            $sumtotal += $value->TotalHargaSetelahPajak;
-            $sumtunai += $value->PembayaranTunai;
-            $sumekop += $value->PembayaranEkop;
-            $sumkredit += $value->PembayaranKredit;
-            $x['Total'] = $value->TotalHargaSetelahPajak;
-            $x['Ekop'] = $value->PembayaranEkop;
-            $x['Tunai'] = $value->PembayaranTunai;
-            $x['Kredit'] = $value->PembayaranKredit;
-            $x['DueDate'] = $value->DueDate;
-
-
-
-            array_push($arr, $x);
-        }
-
-        $periode1 = date("l, F j, Y", strtotime($periode1));
-        $periode2 = date("l, F j, Y", strtotime($periode2));
-
-        if ($request->get('cetak') == 'pdf') {
             $pdf = PDF::loadview(
                 "frontend.pos.laporan.penjualan.pdf",
                 [
-                    'laporan' => $arr, 'periode1' => $periode1, 'periode2' => $periode2,
-                    'diskon' => $sumdiskon, 'pajak' => $sumpajak, 'total' => $sumtotal,
-                    'tunai' => $sumtunai, 'kredit' => $sumkredit, 'ekop' => $sumekop
+                    'grup' => $grup,
+                    'laporan' => $trmutasihd, 'periode1' => $periode1, 'periode2' => $periode2
                 ]
             )->setPaper('a3', 'landscape');
             return $pdf->stream('laporan-penjualan-pdf', array('Attachment' => 0));
         } else {
-            $penjualan = collect($arr);
 
 
 
-            return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop), 'laporan-penjualan.xlsx');
+            if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
+                $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function ($query) {
+                    $query->where('Transaksi', 'PENJUALAN')
+                        ->orWhere('Transaksi', 'CHECKOUT');
+                })->orderBy('Tanggal')->get();
+            } elseif ($request->get('transaksi') == 'semua' && $request->get('customer') != 'semua') {
+                $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->where(function ($query) {
+                    $query->where('Transaksi', 'PENJUALAN')
+                        ->orWhere('Transaksi', 'CHECKOUT');
+                })->orderBy('Tanggal')->get();
+            } else if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'semua') {
+                $trmutasihd = Trmutasihd::whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where(function ($query) {
+                    $query->where('Transaksi', 'PENJUALAN')
+                        ->orWhere('Transaksi', 'CHECKOUT');
+                })->orderBy('Tanggal')->get();
+            } else if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'semua') {
+                $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->orderBy('Tanggal')->get();
+            } else  if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'UMUM') {
+                $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->orderBy('Tanggal')->get();
+            } else {
+                $trmutasihd = Trmutasihd::where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('KodeSuppCust', $request->get('customer'))->orderBy('Tanggal')->get();
+            }
+            $arr = [];
+            $sumdiskon = 0;
+            $sumpajak = 0;
+            $sumtotal = 0;
+            $sumekop = 0;
+            $sumtunai = 0;
+            $sumkredit = 0;
+            foreach ($trmutasihd as $key => $value) {
+                if ($value->Transaksi == 'CHECKOUT') {
+                    $transaksi = 'Online';
+                } else if ($value->Transaksi == 'PENJUALAN') {
+                    $transaksi = 'Offline';
+                }
+
+                $trmutasidt = Trmutasidt::where('Nomor', $value->Nomor)->where('Transaksi', $transaksi)->get();
+                $subtotal = 0;
+
+                foreach ($trmutasidt as $key => $row) {
+                    $subtotal += $row->Harga;
+                }
+
+                $x['Penjualan'] = $transaksi;
+                $x['Lokasi'] = $value->LokasiAwal;
+                $x['Tanggal'] = $value->Tanggal;
+                $x['Nomor'] = $value->Nomor;
+                $x['Customer'] = $value->KodeSuppCust;
+
+                //hitung total diskon
+                $diskonpersen = ($value->DiskonPersen / 100) * $subtotal;
+                $totaldiskon = $value->DiskonTunai + $diskonpersen;
+                $sumdiskon += $totaldiskon;
+                $x['Diskon'] = $totaldiskon;
+
+                //hitung pajak
+                $totalhargasetelahdiskon = $value->TotalHarga;
+                $totalhargasetelahpajak =  ($totalhargasetelahdiskon * ($value->Pajak / 100));
+                $sumpajak += $totalhargasetelahpajak;
+                $x['Pajak'] = $totalhargasetelahpajak;
+
+                $sumtotal += $value->TotalHargaSetelahPajak;
+                $sumtunai += $value->PembayaranTunai;
+                $sumekop += $value->PembayaranEkop;
+                $sumkredit += $value->PembayaranKredit;
+                $x['Total'] = $value->TotalHargaSetelahPajak;
+                $x['Ekop'] = $value->PembayaranEkop;
+                $x['Tunai'] = $value->PembayaranTunai;
+                $x['Kredit'] = $value->PembayaranKredit;
+                $x['DueDate'] = $value->DueDate;
+
+
+
+                array_push($arr, $x);
+            }
+
+            $periode1 = date("l, F j, Y", strtotime($periode1));
+            $periode2 = date("l, F j, Y", strtotime($periode2));
+
+            if ($request->get('cetak') == 'pdf') {
+                $pdf = PDF::loadview(
+                    "frontend.pos.laporan.penjualan.pdf",
+                    [
+                        'grup' => $grup,
+                        'laporan' => $arr, 'periode1' => $periode1, 'periode2' => $periode2,
+                        'diskon' => $sumdiskon, 'pajak' => $sumpajak, 'total' => $sumtotal,
+                        'tunai' => $sumtunai, 'kredit' => $sumkredit, 'ekop' => $sumekop
+                    ]
+                )->setPaper('a3', 'landscape');
+                return $pdf->stream('laporan-penjualan-pdf', array('Attachment' => 0));
+            } else {
+                $penjualan = collect($arr);
+
+
+
+                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop), 'laporan-penjualan.xlsx');
+            }
         }
     }
 

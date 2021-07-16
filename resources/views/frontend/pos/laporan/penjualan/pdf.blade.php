@@ -157,6 +157,47 @@
 
     </header>
     <main>
+        @if ($grup == 'ya')
+        <table>
+            <thead>
+                <tr>
+
+                    <th rowspan="2">Customer</th>
+                    <th rowspan="2">Nama</th>
+                    <th rowspan="2">Subdept</th>
+                    <th rowspan="2">Pangkat</th>
+                    <th rowspan="2">Total</th>
+                    <th colspan="3">Pembayaran</th>
+
+                </tr>
+                <tr>
+                    <th>eKop</th>
+                    <th>Tunai</th>
+                    <th>Kredit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($laporan as $item)
+                <tr>
+                    <td>{{$item->KodeSuppCust}}</td>
+                    <td>@if ($item->Nama == null)
+                        UMUM
+                        @else
+                        {{$item->Nama}}
+                        @endif</td>
+                    <td>{{$item->SubDept}}</td>
+                    <td>{{$item->Pangkat}}</td>
+                    <td>{{$item->TotalHarga}}</td>
+                    <td>{{$item->PembayaranEkop}}</td>
+                    <td>{{$item->PembayaranTunai}}</td>
+                    <td>{{$item->PembayaranKredit}}</td>
+                </tr>
+                @empty
+
+                @endforelse
+            </tbody>
+        </table>
+        @else
         <table>
             <thead>
                 <tr>
@@ -203,16 +244,17 @@
             <tfoot>
                 <tr>
                     <td colspan="5" class="text-center">Total</td>
-                    <td  align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
-                    <td  align="right">{{"Rp " . number_format($kredit,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($kredit,2,',','.')}}</td>
                     <td></td>
                 </tr>
             </tfoot>
         </table>
+        @endif
 
     </main>
 
