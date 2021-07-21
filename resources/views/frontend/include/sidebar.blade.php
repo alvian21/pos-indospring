@@ -105,6 +105,7 @@
                 <li><a class="nav-link" href="{{route('poslaporan.opnamehilang.index')}}">Opname | Hilang/Rusak</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.paretopenjualan.index')}}">Pareto Penjualan</a></li>
                 <li><a class="nav-link" href="{{route('poslaporan.tracestok.index')}}">Trace Stok</a></li>
+                <li><a class="nav-link" href="{{route('poslaporan.trcetak.index')}}">Cetak Label Harga</a></li>
             </ul>
         </li>
     </ul>

@@ -229,6 +229,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::post('/realtimestok/cetak','RealtimeStokController@cetak')->name('realtimestok.cetak');
         Route::post('/paretopenjualan/cetakpdf','ParetoPenjualan@cetakPdf')->name('paretopenjualan.cetakpdf');
         Route::post('/tracestok/cetak','TraceStokController@cetak')->name('tracestok.cetak');
+        Route::get('/trcetak/label','TrcetakController@cetak')->name('cetak.label');
         // Route::post('/paretopenjualan/cetakdetail','ParetoPenjualan@cetakDetail')->name('paretopenjualan.cetakdetail');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('pembelian', 'PembelianController');
@@ -237,6 +238,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('realtimestok', 'RealtimeStokController');
         Route::resource('paretopenjualan', 'ParetoPenjualan');
         Route::resource('tracestok', 'TraceStokController');
+        Route::resource('trcetak', 'TrcetakController');
     });
 
 
