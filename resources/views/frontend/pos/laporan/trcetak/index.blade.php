@@ -91,7 +91,9 @@ $(document).ready(function () {
     $('#barang').select2()
     var table = $("#table-1").DataTable({
         processing: true,
-        serverSide: true,
+        "pagingType": "full_numbers",
+        "paging": true,
+        "lengthMenu": [10, 25, 50, 75, 100],
         ajax: "{{ route('poslaporan.trcetak.index') }}",
         columns: [
             {data: 'KodeBarang', name: 'KodeBarang'},
@@ -163,6 +165,9 @@ $(document).ready(function () {
                     if(response.status){
                         $('#alert-data').html(response.data)
                         setTimeout(function(){$('#alert-data').empty()},1500)
+                        table.clear().draw();
+                        table.rows.add(response['datatable']).draw();
+
                     }else{
                         $('#alert-data').html(response.data)
                     }

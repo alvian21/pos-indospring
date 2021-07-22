@@ -94,10 +94,29 @@ class TrcetakController extends Controller
             $html = '<div class="alert alert-success" role="alert">
             Cetak Label Berhasil Disimpan
           </div>';
+            $cetak = Trcetak::join('msbarang', 'msbarang.Kode', 'trcetak.KodeBarang')->get();
+
+            $data2 = array();
+            if ($cetak != null) {
+                $count = count($cetak);
+                $no = 1;
+                foreach ($cetak as $row) {
+                    $sub = array();
+                    $sub["KodeBarang"] = $row->KodeBarang;
+                    $sub["KodeBarcode"] = $row->KodeBarcode;
+                    $sub["Nama"] = $row->Nama;
+                    $sub["HargaJual"] = $row->HargaJual;
+                    $sub["action"] = '<button type="button" data-kode="'.$row->KodeBarang.'" class="btn btn-danger hapusLabel">Hapus</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
 
             return response()->json([
                 'status' => true,
-                'data' => $html
+                'data' => $html,
+                'datatable' => $data2
             ]);
         }
     }
