@@ -17,10 +17,36 @@ class TrcetakController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $msbarang = Msbarang::all();
         $cetak = Trcetak::join('msbarang', 'msbarang.Kode', 'trcetak.KodeBarang')->get();
+        if ($request->ajax()) {
+
+            $data2 = array();
+            if ($cetak != null) {
+                $count = count($cetak);
+                $no = 1;
+                foreach ($cetak as $row) {
+                    $sub = array();
+                    $sub["KodeBarang"] = $row->KodeBarang;
+                    $sub["KodeBarcode"] = $row->KodeBarcode;
+                    $sub["Nama"] = $row->Nama;
+                    $sub["HargaJual"] = $row->HargaJual;
+                    $sub["action"] = '<button type="button" data-kode="'.$row->KodeBarang.'" class="btn btn-danger hapusLabel">Hapus</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
+        }
         return view('frontend.pos.laporan.trcetak.index', ['msbarang' => $msbarang, 'cetak' => $cetak]);
     }
 
@@ -43,7 +69,7 @@ class TrcetakController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'barang' => 'required|unique:trcetak,KodeBarang'
+            'barang' => 'required|unique:trcetak,KodeBarang|not_in:0'
         ]);
 
         if ($validator->fails()) {

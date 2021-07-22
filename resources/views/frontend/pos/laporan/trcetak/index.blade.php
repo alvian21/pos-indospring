@@ -33,7 +33,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($cetak as $item)
+                                    {{-- @forelse ($cetak as $item)
                                     <tr>
                                         <td>{{$item->KodeBarang}}</td>
                                         <td>{{$item->KodeBarcode}}</td>
@@ -43,7 +43,7 @@
                                     </tr>
                                     @empty
 
-                                    @endforelse
+                                    @endforelse --}}
 
                                 </tbody>
                             </table>
@@ -75,7 +75,7 @@
                     <div class="form-group">
                         <label for="barang">Barang</label>
                         <select class="form-control" id="barang" name="barang">
-                            <option value="0">Pilih Barang</option>
+                            <option value="0" selected>Pilih Barang</option>
                             @forelse ($msbarang as $item)
                             <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null) {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
 
@@ -99,7 +99,19 @@
 <script type="text/javascript">
 $(document).ready(function () {
     $('#barang').select2()
-    var table = $("#table-1").DataTable();
+    var table = $("#table-1").DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('poslaporan.trcetak.index') }}",
+        columns: [
+            {data: 'KodeBarang', name: 'KodeBarang'},
+            {data: 'KodeBarcode', name: 'KodeBarcode'},
+            {data: 'Nama', name: 'Nama'},
+            {data: 'HargaJual', name: 'HargaJual'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
+
+        ],
+    });
 
     function ajax(){
         $.ajaxSetup({
@@ -112,6 +124,10 @@ $(document).ready(function () {
     $('.addcetak').on('click', function(){
         $('#alert-data').empty()
         $('#barang').val(0).change()
+    })
+
+    $('#barang').on('change', function(){
+        $('#alert-data').empty()
     })
 
     $(document).on('click','.hapusLabel', function () {
@@ -156,7 +172,7 @@ $(document).ready(function () {
             }).done(function (response) {
                     if(response.status){
                         $('#alert-data').html(response.data)
-                        setTimeout(function(){location.reload(true)},1000)
+                        setTimeout(function(){$('#alert-data').empty()},1500)
                     }else{
                         $('#alert-data').html(response.data)
                     }
