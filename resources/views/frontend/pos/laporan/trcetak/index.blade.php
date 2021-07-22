@@ -33,17 +33,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @forelse ($cetak as $item)
-                                    <tr>
-                                        <td>{{$item->KodeBarang}}</td>
-                                        <td>{{$item->KodeBarcode}}</td>
-                                        <td>{{$item->Nama}}</td>
-                                        <td>{{$item->HargaJual}}</td>
-                                        <td><button type="button" data-kode="{{$item->KodeBarang}}" class="btn btn-danger hapusLabel">Hapus</button></td>
-                                    </tr>
-                                    @empty
 
-                                    @endforelse --}}
 
                                 </tbody>
                             </table>
