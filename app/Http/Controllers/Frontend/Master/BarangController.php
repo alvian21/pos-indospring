@@ -9,6 +9,7 @@ use App\Mskategori;
 use Image;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Mslokasi;
 
 class BarangController extends Controller
 {
@@ -21,7 +22,7 @@ class BarangController extends Controller
     {
         $msbarang = Msbarang::all();
         $mskategori = Mskategori::all();
-       return view("frontend.master.barang.index",["msbarang" => $msbarang, "mskategori" => $mskategori]);
+        return view("frontend.master.barang.index", ["msbarang" => $msbarang, "mskategori" => $mskategori]);
     }
 
     /**
@@ -47,22 +48,30 @@ class BarangController extends Controller
             'kode_barcode' => 'nullable',
             'kategori' => 'required',
             'tampildimobile' => 'required',
-            'nama'=> 'required',
-            'harga'=> 'required',
+            'nama' => 'required',
+            'harga' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg'
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator->errors());
         } else {
-           if($request->get("status") == "update"){
-            $msbarang = Msbarang::find($request->get('kode'));
-           }elseif($request->get("status") == "store"){
-            $msbarang = new Msbarang();
-            $msbarang->Kode = $request->get("kode");
-            $msbarang->Nama = $request->get("nama");
+            $tampildicaffe = $request->get('tampildicaffe');
+            if ($request->get("status") == "update") {
+                $msbarang = Msbarang::find($request->get('kode'));
+            } elseif ($request->get("status") == "store") {
+                $msbarang = new Msbarang();
+                $msbarang->Kode = $request->get("kode");
+                $msbarang->Nama = $request->get("nama");
+            }
 
-           }
+            $restampil = '';
+            foreach ($tampildicaffe as $key => $value) {
+               $restampil .= $value.' ';
+            }
+
+            $msbarang->TampilDiCaffe = $restampil;
+            $msbarang->HargaCaffe = $request->get('hargacaffe');
             $msbarang->HargaJual = $request->get('harga');
             $msbarang->KodeBarcode = $request->get('kode_barcode');
             $msbarang->KodeKategori = $request->get('kategori');
@@ -85,12 +94,11 @@ class BarangController extends Controller
             $msbarang->save();
 
             // dd($msbarang);
-            if($request->get("status") == "update"){
+            if ($request->get("status") == "update") {
                 return redirect()->back()->with("success", "Data Barang berhasil di update");
-            }else{
+            } else {
                 return redirect()->back()->with("success", "Data Barang berhasil di simpan");
             }
-
         }
     }
 
@@ -142,36 +150,55 @@ class BarangController extends Controller
     public function getKategori(Request $request)
     {
         if ($request->ajax()) {
-            $mskategori = Mskategori::where("Kode","!=",null)->get();
-            return response()->json($mskategori);
+            $mskategori = Mskategori::where("Kode", "!=", null)->get();
+            $mslokasi = Mslokasi::where('status', 'Caffe')->get();
+            $msbarang = '';
+            $arr = [];
+            $harga = 0;
+            if($request->has('kode')){
+
+                $msbarang = Msbarang::where('Kode', $request->get('kode'))->first();
+                if($msbarang->TampilDiCaffe != ''){
+                    $arr = explode(' ', $msbarang->TampilDiCaffe);
+                }
+                $harga = $msbarang->HargaCaffe;
+            }
+            return response()->json([
+                'lokasi' => $mslokasi,
+                'kategori' => $mskategori,
+                'barang'=> $arr,
+                'hargacaffe' => $harga
+            ]);
         }
     }
 
-    public function CheckKodeBarang(Request $request){
-        if($request->ajax()){
+    public function CheckKodeBarang(Request $request)
+    {
+        if ($request->ajax()) {
             $msbarang = Msbarang::find($request->get("kode"));
-            if($msbarang){
+            if ($msbarang) {
                 return response()->json([
-                    'status'=> true
+                    'status' => true
                 ]);
-            }else{
+            } else {
                 return response()->json([
-                    'status'=> false
+                    'status' => false
                 ]);
             }
         }
     }
 
-    public function CheckKodeBarcode(Request $request){
-        if($request->ajax()){
-            $msbarang = Msbarang::where('KodeBarcode', $request->get("KodeBarcode"))->where('KodeBarcode','!=',null)->first();
-            if($msbarang){
+    public function CheckKodeBarcode(Request $request)
+    {
+        if ($request->ajax()) {
+            $msbarang = Msbarang::where('KodeBarcode', $request->get("KodeBarcode"))->where('KodeBarcode', '!=', null)->first();
+            if ($msbarang) {
                 return response()->json([
-                    'status'=> true
+                    'status' => true
                 ]);
-            }else{
+            } else {
                 return response()->json([
-                    'status'=> false
+                    'status' => false
                 ]);
             }
         }

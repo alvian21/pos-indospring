@@ -131,11 +131,23 @@ class PenjualanController extends Controller
             }
 
 
+            $sumtotal = 0;
+            $sumekop = 0;
+            $sumtunai = 0;
+            $sumkredit = 0;
+
+
+            $sumtotal = array_sum(array_column($trmutasihd->toArray(), 'TotalHarga'));
+            $sumekop = array_sum(array_column($trmutasihd->toArray(), 'PembayaranEkop'));
+            $sumtunai = array_sum(array_column($trmutasihd->toArray(), 'PembayaranTunai'));
+            $sumkredit = array_sum(array_column($trmutasihd->toArray(), 'PembayaranKredit'));
+
             $pdf = PDF::loadview(
                 "frontend.pos.laporan.penjualan.pdf",
                 [
                     'grup' => $grup,
-                    'laporan' => $trmutasihd, 'periode1' => $periode1, 'periode2' => $periode2
+                    'laporan' => $trmutasihd, 'periode1' => $periode1, 'periode2' => $periode2, 'total' => $sumtotal,
+                    'tunai' => $sumtunai, 'kredit' => $sumkredit, 'ekop' => $sumekop
                 ]
             )->setPaper('a3', 'landscape');
             return $pdf->stream('laporan-penjualan-pdf', array('Attachment' => 0));

@@ -125,7 +125,16 @@
                     </div>
                     <div class="form-group">
                         <label for="harga">Harga Jual</label>
-                        <input type="text" class="form-control" name="harga" id="harga">
+                        <input type="number" required class="form-control" name="harga" id="harga">
+                    </div>
+                    <div class="form-group">
+                        <label for="tampildicaffe">Tampil Di Caffe</label>
+                        <select class="form-control" name="tampildicaffe[]" multiple id="tampildicaffe">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hargacaffe">Harga Caffe</label>
+                        <input type="number" class="form-control" required name="hargacaffe" id="hargacaffe">
                     </div>
                     {{-- <div class="form-group">
                         <label for="gambar">Gambar <span class="badge badge-info" id="info_gambar"></span></label>
@@ -149,6 +158,7 @@
     //     }
 
         $(document).ready(function() {
+            $('#tampildicaffe').select2()
             $('#kode').attr('readonly', true);
             $('#nama').attr('readonly', true);
             var table = $("#table-1").DataTable({
@@ -253,9 +263,15 @@
                     url:'{{route("master.barang.getkategori")}}',
                     method:'GET',
                     success:function(data){
-                       for (let index = 0; index < data.length; index++) {
-                            $('#kategori').append(' <option value="'+data[index]["Kode"]+'">'+data[index]["Nama"]+'</option>');
-                     }
+                        var kategori = data['kategori']
+                        var lokasi = data['lokasi']
+                        for (let index = 0; index < kategori.length; index++) {
+                                $('#kategori').append(' <option value="'+kategori[index]["Kode"]+'">'+kategori[index]["Nama"]+'</option>');
+                        }
+
+                        for (let index = 0; index < lokasi.length; index++) {
+                                $('#tampildicaffe').append(' <option value="'+lokasi[index]["Kode"]+'">'+lokasi[index]["Kode"]+'</option>');
+                        }
                     }
                 });
 
@@ -266,6 +282,17 @@
                 var btn = $('#btnBarang').val();
                 var kode = $('#kode').val();
                 var kode_barcode = $('#kode_barcode').val();
+                var tampildicaffe = $('#tampildicaffe').find(':selected').val();
+                if(typeof(tampildicaffe) == 'undefined'){
+                        swal({
+                            title: "Error",
+                            text: "Maaf, tampil di caffe wajib di pilih",
+                            icon: "error",
+                            dangerMode: true,
+                        });
+                        return false;
+                    }
+
                 if(btn === "create"){
                     var cek = false;
                     var cek_barcode = false;
@@ -318,6 +345,8 @@
                         return false;
                     }
 
+
+
                     // if(!cek && !cek_barcode){
                     //     return true;
                     // }
@@ -350,6 +379,7 @@
                 var dataselect = data[3];
                 $('#kategori').empty();
                 $('#tampildimobile').empty();
+                $('#tampildicaffe').empty();
                 // console.log(data[4]);
 
                 if(data[6].trim() ==="ada_gambar"){
@@ -359,16 +389,40 @@
                 }
                 $.ajax({
                     url:'{{route("master.barang.getkategori")}}',
+                    data:{
+                        'kode':kode
+                    },
                     method:'GET',
                     success:function(data){
-                       for (let index = 0; index < data.length; index++) {
-                        if(dataselect.trim()===data[index]["Nama"].trim()){
-                            $('#kategori').append(' <option value="'+data[index]["Kode"]+'" selected >'+data[index]["Nama"]+'</option>');
+
+                        var kategori = data['kategori']
+                        var lokasi = data['lokasi']
+                        var barang = data['barang']
+                        // var
+                       for (let index = 0; index < kategori.length; index++) {
+                        if(dataselect.trim()===kategori[index]["Nama"].trim()){
+                            $('#kategori').append(' <option value="'+kategori[index]["Kode"]+'" selected >'+kategori[index]["Nama"]+'</option>');
                             }else{
-                            $('#kategori').append(' <option value="'+data[index]["Kode"]+'">'+data[index]["Nama"]+'</option>');
+                            $('#kategori').append(' <option value="'+kategori[index]["Kode"]+'">'+kategori[index]["Nama"]+'</option>');
                             }
                         }
+                        for (let index = 0; index < lokasi.length; index++) {
+                            var cek = false;
+                           for (let k = 0; k < barang.length; k++) {
+                               const databarang = barang[index];
+                               if(databarang===lokasi[index]["Kode"]){
+                                    cek = true
+                                }
+                           }
 
+                           if(cek){
+                            $('#tampildicaffe').append(' <option value="'+lokasi[index]["Kode"]+'" selected >'+lokasi[index]["Kode"]+'</option>');
+                           }else{
+                            $('#tampildicaffe').append(' <option value="'+lokasi[index]["Kode"]+'" >'+lokasi[index]["Kode"]+'</option>');
+                           }
+                        }
+
+                        $('#hargacaffe').val(data['hargacaffe'])
                     }
                 });
 
