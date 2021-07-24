@@ -21,7 +21,7 @@ class BarangController extends Controller
     public function index()
     {
         $msbarang = Msbarang::all();
-        $mskategori = Mskategori::all();
+        $mskategori = Mskategori::all()->where('Kode','!=',null);
         return view("frontend.master.barang.index", ["msbarang" => $msbarang, "mskategori" => $mskategori]);
     }
 

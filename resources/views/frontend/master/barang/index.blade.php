@@ -20,12 +20,21 @@
                     <div class="card-body">
                         @include('frontend.include.alert')
                         <div class="table-responsive">
-                            <select id="select" class="form-control input-sm">
+                            <select id="select" class="form-control input-sm selectsearch">
                                 <option>Show All</option>
                                 <option>With Pictures</option>
                                 <option>Without Pictures</option>
                                 <option>With Barcode</option>
                                 <option>Without Barcode</option>
+
+                            </select>
+                            <select id="select" class="form-control input-sm selectkategori mt-2">
+                                <option value="">Show All Kategori</option>
+                                @forelse ($mskategori as $item)
+                                <option value="{{$item->Kode}}">{{$item->Nama}}</option>
+                                @empty
+
+                                @endforelse
 
                             </select>
                             <table class="table table-striped" id="table-1">
@@ -173,6 +182,17 @@
                 table.search(this.value).draw();
             });
 
+            $('.selectkategori').on('change', function () {
+                var data = $(this).find(':selected').text()
+                if(data != 'Show All Kategori'){
+                    table.columns(1).search("").draw();
+                    table.columns(3).search(data).draw();
+                }else{
+                    table.columns(1).search("").draw();
+                    table.columns(3).search("").draw();
+                }
+            })
+
             function createItem(data) {
                 sessionStorage.setItem("filter", data);
             }
@@ -214,7 +234,7 @@
                 createItemEntry($(this).val());
             });
 
-            $('#select').change(function() {
+            $('.selectsearch').change(function() {
                 if (this.value == "With Pictures") {
                     table.columns(1).search("").draw();
                     table.columns(6).search("ada_gambar").draw();
@@ -238,6 +258,8 @@
                 }
 
             });
+
+
             $('#ModalBarang').on('hidden.bs.modal', function() {
                 $(this).find('form').trigger('reset');
                 $('#kode').attr('readonly', true);
