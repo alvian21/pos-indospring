@@ -479,12 +479,11 @@
                         for (let index = 0; index < lokasi.length; index++) {
                             var cek = false;
                            for (let k = 0; k < barang.length; k++) {
-                               const databarang = barang[index];
+                               const databarang = barang[k];
                                if(databarang===lokasi[index]["Kode"]){
                                     cek = true
                                 }
                            }
-
                            if(cek){
                             $('#tampildicaffe').append(' <option value="'+lokasi[index]["Kode"]+'" selected >'+lokasi[index]["Kode"]+'</option>');
                            }else{

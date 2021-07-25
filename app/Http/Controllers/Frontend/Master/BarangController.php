@@ -166,6 +166,7 @@ class BarangController extends Controller
                 $msbarang = Msbarang::where('Kode', $request->get('kode'))->first();
                 if($msbarang->TampilDiCaffe != ''){
                     $arr = explode(' ', $msbarang->TampilDiCaffe);
+                    $arr = array_filter($arr);
                 }
                 $harga = $msbarang->HargaCaffe;
                 $hargatoko = $msbarang->HargaJual;
