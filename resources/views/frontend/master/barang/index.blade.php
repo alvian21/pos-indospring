@@ -37,6 +37,16 @@
                                 @endforelse
 
                             </select>
+                            <select id="select" class="form-control input-sm selectcaffe mt-2">
+                                <option value="Tampil" selected>Tampil Di Caffe</option>
+                                <option value="Tidak">Tidak Tampil Di Caffe</option>
+                                @forelse ($mslokasi as $item)
+                                <option value="{{$item->Kode}}">{{$item->Kode}}</option>
+                                @empty
+
+                                @endforelse
+
+                            </select>
                             <table class="table table-striped" id="table-1">
                                 <thead>
                                     <tr>
@@ -73,7 +83,15 @@
                                             @endforeach
                                         </td>
                                         <td>{{($item->TampilDiMobile == "1") ? 'Ya' : 'Tidak'}}</td>
-                                        <td>{{$item->TampilDiCaffe}}</td>
+                                        <td>
+                                            @if (empty($item->TampilDiCaffe))
+
+                                            <p style="display:none">Tidak</p>
+                                            @else
+                                            {{$item->TampilDiCaffe}}
+                                            <p style="display:none">Tampil</p>
+                                            @endif
+                                        </td>
                                         <td>@rupiah($item->HargaJual)</td>
                                         <td>@rupiah($item->HargaCaffe)</td>
                                         <td>
@@ -221,6 +239,14 @@
                 }
             })
 
+
+
+            $('.selectcaffe').on('change', function () {
+                var data = $(this).find(':selected').val()
+                createItemEntryCaffe(data);
+                table.columns(1).search("").draw();
+                table.columns(5).search(data).draw();
+            })
             function createItem(data) {
                 sessionStorage.setItem("filter", data);
             }
@@ -235,6 +261,9 @@
             function createItemEntryKategori(data){
                 sessionStorage.setItem("kategori", data);
             }
+            function createItemEntryCaffe(data){
+                sessionStorage.setItem("caffe", data);
+            }
 
             if(sessionStorage.getItem("filter")!=null ){
                 var filter = sessionStorage.getItem("filter");
@@ -244,18 +273,18 @@
                     }).prop('selected', true);
                 if (filter == "With Pictures") {
                     table.columns(1).search("").draw();
-                    table.columns(6).search("ada_gambar").draw();
+                    table.columns(8).search("ada_gambar").draw();
                 } else if (filter == "Without Pictures") {
                     table.columns(1).search("").draw();
-                    table.columns(6).search("belum ada gambar").draw();
+                    table.columns(8).search("belum ada gambar").draw();
                 }else if (filter == "With Barcode") {
-                    table.columns(6).search("").draw();
+                    table.columns(8).search("").draw();
                     table.columns(1).search("ada_barcode").draw();
                 }else if (filter == "Without Barcode") {
-                    table.columns(6).search("").draw();
+                    table.columns(8).search("").draw();
                     table.columns(1).search("no_barcode").draw();
                 } else  {
-                    table.columns(6).search("").draw();
+                    table.columns(8).search("").draw();
                     table.columns(1).search("").draw();
                 }
             }
@@ -268,6 +297,10 @@
                 var filter = sessionStorage.getItem("kategori");
                 $('.selectkategori').val(filter).change();
             }
+            if(sessionStorage.getItem("caffe") != null){
+                var filter = sessionStorage.getItem("caffe");
+                $('.selectcaffe').val(filter).change();
+            }
 
             $('select[name="table-1_length"]').on('change', function(){
                 createItemEntry($(this).val());
@@ -276,22 +309,22 @@
             $('.selectsearch').change(function() {
                 if (this.value == "With Pictures") {
                     table.columns(1).search("").draw();
-                    table.columns(6).search("ada_gambar").draw();
+                    table.columns(8).search("ada_gambar").draw();
                     createItem("With Pictures");
                 } else if (this.value == "Without Pictures") {
                     table.columns(1).search("").draw();
-                    table.columns(6).search("belum ada gambar").draw();
+                    table.columns(8).search("belum ada gambar").draw();
                     createItem("Without Pictures");
                 }else if (this.value == "With Barcode") {
-                    table.columns(6).search("").draw();
+                    table.columns(8).search("").draw();
                     table.columns(1).search("ada_barcode").draw();
                     createItem("With Barcode");
                 }else if (this.value == "Without Barcode") {
-                    table.columns(6).search("").draw();
+                    table.columns(8).search("").draw();
                     table.columns(1).search("no_barcode").draw();
                     createItem("Without Barcode");
                 } else if (this.value == "Show All") {
-                    table.columns(6).search("").draw();
+                    table.columns(8).search("").draw();
                     table.columns(1).search("").draw();
                     createItem("Show All");
                 }

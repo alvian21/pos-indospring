@@ -22,7 +22,8 @@ class BarangController extends Controller
     {
         $msbarang = Msbarang::all();
         $mskategori = Mskategori::all()->where('Kode','!=',null);
-        return view("frontend.master.barang.index", ["msbarang" => $msbarang, "mskategori" => $mskategori]);
+        $mslokasi = Mslokasi::all()->where('Status','Caffe');
+        return view("frontend.master.barang.index", ["msbarang" => $msbarang, "mskategori" => $mskategori, "mslokasi" => $mslokasi]);
     }
 
     /**
