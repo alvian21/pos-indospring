@@ -50,6 +50,7 @@ class BarangController extends Controller
             'tampildimobile' => 'required',
             'nama' => 'required',
             'harga' => 'required',
+            'hargacaffe' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg'
         ]);
 
@@ -57,6 +58,10 @@ class BarangController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         } else {
             $tampildicaffe = $request->get('tampildicaffe');
+            $hargatoko = $request->get('harga');
+            $hargatoko = str_replace('.','',$hargatoko);
+            $hargacaffe = $request->get('hargacaffe');
+            $hargacaffe = str_replace('.','',$hargacaffe);
             if ($request->get("status") == "update") {
                 $msbarang = Msbarang::find($request->get('kode'));
             } elseif ($request->get("status") == "store") {
@@ -71,8 +76,8 @@ class BarangController extends Controller
             }
 
             $msbarang->TampilDiCaffe = $restampil;
-            $msbarang->HargaCaffe = $request->get('hargacaffe');
-            $msbarang->HargaJual = $request->get('harga');
+            $msbarang->HargaCaffe = $hargacaffe;
+            $msbarang->HargaJual = $hargatoko;
             $msbarang->KodeBarcode = $request->get('kode_barcode');
             $msbarang->KodeKategori = $request->get('kategori');
             $msbarang->TampilDiMobile = $request->get('tampildimobile');

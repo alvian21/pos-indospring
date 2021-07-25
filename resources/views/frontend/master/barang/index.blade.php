@@ -29,7 +29,7 @@
 
                             </select>
                             <select id="select" class="form-control input-sm selectkategori mt-2">
-                                <option value="">Show All Kategori</option>
+                                <option value="" selected>Show All Kategori</option>
                                 @forelse ($mskategori as $item)
                                 <option value="{{$item->Kode}}">{{$item->Nama}}</option>
                                 @empty
@@ -44,8 +44,10 @@
                                         <th>Kode Barcode</th>
                                         <th>Nama</th>
                                         <th>Kategori</th>
-                                        <th>TampilDiMobile</th>
-                                        <th>Harga Jual</th>
+                                        <th>Tampil Di Mobile</th>
+                                        <th>Tampil Di Caffe</th>
+                                        <th>Harga Jual Toko</th>
+                                        <th>Harga Jual Caffe</th>
                                         <th>Gambar</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -71,7 +73,9 @@
                                             @endforeach
                                         </td>
                                         <td>{{($item->TampilDiMobile == "1") ? 'Ya' : 'Tidak'}}</td>
-                                        <td>{{$item->HargaJual}}</td>
+                                        <td>{{$item->TampilDiCaffe}}</td>
+                                        <td>@rupiah($item->HargaJual)</td>
+                                        <td>@rupiah($item->HargaCaffe)</td>
                                         <td>
                                             @if ($item->LokasiGambar != null)
                                             <img width="120"
@@ -127,24 +131,40 @@
                         <select class="form-control" name="kategori" id="kategori">
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="tampildimobile">Tampil Di Mobile</label>
-                        <select class="form-control" name="tampildimobile" id="tampildimobile">
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tampildimobile">Tampil Di Mobile</label>
+                                <select class="form-control" name="tampildimobile" id="tampildimobile">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tampildicaffe">Tampil Di Caffe</label>
+                                <select class="form-control" name="tampildicaffe[]" multiple id="tampildicaffe">
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="harga">Harga Jual</label>
-                        <input type="number" required class="form-control" name="harga" id="harga">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="harga">Harga Jual Toko</label>
+                                <input type="text" required class="form-control" name="harga" id="harga">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="hargacaffe">Harga Jual Caffe</label>
+                                <input type="text" class="form-control" required name="hargacaffe" id="hargacaffe">
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="tampildicaffe">Tampil Di Caffe</label>
-                        <select class="form-control" name="tampildicaffe[]" multiple id="tampildicaffe">
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="hargacaffe">Harga Caffe</label>
-                        <input type="number" class="form-control" required name="hargacaffe" id="hargacaffe">
-                    </div>
+
+
+
                     {{-- <div class="form-group">
                         <label for="gambar">Gambar <span class="badge badge-info" id="info_gambar"></span></label>
                         <input type="file" class="form-control" name="gambar" id="gambar">
@@ -167,6 +187,12 @@
     //     }
 
         $(document).ready(function() {
+            $('#harga').mask('000.000.000.000', {
+                reverse: true
+            });
+            $('#hargacaffe').mask('000.000.000.000', {
+                reverse: true
+            });
             $('#tampildicaffe').select2()
             $('#kode').attr('readonly', true);
             $('#nama').attr('readonly', true);
@@ -174,6 +200,7 @@
                 dom: "<'row'<'col-sm-9'l><'col-sm-3'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-9'i><'col-sm-3'p>>",
+                "scrollX": true
             });
 
             $(".dataTables_filter").append(select);

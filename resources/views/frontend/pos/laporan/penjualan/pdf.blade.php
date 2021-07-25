@@ -187,10 +187,10 @@
                         @endif</td>
                     <td>{{$item->SubDept}}</td>
                     <td>{{$item->Pangkat}}</td>
-                    <td>{{"Rp " . number_format($item->TotalHarga,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item->PembayaranEkop,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item->PembayaranTunai,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($item->PembayaranKredit,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item->TotalHarga,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item->PembayaranEkop,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item->PembayaranTunai,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($item->PembayaranKredit,2,',','.')}}</td>
 
                 </tr>
                 @empty
@@ -200,11 +200,11 @@
             <tfoot>
                 <tr>
                     <td colspan="4" class="center">Total</td>
-                    <td>{{"Rp " . number_format($total,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($ekop,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($tunai,2,',','.')}}</td>
-                    <td>{{"Rp " . number_format($kredit,2,',','.')}}</td>
-                    
+                    <td align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
+                    <td align="right">{{"Rp " . number_format($kredit,2,',','.')}}</td>
+
                 </tr>
             </tfoot>
         </table>
