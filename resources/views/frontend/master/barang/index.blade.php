@@ -403,7 +403,16 @@
 
                 // return false;
              });
-
+             function convertToRupiah(angka) {
+                var rupiah = '';
+                var angkarev = angka.toString().split('').reverse().join('');
+                for (var i = 0; i < angkarev.length; i++) {
+                    if (i%3 == 0) {
+                    rupiah += angkarev.substr(i,3)+'.';
+                    }
+                }
+                return rupiah.split('',rupiah.length-1).reverse().join('');
+            }
             $(document).on('click', '.btnedit', function() {
                 $("#status").val("update");
                 $('#btnBarang').val('edit');
@@ -424,7 +433,7 @@
                 }
 
                 $('#nama').val(data[2]);
-                $('#harga').val(data[5]);
+                // $('#harga').val(data[5]);
                 var dataselect = data[3];
                 $('#kategori').empty();
                 $('#tampildimobile').empty();
@@ -471,7 +480,8 @@
                            }
                         }
 
-                        $('#hargacaffe').val(data['hargacaffe'])
+                        $('#hargacaffe').val(convertToRupiah(data['hargacaffe']))
+                        $('#harga').val(convertToRupiah(data['hargatoko']))
                     }
                 });
 

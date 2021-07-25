@@ -160,6 +160,7 @@ class BarangController extends Controller
             $msbarang = '';
             $arr = [];
             $harga = 0;
+            $hargatoko = 0;
             if($request->has('kode')){
 
                 $msbarang = Msbarang::where('Kode', $request->get('kode'))->first();
@@ -167,12 +168,14 @@ class BarangController extends Controller
                     $arr = explode(' ', $msbarang->TampilDiCaffe);
                 }
                 $harga = $msbarang->HargaCaffe;
+                $hargatoko = $msbarang->HargaJual;
             }
             return response()->json([
                 'lokasi' => $mslokasi,
                 'kategori' => $mskategori,
                 'barang'=> $arr,
-                'hargacaffe' => $harga
+                'hargacaffe' => $harga,
+                'hargatoko' => $hargatoko
             ]);
         }
     }
