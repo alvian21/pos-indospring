@@ -29,9 +29,9 @@
 
                             </select>
                             <select id="select" class="form-control input-sm selectkategori mt-2">
-                                <option value="" selected>Show All Kategori</option>
+                                <option value="Show All Kategori" selected>Show All Kategori</option>
                                 @forelse ($mskategori as $item)
-                                <option value="{{$item->Kode}}">{{$item->Nama}}</option>
+                                <option value="{{$item->Nama}}">{{$item->Nama}}</option>
                                 @empty
 
                                 @endforelse
@@ -211,6 +211,7 @@
 
             $('.selectkategori').on('change', function () {
                 var data = $(this).find(':selected').text()
+                createItemEntryKategori(data);
                 if(data != 'Show All Kategori'){
                     table.columns(1).search("").draw();
                     table.columns(3).search(data).draw();
@@ -226,6 +227,13 @@
 
             function createItemEntry(data){
                 sessionStorage.setItem("entry", data);
+            }
+            function createItemKategori(data) {
+                sessionStorage.setItem("kategori", data);
+            }
+
+            function createItemEntryKategori(data){
+                sessionStorage.setItem("kategori", data);
             }
 
             if(sessionStorage.getItem("filter")!=null ){
@@ -255,6 +263,10 @@
             if(sessionStorage.getItem("entry") != null){
                 var filter = sessionStorage.getItem("entry");
                 $('select[name="table-1_length"]').val(filter).change();
+            }
+            if(sessionStorage.getItem("kategori") != null){
+                var filter = sessionStorage.getItem("kategori");
+                $('.selectkategori').val(filter).change();
             }
 
             $('select[name="table-1_length"]').on('change', function(){
