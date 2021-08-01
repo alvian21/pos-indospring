@@ -32,11 +32,12 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.0.3/css/dataTables.dateTime.min.css">
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
     @yield('css')
+
 </head>
 
 <body class="layout-skin skin-cyan">
     <div id="app">
-        <div class="main-wrapper">
+        <div class="main-wrapper" >
             <div class="navbar-bg"></div>
             <nav class="navbar navbar-expand-lg main-navbar">
                 @include('frontend.include.topnav')
@@ -75,7 +76,7 @@
         crossorigin="anonymous"></script>
 
     <script>
-    //     myFunction()
+        //     myFunction()
     //    function myFunction() {
     //     if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ){
     //         alert('Opera');

@@ -241,6 +241,12 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('trcetak', 'TrcetakController');
     });
 
+    Route::group(['namespace'=>'POS\Synchronize','prefix'=>'pos/synchronize','as'=>'synchronize.'],function () {
+
+        Route::resource('penjualan', 'PenjualanController');
+        Route::resource('msbarang', 'MsBarangController');
+
+    });
 
     //logout
     Route::post("/logout", "AuthController@logout")->name("logout");

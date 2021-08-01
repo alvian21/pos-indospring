@@ -12,6 +12,8 @@ class Msbarang extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
+    protected $guarded = [];
+
     protected $casts = [
         'HargaJual' => 'integer',
         'TampilDiMobile' => 'integer'

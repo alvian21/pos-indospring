@@ -85,12 +85,7 @@
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{route('pos.pembelian.index')}}">Pembelian</a></li>
-                <li><a class="nav-link" href="{{route('pos.pembelianbaru.index')}}">Pembelian - Baru</a></li>
-                <li><a class="nav-link" href="{{route('pos.penjualan.index')}}">Penjualan</a></li>
-                <li><a class="nav-link" href="{{route('pos.tfantartoko.index')}}">Transfer Antar Toko</a></li>
-                <li><a class="nav-link" href="{{route('pos.stockopname.index')}}">Stock Opname</a></li>
-                <li><a class="nav-link" href="{{route('pos.stockhilang.index')}}">Stock Hilang / Rusak</a></li>
+
                 <li><a class="nav-link" href="{{route('pos.kasir.index')}}">Kasir</a></li>
             </ul>
         </li>
@@ -98,14 +93,17 @@
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Laporan</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{route('poslaporan.realtimestok.index')}}">Realtime Stok</a></li>
+
                 <li><a class="nav-link" href="{{route('poslaporan.penjualan.index')}}">Penjualan</a></li>
-                <li><a class="nav-link" href="{{route('poslaporan.pembelian.index')}}">Pembelian</a></li>
-                <li><a class="nav-link" href="{{route('poslaporan.minimumstok.index')}}">Minimum Stok</a></li>
-                <li><a class="nav-link" href="{{route('poslaporan.opnamehilang.index')}}">Opname | Hilang/Rusak</a></li>
-                <li><a class="nav-link" href="{{route('poslaporan.paretopenjualan.index')}}">Pareto Penjualan</a></li>
-                <li><a class="nav-link" href="{{route('poslaporan.tracestok.index')}}">Trace Stok</a></li>
-                <li><a class="nav-link" href="{{route('poslaporan.trcetak.index')}}">Cetak Label Harga</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown @yield('synchronize')">
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Synchronize</span></a>
+            <ul class="dropdown-menu">
+                <li><a class="nav-link" href="{{route('synchronize.penjualan.index')}}">Synchronize Penjualan</a></li>
+                <li><a class="nav-link" href="{{route('synchronize.msbarang.index')}}">Synchronize Master Barang</a>
+                </li>
             </ul>
         </li>
     </ul>
