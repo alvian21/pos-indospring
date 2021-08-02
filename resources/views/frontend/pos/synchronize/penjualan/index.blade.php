@@ -1,8 +1,8 @@
 @extends('frontend.master')
 
-@section('title', 'Laporan Realtime Stok')
+@section('title', 'Synchronize Penjualan')
 
-@section('poslaporan', 'active')
+@section('synchronize', 'active')
 
 
 @section('content')
@@ -28,8 +28,10 @@
                                 <input type="date" class="form-control" id="tanggal" name="tanggal">
 
                             </div>
+                            <div class="progress" style="height: 20px;">
 
-                            <div class="row">
+                            </div>
+                            <div class="row mt-2">
                                 <div class="col-md-12 text-center">
                                     <button type="button" class="btn btn-primary btnsync">Sync Now</button>
                                 </div>
@@ -49,7 +51,7 @@
 
         $('#kategori').select2()
         $('#cetak').select2()
-
+        $('.progress').hide()
         function ajax() {
             $.ajaxSetup({
                 headers: {
@@ -57,6 +59,23 @@
                 }
             });
         }
+
+        function getProgress(tanggal)
+        {
+            ajax()
+           $.ajax({
+                url:"{{route('synchronize.penjualan.store')}}",
+                method:"POST",
+                async: true,
+                data:{'status':'progress','tanggal':tanggal},
+                success:function(response){
+                    if(response.status){
+                            $('.progress').html(response.data)
+                    }
+                }
+            })
+        }
+
 
         $('.btnsync').on('click', function(){
 
@@ -68,11 +87,12 @@
                 $(this).html(
                     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
                 );
+                $('.progress').show()
                 ajax()
                 $.ajax({
                     url:"{{route('synchronize.penjualan.store')}}",
                     method:"POST",
-                    data:{'tanggal':tanggal}
+                    data:{'tanggal':tanggal,'status':'insert'}
                 }).done(function (response) {
                     console.log(response);
                     if(response.status){
@@ -82,6 +102,8 @@
                         $('.btnsync').text('Sync Now')
                     }
                 })
+
+                getProgress(tanggal)
             }
 
 

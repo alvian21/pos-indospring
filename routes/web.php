@@ -243,6 +243,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
     Route::group(['namespace'=>'POS\Synchronize','prefix'=>'pos/synchronize','as'=>'synchronize.'],function () {
 
+        // Route::get('/penjualan/delete','PenjualanController@hapus');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('msbarang', 'MsBarangController');
 

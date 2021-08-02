@@ -41,43 +41,80 @@ class MsBarangController extends Controller
     {
 
         if ($request->ajax()) {
+            $koneksi = 'mysql2';
+            $totalbarang = DB::connection($koneksi)->table('msbarang')->count();
+            $cloudbarang = DB::connection($koneksi)->table('msbarang')->get();
+            $msbarang = Msbarang::all();
+            session(['totalbarang' => $totalbarang]);
+            $total = 0;
             DB::beginTransaction();
+            DB::connection($koneksi)->beginTransaction();
             try {
 
-                $cloudbarang = DB::connection('mysql2')->table('msbarang')->get();
-                $msbarang = Msbarang::all();
-                foreach ($cloudbarang as $key => $value) {
+                if ($request->get('status') == 'progress') {
+                    if (session()->has('totalpersen')) {
+                        $total = session('totalpersen');
+                    } else {
+                        $total = 0;
+                    }
 
-                    $updateOrCreate  = [
-                        'Kode' => $value->Kode,
-                        'KodeBarcode' => $value->KodeBarcode,
-                        'Nama' => $value->Nama,
-                        'HargaJual' => $value->HargaJual,
-                        'KodeKategori' => $value->KodeKategori,
-                        'UserUpdate' => $value->UserUpdate,
-                        'LastUpdate' => $value->LastUpdate,
-                        'LokasiGambar' => $value->LokasiGambar,
-                        'Satuan' => $value->Satuan,
-                        'TampilDiMobile' => $value->TampilDiMobile,
-                        'MinimumStok' => $value->MinimumStok,
-                        'HargaCaffe' => $value->HargaCaffe,
-                        'TampilDiCaffe' => $value->TampilDiCaffe,
-                    ];
 
-                    $updatelokal = Msbarang::updateOrCreate($updateOrCreate);
-                }
+                    $persen = ($total / $totalbarang) * 100;
+                    $persen = round($persen);
+                    $html = '<div class="progress-bar" role="progressbar" style="width: ' . $persen . '%;" aria-valuenow="' . $persen . '"
+                    aria-valuemin="0" aria-valuemax="100">' . $persen . '%</div>';
 
-                DB::commit();
+                    if ($persen >= 100) {
+                        $pesan = 'selesai';
+                    } else {
+                        $pesan = 'belum';
+                    }
 
-                return response()->json(
-                    [
+                    return response()->json([
                         'status' => true,
-                        'message' => 'Master Barang Berhasil di Synchronize',
-                        'code' => Response::HTTP_OK
-                    ]
-                );
+                        'data' => $html
+
+                    ]);
+                } else {
+                    foreach ($cloudbarang as $key => $value) {
+                        $total += 1;
+                        $updateOrCreate  = [
+                            'Kode' => $value->Kode,
+                            'KodeBarcode' => $value->KodeBarcode,
+                            'Nama' => $value->Nama,
+                            'HargaJual' => $value->HargaJual,
+                            'KodeKategori' => $value->KodeKategori,
+                            'UserUpdate' => $value->UserUpdate,
+                            'LastUpdate' => $value->LastUpdate,
+                            'LokasiGambar' => $value->LokasiGambar,
+                            'Satuan' => $value->Satuan,
+                            'TampilDiMobile' => $value->TampilDiMobile,
+                            'MinimumStok' => $value->MinimumStok,
+                            'HargaCaffe' => $value->HargaCaffe,
+                            'TampilDiCaffe' => $value->TampilDiCaffe,
+                        ];
+                        session()->forget('totalpersen');
+                        session(['totalpersen' => $total]);
+                        session()->save();
+                        $updatelokal = Msbarang::updateOrCreate($updateOrCreate);
+                    }
+                    session()->save();
+
+
+                    DB::commit();
+                    DB::connection($koneksi)->commit();
+
+                    return response()->json(
+                        [
+                            'status' => true,
+                            'message' => 'Master Barang Berhasil di Synchronize',
+                            'code' => Response::HTTP_OK
+                        ]
+                    );
+                }
             } catch (\Exception $e) {
                 DB::rollBack();
+                DB::connection($koneksi)->rollBack();
                 return response()->json(
                     [
                         'status' => false,

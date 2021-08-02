@@ -1,8 +1,8 @@
 @extends('frontend.master')
 
-@section('title', 'Laporan Realtime Stok')
+@section('title', 'Synchronize Master Barang')
 
-@section('poslaporan', 'active')
+@section('synchronize', 'active')
 
 
 @section('content')
@@ -21,17 +21,15 @@
                     <div class="card-body  justify-content-center align-items-center">
                         @include('frontend.include.alert')
 
-                        <form method="POST" >
+                        <form method="POST">
                             @csrf
-                            {{-- <div class="form-group">
-                                <label for="tangal">Tanggal</label>
-                                <input type="date" class="form-control" id="tangal" name="tanggal">
+                            <div class="progress" style="height: 20px;">
 
-                            </div> --}}
+                            </div>
 
-                            <div class="row">
+                            <div class="row mt-2">
                                 <div class="col-md-12 text-center">
-                                    <button type="button" class="btn btn-primary btnsync">Sync Now</button>
+                                    <button type="button" id="btnsync" class="btn btn-primary btnsync">Sync Now</button>
                                 </div>
                             </div>
                         </form>
@@ -49,7 +47,8 @@
 
         $('#kategori').select2()
         $('#cetak').select2()
-
+        $('.progress').hide()
+        var waktu;
         function ajax() {
             $.ajaxSetup({
                 headers: {
@@ -58,17 +57,41 @@
             });
         }
 
-        $('.btnsync').on('click', function(){
+       function getProgress()
+        {
+            ajax()
+           $.ajax({
+                url:"{{route('synchronize.msbarang.store')}}",
+                method:"POST",
+                async: true,
+                data:{'status':'progress'},
+                success:function(response){
+                    if(response.status){
 
+                            console.log(response);
+                            $('.progress').html(response.data)
+
+
+                    }
+                }
+            })
+        }
+
+
+        $('.btnsync').on('click', function(){
+                 $('.progress').show()
                 $(this).prop("disabled", true);
                 // add spinner to button
                 $(this).html(
                     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
                 );
+
                 ajax()
                 $.ajax({
                     url:"{{route('synchronize.msbarang.store')}}",
                     method:"POST",
+                    async: true,
+                    data:{'status':'insert'},
                 }).done(function (response) {
 
                     if(response.status){
@@ -76,8 +99,13 @@
                         $('.spinner-border').remove()
                         $('.btnsync').prop("disabled", false);
                         $('.btnsync').text('Sync Now')
+                        // $('.progress').hide()
+                        if(waktu != undefined){
+                           setTimeout(function () {  clearTimeout(waktu) },10000)
+                        }
                     }
                 })
+                getProgress()
 
         })
      })
