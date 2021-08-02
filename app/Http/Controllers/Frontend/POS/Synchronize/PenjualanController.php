@@ -58,7 +58,7 @@ class PenjualanController extends Controller
                     $no = 1;
                     $cek = DB::connection($koneksi)->table('trmutasihd')->whereDate('Tanggal', $tanggal)->where('NomorLokal', $value->Kode)->where('NomorLokal', '!=', null)->first();
 
-                    if (!$cek) {
+                    if (!$cek  && !empty($value->LokasiAwal)) {
                         DB::connection($koneksi)->table('trmutasihd')->insert([
                             'Transaksi' => 'PENJUALAN',
                             'Nomor' => $nomor,
