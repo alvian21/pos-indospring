@@ -157,7 +157,7 @@
 
     </header>
     <main>
-        @if ($grup == 'ya')
+        @if ($grup == 'Group By Customer')
         <table>
             <thead>
                 <tr>
