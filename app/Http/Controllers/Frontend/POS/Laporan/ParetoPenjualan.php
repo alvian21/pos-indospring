@@ -122,21 +122,22 @@ class ParetoPenjualan extends Controller
 
 
         foreach ($trmutasihd as $key => $value) {
-            $barang = Msbarang::select('msbarang.*','msbarang.Kode as KodeBarang','msbarang.Nama as NamaBarang')->where('msbarang.Kode', $value->KodeBarang)->first()->toArray();
+            $barang = Msbarang::select('msbarang.*','msbarang.Kode as KodeBarang','msbarang.Nama as NamaBarang')->where('msbarang.Kode', $value->KodeBarang)->first();
 
-            if($barang['KodeKategori']== null){
+            if(!$barang){
                 $kategori = [
                     "Kategori" => "none",
                     "KodeKategori" => "100"
                 ];
             }else{
-                $kategori = Mskategori::select('mskategori.*','mskategori.Nama as Kategori')->where('Kode', $barang['KodeKategori'])->first()->toArray();
+                $kategori = Mskategori::select('mskategori.*','mskategori.Nama as Kategori')->where('Kode', $barang->KodeKategori)->first();
             }
 
             $value = json_decode(json_encode($value), true);
+            $barang = json_decode(json_encode($barang), true);
+            $kategori = json_decode(json_encode($kategori), true);
             $res = array_merge($value, $barang);
             $res = array_merge($res, $kategori);
-            // dd($res);
             array_push($arr, $res);
         }
 
