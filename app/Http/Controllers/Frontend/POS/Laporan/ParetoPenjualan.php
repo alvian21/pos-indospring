@@ -112,9 +112,9 @@ class ParetoPenjualan extends Controller
             $trmutasihd =  Trmutasihd::select('KodeBarang', DB::raw('count(*) as Total'))->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where(function ($query) {
                 $query->where('trmutasihd.Transaksi', 'PENJUALAN')
                     ->orWhere('trmutasihd.Transaksi', 'CHECKOUT');
-            })->orderBy('Total', 'DESC')->groupBy('KodeBarang')->get();
+            })->orderBy('Total', 'DESC')->groupBy('KodeBarang')->limit($jumlah)->get();
         } else {
-            $trmutasihd =  Trmutasihd::select('KodeBarang', DB::raw('count(*) as Total'))->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('trmutasihd.Transaksi', $status)->orderBy('Total', 'DESC')->groupBy('KodeBarang')->get();
+            $trmutasihd =  Trmutasihd::select('KodeBarang', DB::raw('count(*) as Total'))->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->where('LokasiAwal', $lokasi)->where('trmutasihd.Transaksi', $status)->orderBy('Total', 'DESC')->groupBy('KodeBarang')->limit($jumlah)->get();
         }
 
 
@@ -132,13 +132,15 @@ class ParetoPenjualan extends Controller
             }else{
                 $kategori = Mskategori::select('mskategori.*','mskategori.Nama as Kategori')->where('Kode', $barang->KodeKategori)->first();
             }
-
             $value = json_decode(json_encode($value), true);
             $barang = json_decode(json_encode($barang), true);
             $kategori = json_decode(json_encode($kategori), true);
-            $res = array_merge($value, $barang);
-            $res = array_merge($res, $kategori);
-            array_push($arr, $res);
+            if(!empty($barang) && !empty($kategori)){
+                $res = array_merge($value, $barang);
+                $res = array_merge($res, $kategori);
+                array_push($arr, $res);
+            }
+
         }
 
         $periode1 = date("l, F j, Y", strtotime($periode1));
