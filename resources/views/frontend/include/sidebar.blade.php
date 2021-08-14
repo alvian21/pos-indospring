@@ -57,13 +57,13 @@
                 <li><a class="nav-link" href="#">Cicilan</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown @yield('transaksi')">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="#">Cek Saldo</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.saldo.index')}}">Cek Saldo</a></li>
                 <li><a class="nav-link" href="#">Approval Pinjaman</a></li>
-                <li><a class="nav-link" href="#">TopUp e-kop</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.topup.index')}}">TopUp e-kop</a></li>
                 <li><a class="nav-link" href="#">Pembayaran</a></li>
                 <li><a class="nav-link" href="#">Aktivasi e-kop</a></li>
                 <li><a class="nav-link" href="#">Proses Bulanan</a></li>
