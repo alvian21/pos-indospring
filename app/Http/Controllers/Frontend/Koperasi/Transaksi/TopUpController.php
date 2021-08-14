@@ -80,12 +80,18 @@ class TopUpController extends Controller
             $trtopup->Nilai = $topup;
             $trtopup->SaldoAwal = $saldoawal;
             $trtopup->UserUpdate = auth('web')->user()->UserLogin;
+            $trtopup->LastUpdate = date('Y-m-d H:i:s');
             $trtopup->save();
 
             $newekop = new Trsaldoekop();
             $newekop->Tanggal = date('Y-m-d H:i:s');
             $newekop->KodeUser = $traktifasi->Kode;
             $newekop->Saldo = $saldo;
+            if($ekop){
+                if($ekop->Saldo < 0){
+                    $newekop->SaldoMinus = $saldoawal;
+                }
+            }
             $newekop->save();
 
 
