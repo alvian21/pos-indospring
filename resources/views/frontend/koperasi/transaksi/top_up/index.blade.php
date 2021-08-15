@@ -11,27 +11,20 @@
     </div>
     <div class="section-body">
         <form id="formTopUp">
-        <div class="row">
-            <div class="col-6">
-                <div class="card card-dark">
-                    <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i>TopUp e-kop</h4>
-                    </div>
-                    <div class="card-body">
-                        @include('frontend.include.alert')
-                        <div id="data-alert"></div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="card card-dark">
+                        <div class="card-header container-fluid d-flex justify-content-between">
+                            <h4 class="text-dark"><i class="fas fa-list pr-2"></i>TopUp e-kop</h4>
+                        </div>
+                        <div class="card-body">
+                            @include('frontend.include.alert')
+                            <div id="data-alert"></div>
 
                             @csrf
                             <div class="form-group">
                                 <label for="barcode">Barcode / Ekop</label>
-                                <select class="form-control" id="barcode" name="barcode">
-                                    <option value="">Pilih Barcode</option>
-                                    @forelse ($traktifasi as $item)
-                                    <option value="{{$item->Nomor}}">{{$item->NoEkop}}</option>
-                                    @empty
-
-                                    @endforelse
-                                </select>
+                                <input type="text" class="form-control" id="barcode">
                             </div>
 
                             <div class="row">
@@ -50,7 +43,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="jumlah_topup">TopUp</label>
-                                <input type="text" class="form-control" id="jumlah_topup" >
+                                <input type="text" class="form-control" id="jumlah_topup">
                             </div>
                             <div class="row">
                                 <div class="col-md-12 text-center">
@@ -58,35 +51,35 @@
                                 </div>
                             </div>
 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="card card-dark">
+
+                        <div class="card-body">
+                            @include('frontend.include.alert')
+                            <form>
+
+                                <div class="form-group">
+                                    <label for="saldo_awal">Saldo Awal</label>
+                                    <input type="text" class="form-control" id="saldo_awal" value="0" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="topup">TopUp</label>
+                                    <input type="text" class="form-control" id="topup" value="0" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="saldo_akhir">Saldo Akhir</label>
+                                    <input type="text" class="form-control" id="saldo_akhir" value="0" readonly>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-6">
-                <div class="card card-dark">
-
-                    <div class="card-body">
-                        @include('frontend.include.alert')
-                        <form>
-
-                            <div class="form-group">
-                                <label for="saldo_awal">Saldo Awal</label>
-                                <input type="text" class="form-control" id="saldo_awal" value="0" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="topup">TopUp</label>
-                                <input type="text" class="form-control" id="topup" value="0" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="saldo_akhir">Saldo Akhir</label>
-                                <input type="text" class="form-control" id="saldo_akhir" value="0" readonly>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+        </form>
     </div>
 </section>
 
@@ -95,8 +88,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var normalsaldo = 0;
-        $('#barcode').select2()
-        $('#cetak').select2()
+
         $('#jumlah_topup').mask('000.000.000.000', {
             reverse: true
         });
@@ -118,14 +110,24 @@
         {
             return parseFloat(rupiah.replace(/,.*|[^0-9]/g, ''), 10);
         }
-        $('#barcode').on('change',function () {
-            var id = $(this).find(':selected').val()
-            if(id != ''){
+
+
+        function resetForm() {
+            $('#kode').val('')
+                        $('#nama').val('')
+                        $('#saldo').val('')
+                        $('#topup').val(0)
+                       $('#saldo_akhir').val(0)
+                       $('#saldo_awal').val(0)
+         }
+        $('#barcode').on('keyup',function () {
+            var barcode = $(this).val()
+            if(barcode != ''){
                 $.ajax({
                     url:"{{route('koperasi.topup.cek')}}",
                     method:"GET",
                     async:false,
-                    data:{'id':id}
+                    data:{'cari':barcode}
                 }).done(function (response) {
                     if(response.status){
                         var data = response.data;
@@ -133,6 +135,9 @@
                         $('#nama').val(data.nama)
                         $('#saldo_awal').val(formatRupiah(data.normalsaldo))
                         normalsaldo = data.normalsaldo
+                        totalSaldo()
+                    }else{
+                        resetForm()
                     }
                  })
             }else{
@@ -142,19 +147,27 @@
             }
          })
 
-         $('#jumlah_topup').on('keyup',function () {
-             var topup = $(this).val()
+         function totalSaldo()
+         {
+            var topup = $('#jumlah_topup').val()
              topup = convertToAngka(topup);
-             var saldo_awal =normalsaldo
+             if(topup >= 0){
+                var saldo_awal =normalsaldo
 
-             if(saldo_awal > 0){
+                if(saldo_awal > 0){
                 var tambah = parseInt(saldo_awal) + topup
-             }else{
+                }else{
                 var tambah = topup
+                }
+
+                $('#topup').val(formatRupiah(topup))
+                $('#saldo_akhir').val(formatRupiah(tambah))
              }
 
-             $('#topup').val(formatRupiah(topup))
-             $('#saldo_akhir').val(formatRupiah(tambah))
+         }
+
+         $('#jumlah_topup').on('keyup',function () {
+            totalSaldo()
           })
 
 
@@ -185,7 +198,7 @@
                                 console.log(response);
                                 if(response.status){
                                     $('#formTopUp').trigger('reset')
-                                    $('#barcode').val('').change()
+
                                     swal("Success!", "TopUp Berhasil Dilakukan!", "success");
                                 }else{
                                     $('#data-alert').html(response.data)

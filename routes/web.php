@@ -91,6 +91,12 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         });
         Route::resource('topup', 'TopUpController');
         Route::resource('aktivasi', 'AktivasiController');
+        Route::resource('proses-bulanan', 'ProsesBulananController');
+    });
+
+    Route::group(['namespace' => 'Koperasi\Laporan', 'prefix' => 'koperasi', 'as' => 'koperasi.'], function () {
+
+        Route::resource('tagihan-kredit', 'TagihanKreditController');
     });
 
     //anggota

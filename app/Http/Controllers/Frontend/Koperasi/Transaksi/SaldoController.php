@@ -16,10 +16,35 @@ class SaldoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $traktifasi = Traktifasi::all()->where('Status', 'aktif');
-        return view("frontend.koperasi.transaksi.cek_saldo.index", ['traktifasi' => $traktifasi]);
+        if ($request->ajax()) {
+            $cari = $request->get('cari');
+            $cek = Traktifasi::where('Status', 'aktif')->where(function ($q) use ($cari) {
+                $q->where('Kode', $cari)->orWhere('NoEkop', $cari);
+            })->first();
+
+            if ($cek) {
+                $anggota = Msanggota::where('Kode', $cek->Kode)->first();
+                $ekop = Trsaldoekop::where('KodeUser', $cek->Kode)->orderBy('Tanggal', 'DESC')->first();
+                if ($ekop) {
+                    $saldo = $this->rupiah($ekop->Saldo);
+                } else {
+                    $saldo = $this->rupiah(0);
+                }
+                $data = [
+                    'kode' => $anggota->Kode,
+                    'nama' => $anggota->Nama,
+                    'saldo' => $saldo
+                ];
+
+                return response()->json([
+                    'status' => true,
+                    'data' => $data
+                ]);
+            }
+        }
+        return view("frontend.koperasi.transaksi.cek_saldo.index");
     }
 
     /**
@@ -115,6 +140,6 @@ class SaldoController extends Controller
 
     public function rupiah($expression)
     {
-       return "Rp ". number_format($expression, 2, ',', '.');
+        return "Rp " . number_format($expression, 2, ',', '.');
     }
 }

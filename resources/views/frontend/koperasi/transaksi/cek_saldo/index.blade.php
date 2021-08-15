@@ -22,14 +22,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="barcode">Barcode / Ekop</label>
-                                <select class="form-control" id="barcode" name="barcode">
-                                    <option value="">Pilih Barcode</option>
-                                    @forelse ($traktifasi as $item)
-                                    <option value="{{$item->Nomor}}">{{$item->NoEkop}}</option>
-                                    @empty
-
-                                    @endforelse
-                                </select>
+                                <input type="text" class="form-control" id="barcode" >
                             </div>
 
                             <div class="row">
@@ -64,23 +57,26 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $('#barcode').select2()
-        $('#cetak').select2()
 
-        $('#barcode').on('change',function () {
-            var id = $(this).find(':selected').val()
-            if(id != ''){
+        $('#barcode').on('keyup',function () {
+            var barcode = $(this).val()
+            if(barcode != ''){
                 $.ajax({
-                    url:"{{route('koperasi.saldo.cek')}}",
+                    url:"{{route('koperasi.saldo.index')}}",
                     method:"GET",
-                    data:{'id':id}
+                    data:{'cari':barcode}
                 }).done(function (response) {
                     if(response.status){
+                        console.log(response);
                         var data = response.data;
                         $('#kode').val(data.kode)
                         $('#nama').val(data.nama)
                         $('#saldo').val(data.saldo)
 
+                    }else{
+                        $('#kode').val('')
+                        $('#nama').val('')
+                        $('#saldo').val('')
                     }
                  })
             }else{

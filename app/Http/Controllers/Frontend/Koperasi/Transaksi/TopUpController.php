@@ -179,28 +179,37 @@ class TopUpController extends Controller
     public function CekSaldo(Request $request)
     {
         if ($request->ajax()) {
-            $id = $request->get('id');
-            $traktifasi = Traktifasi::where('Nomor', $id)->where('Status', 'aktif')->first();
-            $anggota = Msanggota::where('Kode', $traktifasi->Kode)->first();
-            $ekop = Trsaldoekop::where('KodeUser', $traktifasi->Kode)->orderBy('Tanggal', 'DESC')->first();
-            if ($ekop) {
-                $saldo = $this->rupiah($ekop->Saldo);
-                $normalsaldo = $ekop->Saldo;
-            } else {
-                $saldo = $this->rupiah(0);
-                $normalsaldo = 0;
-            }
-            $data = [
-                'kode' => $anggota->Kode,
-                'nama' => $anggota->Nama,
-                'saldo' => $saldo,
-                'normalsaldo' => $normalsaldo
-            ];
+            $cari = $request->get('cari');
+            $cek = Traktifasi::where('Status', 'aktif')->where(function ($q) use ($cari) {
+                $q->where('Kode', $cari)->orWhere('NoEkop', $cari);
+            })->first();
 
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
+            if ($cek) {
+                $anggota = Msanggota::where('Kode', $cek->Kode)->first();
+                $ekop = Trsaldoekop::where('KodeUser', $cek->Kode)->orderBy('Tanggal', 'DESC')->first();
+                if ($ekop) {
+                    $saldo = $this->rupiah($ekop->Saldo);
+                    $normalsaldo = $ekop->Saldo;
+                } else {
+                    $saldo = $this->rupiah(0);
+                    $normalsaldo = 0;
+                }
+                $data = [
+                    'kode' => $anggota->Kode,
+                    'nama' => $anggota->Nama,
+                    'saldo' => $saldo,
+                    'normalsaldo' => $normalsaldo
+                ];
+
+                return response()->json([
+                    'status' => true,
+                    'data' => $data
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false
+                ]);
+            }
         }
     }
 

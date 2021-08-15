@@ -66,8 +66,15 @@
                 <li><a class="nav-link" href="{{route('koperasi.topup.index')}}">TopUp e-kop</a></li>
                 <li><a class="nav-link" href="#">Pembayaran</a></li>
                 <li><a class="nav-link" href="{{route('koperasi.aktivasi.index')}}">Aktivasi e-kop</a></li>
-                <li><a class="nav-link" href="#">Proses Bulanan</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.proses-bulanan.index')}}">Proses Bulanan</a></li>
                 <li><a class="nav-link" href="#">Web</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown @yield('laporan')">
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
+                    class="fas fa-columns"></i><span>Laporan</span></a>
+            <ul class="dropdown-menu">
+                <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Tagihan Penjualan Kredit</a></li>
             </ul>
         </li>
         <li class="menu-header">POS | Point Of Sale</li>
