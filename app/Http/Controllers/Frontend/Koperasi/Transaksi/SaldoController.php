@@ -23,10 +23,28 @@ class SaldoController extends Controller
             $cek = Traktifasi::where('Status', 'aktif')->where(function ($q) use ($cari) {
                 $q->where('Kode', $cari)->orWhere('NoEkop', $cari);
             })->first();
-
+            $cekanggota = Msanggota::where('Kode', $cari)->first();
             if ($cek) {
                 $anggota = Msanggota::where('Kode', $cek->Kode)->first();
                 $ekop = Trsaldoekop::where('KodeUser', $cek->Kode)->orderBy('Tanggal', 'DESC')->first();
+                if ($ekop) {
+                    $saldo = $this->rupiah($ekop->Saldo);
+                } else {
+                    $saldo = $this->rupiah(0);
+                }
+                $data = [
+                    'kode' => $anggota->Kode,
+                    'nama' => $anggota->Nama,
+                    'saldo' => $saldo
+                ];
+
+                return response()->json([
+                    'status' => true,
+                    'data' => $data
+                ]);
+            } elseif ($cekanggota) {
+                $anggota = Msanggota::where('Kode', $cekanggota->Kode)->first();
+                $ekop = Trsaldoekop::where('KodeUser', $cekanggota->Kode)->orderBy('Tanggal', 'DESC')->first();
                 if ($ekop) {
                     $saldo = $this->rupiah($ekop->Saldo);
                 } else {
