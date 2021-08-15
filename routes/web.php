@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('ceksaldo', 'TopUpController@CekSaldo')->name('cek');
         });
         Route::resource('topup', 'TopUpController');
+        Route::resource('aktivasi', 'AktivasiController');
     });
 
     //anggota

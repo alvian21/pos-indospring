@@ -20,7 +20,7 @@ class TopUpController extends Controller
      */
     public function index()
     {
-        $traktifasi = Traktifasi::leftjoin('msanggota', 'traktifasi.Kode', 'msanggota.Kode')->where('Status','aktif')->get();
+        $traktifasi = Traktifasi::leftjoin('msanggota', 'traktifasi.Kode', 'msanggota.Kode')->where('Status', 'aktif')->get();
         return view("frontend.koperasi.transaksi.top_up.index", ['traktifasi' => $traktifasi]);
     }
 
@@ -58,47 +58,75 @@ class TopUpController extends Controller
         } else {
             $barcode = $request->get('barcode');
             $topup = $request->get('jumlah_topup');
-            $traktifasi = Traktifasi::where('Nomor', $barcode)->first();
-            $ekop = Trsaldoekop::where('KodeUser', $traktifasi->Kode)->orderBy('Tanggal', 'DESC')->first();
-            $saldoawal = 0;
-            if($ekop){
-                $saldoawal =  $ekop->Saldo;
-                if($ekop->Saldo > 0){
-                    $saldo = $ekop->Saldo + $topup;
-                }else{
+            DB::beginTransaction();
+            try {
+                $traktifasi = Traktifasi::where('Nomor', $barcode)->first();
+                $ekop = Trsaldoekop::where('KodeUser', $traktifasi->Kode)->orderBy('Tanggal', 'DESC')->first();
+                $day = date('d');
+                $month = date('m');
+                $year = date('Y');
+                $cek = TrTopUp::whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+                if ($cek) {
+                    $nomor = (int) substr($cek->Nomor, 14);
+                    if ($nomor != 0) {
+                        if ($nomor >= 9999) {
+                            $nomor = $nomor + 1;
+                            $formatNomor = "TO-" . date('Y-m-d') . "-" . $nomor;
+                        } else {
+                            $nomor = $nomor + 1;
+                            $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                            $formatNomor = "TO-" . date('Y-m-d') . "-" . $addzero;
+                        }
+                    }
+                } else {
+                    $nomor = 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "TO-" . date('Y-m-d') . "-" . $addzero;
+                }
+
+                $saldoawal = 0;
+                if ($ekop) {
+                    $saldoawal =  $ekop->Saldo;
+                    if ($ekop->Saldo > 0) {
+                        $saldo = $ekop->Saldo + $topup;
+                    } else {
+                        $saldo = $topup;
+                    }
+                } else {
                     $saldo = $topup;
                 }
-            }else{
-                $saldo = $topup;
-            }
 
-            $trtopup = new TrTopUp();
-            $trtopup->Nomor = $traktifasi->Nomor;
-            $trtopup->Tanggal = date('Y-m-d H:i:s');
-            $trtopup->Kode = $traktifasi->Kode;
-            $trtopup->NoEkop = $traktifasi->NoEkop;
-            $trtopup->Nilai = $topup;
-            $trtopup->SaldoAwal = $saldoawal;
-            $trtopup->UserUpdate = auth('web')->user()->UserLogin;
-            $trtopup->LastUpdate = date('Y-m-d H:i:s');
-            $trtopup->save();
+                $trtopup = new TrTopUp();
+                $trtopup->Nomor = $formatNomor;
+                $trtopup->Tanggal = date('Y-m-d H:i:s');
+                $trtopup->Kode = $traktifasi->Kode;
+                $trtopup->NoEkop = $traktifasi->NoEkop;
+                $trtopup->Nilai = $topup;
+                $trtopup->SaldoAwal = $saldoawal;
+                $trtopup->UserUpdate = auth('web')->user()->UserLogin;
+                $trtopup->LastUpdate = date('Y-m-d H:i:s');
+                $trtopup->Pembayaran = "Tunai";
+                $trtopup->save();
 
-            $newekop = new Trsaldoekop();
-            $newekop->Tanggal = date('Y-m-d H:i:s');
-            $newekop->KodeUser = $traktifasi->Kode;
-            $newekop->Saldo = $saldo;
-            if($ekop){
-                if($ekop->Saldo < 0){
-                    $newekop->SaldoMinus = $saldoawal;
+                $newekop = new Trsaldoekop();
+                $newekop->Tanggal = date('Y-m-d H:i:s');
+                $newekop->KodeUser = $traktifasi->Kode;
+                $newekop->Saldo = $saldo;
+                if ($ekop) {
+                    if ($ekop->Saldo < 0) {
+                        $newekop->SaldoMinus = $saldoawal;
+                    }
                 }
+                $newekop->save();
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'success'
+                ]);
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                //throw $th;
             }
-            $newekop->save();
-
-
-            return response()->json([
-                'status' => true,
-                'message' => 'success'
-            ]);
         }
     }
 

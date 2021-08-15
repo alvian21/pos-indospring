@@ -65,7 +65,7 @@
                 <li><a class="nav-link" href="#">Approval Pinjaman</a></li>
                 <li><a class="nav-link" href="{{route('koperasi.topup.index')}}">TopUp e-kop</a></li>
                 <li><a class="nav-link" href="#">Pembayaran</a></li>
-                <li><a class="nav-link" href="#">Aktivasi e-kop</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.aktivasi.index')}}">Aktivasi e-kop</a></li>
                 <li><a class="nav-link" href="#">Proses Bulanan</a></li>
                 <li><a class="nav-link" href="#">Web</a></li>
             </ul>
