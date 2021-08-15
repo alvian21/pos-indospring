@@ -2,7 +2,7 @@
 
 @section('title', 'Proses Bulanan')
 
-@section('laporan', 'active')
+@section('transaksi', 'active')
 
 @section('content')
 <section class="section">
