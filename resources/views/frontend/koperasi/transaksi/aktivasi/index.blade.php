@@ -377,69 +377,69 @@
             $.ajax({
                 url:"{{route('koperasi.aktivasi.index')}}",
                 method:"GET",
-                async:false,
                 data:{
                     'barcode':id
                 }
             }).done(function (response) {
                     if(response.status){
                         status = response.datastatus
+                        if(status){
+                            swal({
+                                text: "Ada kartu yang sudah teregistrasi, Apakah akan mengganti dengan kartu baru!",
+                                icon: "warning",
+                                buttons: true,
+                                dangerMode: true,
+                            })
+                            .then((willUpdate) => {
+                                if (willUpdate) {
+                                    $('#data-alert').empty()
+                                    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+                                    $('.kode_nfc').select();
+                                    //show the next fieldset
+                                    next_fs.show();
+                                    //hide the current fieldset with style
+                                    current_fs.animate({opacity: 0}, {
+                                        step: function(now) {
+                                        // for making fielset appear animation
+                                        opacity = 1 - now;
+
+                                        current_fs.css({
+                                        'display': 'none',
+                                        'position': 'relative'
+                                        });
+                                        next_fs.css({'opacity': opacity});
+                                        },
+                                    duration: 600
+                                    });
+                                }
+                                });
+                        }else{
+                            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+                                    $('.kode_nfc').select();
+                                    //show the next fieldset
+                                    next_fs.show();
+                                    //hide the current fieldset with style
+                                    current_fs.animate({opacity: 0}, {
+                                        step: function(now) {
+                                        // for making fielset appear animation
+                                        opacity = 1 - now;
+
+                                        current_fs.css({
+                                        'display': 'none',
+                                        'position': 'relative'
+                                        });
+                                        next_fs.css({'opacity': opacity});
+                                        },
+                                    duration: 600
+                                    });
+                        }
                     }else{
                         $('#data-alert').html(response.data)
                         return false;
                     }
              })
 
-             if(status){
-                swal({
-                        text: "Ada kartu yang sudah teregistrasi, Apakah akan mengganti dengan kartu baru!",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    })
-                    .then((willUpdate) => {
-                    if (willUpdate) {
-                        $('#data-alert').empty()
-                        $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-                        $('.kode_nfc').select();
-                        //show the next fieldset
-                        next_fs.show();
-                        //hide the current fieldset with style
-                        current_fs.animate({opacity: 0}, {
-                            step: function(now) {
-                            // for making fielset appear animation
-                            opacity = 1 - now;
 
-                            current_fs.css({
-                            'display': 'none',
-                            'position': 'relative'
-                            });
-                            next_fs.css({'opacity': opacity});
-                            },
-                        duration: 600
-                        });
-                    }
-                    });
-             }else{
-                $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-                        $('.kode_nfc').select();
-                        //show the next fieldset
-                        next_fs.show();
-                        //hide the current fieldset with style
-                        current_fs.animate({opacity: 0}, {
-                            step: function(now) {
-                            // for making fielset appear animation
-                            opacity = 1 - now;
-
-                            current_fs.css({
-                            'display': 'none',
-                            'position': 'relative'
-                            });
-                            next_fs.css({'opacity': opacity});
-                            },
-                        duration: 600
-                        });
-             }
         }else if(data.val()=='personal'){
             var kode_nfc = $('#kode_nfc').val()
             ajax()
