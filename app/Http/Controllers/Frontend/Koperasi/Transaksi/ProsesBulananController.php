@@ -75,43 +75,46 @@ class ProsesBulananController extends Controller
 
                         if ($saldoekop) {
                             $grupbycustomer = Trmutasihd::selectRaw('sum(TotalHarga)+(sum(TotalHarga)* ? /100) as totalhitung', [$saldominusbunga->Nilai])->where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', '>=', $tgl_awal)->whereDate('Tanggal', '<=', $tgl_akhir)->where('KodeSuppCust', $value->Kode)->first();
-                            if ($grupbycustomer->totalhitung != null) {
-                                if ($saldoekop->Saldo < 0) {
-                                    $saldoreset = new Trsaldoreset();
-                                    $saldoreset->SaldoSisaEkop = $saldominusmax->Nilai + $saldoekop->Saldo;
-                                    $saldoreset->SaldoBelanjaKredit  = $grupbycustomer->totalhitung;
-                                    $saldoreset->Tanggal = date('Y-m-d H:i:s');
-                                    $saldoreset->KodeUser = $value->Kode;
-                                    $saldoreset->UserUpdate = auth('web')->user()->UserLogin;
-                                    $saldoreset->save();
 
-                                    $trsaldoekop = new Trsaldoekop();
-                                    $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
-                                    $trsaldoekop->KodeUser = $value->Kode;
-                                    $trsaldoekop->SaldoMinus = 0;
-                                    $trsaldoekop->Saldo = -1 * $saldominusmax->Nilai;
-                                    $trsaldoekop->save();
-                                } else {
+                            if ($grupbycustomer->totalhitung == null) {
+                                $grupbycustomer->totalhitung = 0;
+                            }
 
-                                    if ($saldoekop->SaldoMinus == null) {
-                                        $saldoekop->SaldoMinus = 0;
-                                    }
+                            if ($saldoekop->Saldo < 0) {
+                                $saldoreset = new Trsaldoreset();
+                                $saldoreset->SaldoSisaEkop = $saldominusmax->Nilai + $saldoekop->Saldo;
+                                $saldoreset->SaldoBelanjaKredit  = $grupbycustomer->totalhitung;
+                                $saldoreset->Tanggal = date('Y-m-d H:i:s');
+                                $saldoreset->KodeUser = $value->Kode;
+                                $saldoreset->UserUpdate = auth('web')->user()->UserLogin;
+                                $saldoreset->save();
 
-                                    $saldoreset = new Trsaldoreset();
-                                    $saldoreset->SaldoSisaEkop = $saldominusmax->Nilai + $saldoekop->SaldoMinus;
-                                    $saldoreset->SaldoBelanjaKredit  = $grupbycustomer->totalhitung;
-                                    $saldoreset->Tanggal = date('Y-m-d H:i:s');
-                                    $saldoreset->KodeUser = $value->Kode;
-                                    $saldoreset->UserUpdate = auth('web')->user()->UserLogin;
-                                    $saldoreset->save();
+                                $trsaldoekop = new Trsaldoekop();
+                                $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                                $trsaldoekop->KodeUser = $value->Kode;
+                                $trsaldoekop->SaldoMinus = 0;
+                                $trsaldoekop->Saldo = -1 * $saldominusmax->Nilai;
+                                $trsaldoekop->save();
+                            } else {
 
-                                    $trsaldoekop = new Trsaldoekop();
-                                    $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
-                                    $trsaldoekop->KodeUser = $value->Kode;
-                                    $trsaldoekop->SaldoMinus =  -1 * $saldominusmax->Nilai;
-                                    $trsaldoekop->Saldo = $saldoekop->Saldo;
-                                    $trsaldoekop->save();
+                                if ($saldoekop->SaldoMinus == null) {
+                                    $saldoekop->SaldoMinus = 0;
                                 }
+
+                                $saldoreset = new Trsaldoreset();
+                                $saldoreset->SaldoSisaEkop = $saldominusmax->Nilai + $saldoekop->SaldoMinus;
+                                $saldoreset->SaldoBelanjaKredit  = $grupbycustomer->totalhitung;
+                                $saldoreset->Tanggal = date('Y-m-d H:i:s');
+                                $saldoreset->KodeUser = $value->Kode;
+                                $saldoreset->UserUpdate = auth('web')->user()->UserLogin;
+                                $saldoreset->save();
+
+                                $trsaldoekop = new Trsaldoekop();
+                                $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                                $trsaldoekop->KodeUser = $value->Kode;
+                                $trsaldoekop->SaldoMinus =  -1 * $saldominusmax->Nilai;
+                                $trsaldoekop->Saldo = $saldoekop->Saldo;
+                                $trsaldoekop->save();
                             }
                         }
                     }
