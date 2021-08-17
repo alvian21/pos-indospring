@@ -22,13 +22,13 @@
                             @csrf
                             <div class="form-group">
                                 <label for="periode">Periode</label>
-                                <input type="month" class="form-control" id="periode" name="periode">
+                                <input type="month" class="form-control" id="periode" required name="periode">
                             </div>
                             <div class="form-group">
                                 <label for="cetak">Cetak</label>
                                 <select class="form-control" id="cetak" name="cetak">
                                     <option value="pdf">Pdf</option>
-                                    {{-- <option value="excel">Excel</option> --}}
+                                    <option value="excel">Excel</option>
                                 </select>
                             </div>
                             <div class="row">

@@ -163,7 +163,7 @@ class PenjualanController extends Controller
 
 
 
-                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup), 'laporan-penjualan-grup.xlsx');
+                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup),);
             }
         }else if($grup == 'Group By Tanggal'){
             if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
