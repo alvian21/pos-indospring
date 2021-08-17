@@ -423,6 +423,21 @@ class KasirController extends Controller
                     $trsaldoekop->save();
                 }
                 if (($pembayaran_kredit != '' || $pembayaran_kredit > 0) && $pembayaran_kredit != 0) {
+
+                    $cekreset = Mssetting::where('Kode', 'SaldoMinusResetPerBulan')->where('aktif', 1)->first();
+
+                    $tanggal = '';
+                    if ($cekreset) {
+                        if ($day < $cekreset->Nilai) {
+                            $nilai = $cekreset->Nilai - 1;
+                            $tanggal = date('Y-m-' . $nilai);
+                        } elseif ($day >= $cekreset->Nilai) {
+                            $nilai = $cekreset->Nilai - 1;
+                            $firstdate = date('Y-m-' . $nilai);
+                            $tanggal = date("Y-m-d", strtotime('+1 month', strtotime($firstdate)));
+                        }
+                    }
+
                     $cek = DB::select('call CEKSALDOEKOP(?)', [
                         $barcode_cust
                     ]);
@@ -440,22 +455,8 @@ class KasirController extends Controller
 
                     $trmutasihd->PembayaranKredit = $pembayaran_kredit;
                     $trsaldoekop->Saldo = round($cek[0]->Saldo, 2) + $pembayaran_kredit;
-                    // if ($SaldoMinusBunga->aktif == 1) {
-                    //     $hitungkredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
-                    //     $bayar_kredit = $hitungkredit;
-                    //     $trmutasihd->PembayaranKredit = $bayar_kredit;
-                    //     $trsaldokredit->Saldo = $hitungkredit;
 
-                    //     //hitung trsaldoekop
-                    //     $trsaldoekop->Saldo = $cek[0]->Saldo + $hitungkredit;
-
-                    // } else {
-                    //     $bayar_kredit = $pembayaran_kredit;
-                    //     $trmutasihd->PembayaranKredit = $bayar_kredit;
-                    //     $trsaldokredit->Saldo = $pembayaran_kredit;
-                    //     $trsaldoekop->Saldo = $cek[0]->Saldo + $bayar_kredit;
-                    // }
-                    $trmutasihd->DueDate = date('Y-m-t');
+                    $trmutasihd->DueDate = $tanggal;
                     $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
                     if ($cekkredit) {
                         $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo, 2);

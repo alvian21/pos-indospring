@@ -166,7 +166,8 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <input type="time" id="inputmblbelanjajamon" class="text-center form-control"
+                                                        <input type="time" id="inputmblbelanjajamon"
+                                                            class="text-center form-control"
                                                             value="{{$MobileBelanjaJamOnOff->MobileTimeOn}}"
                                                             name="inputmblbelanjajamon">
                                                     </div>
@@ -174,7 +175,8 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <input type="time" class="text-center form-control"
-                                                          id="inputmblbelanjajamoff"  value="{{$MobileBelanjaJamOnOff->MobileTimeOff}}"
+                                                            id="inputmblbelanjajamoff"
+                                                            value="{{$MobileBelanjaJamOnOff->MobileTimeOff}}"
                                                             name="inputmblbelanjajamoff">
                                                     </div>
                                                 </div>
@@ -197,36 +199,57 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @forelse ($MobilePengajuanDay as $item)
-                                            <div class="row mt-1">
-                                                <div class="col-md-6">
-                                                    <select class="form-control" id="pengajuanday"
-                                                        name="pengajuanday[]">
-                                                        <option value="0">Pilih Tanggal</option>
-                                                        @for ($x = 1; $x <= 31; $x++ )
-                                                        <option value="{{$x}}" @if($item->Nilai == $x) selected @endif>{{$x}}</option>
-                                                        @endfor
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
+
+                                            <div class="row">
+                                                <div class="col-md-12">
                                                     <div class="form-group text-center">
-                                                        <div class="custom-control custom-switch custom-switch-md float-right">
-                                                            <input type="hidden" name="pengajuandayid[]" value="{{$item->id}}">
+                                                        <div
+                                                            class="custom-control custom-switch custom-switch-md">
+                                                            <input type="hidden" name="pengajuandayid"
+                                                                value="{{$MobilePengajuanDay[0]->id}}">
                                                             <input type="checkbox" class="custom-control-input"
-                                                                name="ckmblpengajuanday[]"
-                                                                id="MobilePengajuanDay{{$item->id}}"
-                                                                data-id="{{$item->id}}" data-nilai={{$item->Nilai}}
-                                                                @if($item->aktif == 1 ) checked
+                                                                name="ckmblpengajuanday"
+                                                                id="MobilePengajuanDay{{$MobilePengajuanDay[0]->id}}"
+                                                                data-id="{{$MobilePengajuanDay[0]->id}}" data-nilai={{$MobilePengajuanDay[0]->Nilai}}
+                                                                @if($MobilePengajuanDay[0]->aktif == 1 ) checked
                                                             @endif>
                                                             <label class="custom-control-label"
-                                                                for="MobilePengajuanDay{{$item->id}}"></label>
+                                                                for="MobilePengajuanDay{{$MobilePengajuanDay[0]->id}}"></label>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            @empty
 
-                                            @endforelse
+                                            <div class="row mt-1">
+                                                <div class="col-md-4">
+                                                    <input type="hidden" name="pengajuandayid1" value="{{$MobilePengajuanDay[0]->id}}">
+                                                    <select class="form-control" id="pengajuanday1"
+                                                        name="pengajuanday1">
+                                                        <option value="0">Pilih Tanggal</option>
+                                                        @for ($x = 1; $x <= 31; $x++ ) <option value="{{$x}}"
+                                                            @if($MobilePengajuanDay[0]->Nilai == $x) selected
+                                                            @endif>{{$x}}</option>
+                                                            @endfor
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <h3 class="text-center">sampai</h3>
+                                                </div>
+
+                                                <div class="col-md-4" >
+                                                    <input type="hidden" name="pengajuandayid2" value="{{$MobilePengajuanDay[1]->id}}">
+                                                    <select class="form-control" id="pengajuanday2"
+                                                        name="pengajuanday2">
+                                                        <option value="0">Pilih Tanggal</option>
+                                                        @for ($x = 1; $x <= 31; $x++ ) <option value="{{$x}}"
+                                                            @if($MobilePengajuanDay[1]->Nilai == $x) selected
+                                                            @endif>{{$x}}</option>
+                                                            @endfor
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
 
 
                                         </div>
@@ -235,7 +258,8 @@
                                 <div class="col-md-6">
                                     <div class="card text-white bg-dark rounded" style="height: 14rem">
                                         <div class="card-body">
-                                            <input type="hidden" name="name4" value="{{$MobilePengajuanMaksAnggota->Kode}}">
+                                            <input type="hidden" name="name4"
+                                                value="{{$MobilePengajuanMaksAnggota->Kode}}">
                                             <div class="row mt-4">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
@@ -250,7 +274,8 @@
                                                         name="inputmblpengajuanmaksanggotanilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="MobilePengajuanMaksAnggota"
                                                             @if($MobilePengajuanMaksAnggota->aktif == 1 ) checked
@@ -261,7 +286,8 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <input type="hidden" name="name5" value="{{$MobileInfoPinjamanMulaiDari->Kode}}">
+                                                <input type="hidden" name="name5"
+                                                    value="{{$MobileInfoPinjamanMulaiDari->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="form-group">
@@ -278,7 +304,8 @@
                                                         name="inputmblinfopinjamannilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="MobileInfoPinjamanMulaiDari" name="ckmblinfopinjaman"
                                                             @if($MobileInfoPinjamanMulaiDari->aktif == 1 ) checked
@@ -312,10 +339,11 @@
                                                         name="inputmblSaldoMinusMaxnilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="MobileSaldoMinusMax"
-                                                            @if($SaldoMinusMax->aktif == 1 ) checked
+                                                            id="MobileSaldoMinusMax" @if($SaldoMinusMax->aktif == 1 )
+                                                        checked
                                                         @endif name="ckmblSaldoMinusMax">
                                                         <label class="custom-control-label"
                                                             for="MobileSaldoMinusMax"></label>
@@ -329,8 +357,8 @@
                                                         <div class="form-group">
 
                                                             <input type="text" class="text-center form-control"
-                                                            value="{{$SaldoMinusBunga->Nama}}"
-                                                            name="inputmblSaldoMinusBunganama">
+                                                                value="{{$SaldoMinusBunga->Nama}}"
+                                                                name="inputmblSaldoMinusBunganama">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -340,7 +368,8 @@
                                                         name="inputSaldoMinusBunganilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="SaldoMinusBunga" name="ckSaldoMinusBunga"
                                                             @if($SaldoMinusBunga->aktif == 1 ) checked
@@ -351,22 +380,28 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <input type="hidden" name="name8" value="{{$SaldoMinusResetPerBulan->Kode}}">
+                                                <input type="hidden" name="name8"
+                                                    value="{{$SaldoMinusResetPerBulan->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="form-group">
-
                                                             <textarea class="form-control"
                                                                 id="exampleFormControlTextarea1" rows="6"
                                                                 name="inputSaldoMinusResetPerBulannama">{{$SaldoMinusResetPerBulan->Nama}}</textarea>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                <div class="col-md-3">
+                                                    <input type="number" class="text-center form-control"
+                                                        value="{{$SaldoMinusResetPerBulan->Nilai}}"
+                                                        name="inputSaldoMinusResetPerBulannilai">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="SaldoMinusResetPerBulan" name="ckSaldoMinusResetPerBulan"
+                                                            id="SaldoMinusResetPerBulan"
+                                                            name="ckSaldoMinusResetPerBulan"
                                                             @if($SaldoMinusResetPerBulan->aktif == 1 ) checked
                                                         @endif>
                                                         <label class="custom-control-label"
@@ -395,10 +430,11 @@
                                                         name="inputmblPajakPenjualannilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="MobilePajakPenjualan"
-                                                            @if($PajakPenjualan->aktif == 1 ) checked
+                                                            id="MobilePajakPenjualan" @if($PajakPenjualan->aktif == 1 )
+                                                        checked
                                                         @endif name="ckmblPajakPenjualan">
                                                         <label class="custom-control-label"
                                                             for="MobilePajakPenjualan"></label>
@@ -406,22 +442,25 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <input type="hidden" name="name10" value="{{$DiskonRpPenjualanReadOnly->Kode}}">
+                                                <input type="hidden" name="name10"
+                                                    value="{{$DiskonRpPenjualanReadOnly->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="form-group">
 
                                                             <input type="text" class="text-center form-control"
-                                                            value="{{$DiskonRpPenjualanReadOnly->Nama}}"
-                                                            name="inputmblDiskonRpPenjualanReadOnlynama">
+                                                                value="{{$DiskonRpPenjualanReadOnly->Nama}}"
+                                                                name="inputmblDiskonRpPenjualanReadOnlynama">
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="DiskonRpPenjualanReadOnly" name="ckDiskonRpPenjualanReadOnly"
+                                                            id="DiskonRpPenjualanReadOnly"
+                                                            name="ckDiskonRpPenjualanReadOnly"
                                                             @if($DiskonRpPenjualanReadOnly->aktif == 1 ) checked
                                                         @endif>
                                                         <label class="custom-control-label"
@@ -430,7 +469,8 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <input type="hidden" name="name11" value="{{$DiskonPersenPenjualanReadOnly->Kode}}">
+                                                <input type="hidden" name="name11"
+                                                    value="{{$DiskonPersenPenjualanReadOnly->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="form-group">
@@ -443,9 +483,11 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="DiskonPersenPenjualanReadOnly" name="ckDiskonPersenPenjualanReadOnly"
+                                                            id="DiskonPersenPenjualanReadOnly"
+                                                            name="ckDiskonPersenPenjualanReadOnly"
                                                             @if($DiskonPersenPenjualanReadOnly->aktif == 1 ) checked
                                                         @endif>
                                                         <label class="custom-control-label"
@@ -469,8 +511,8 @@
                                             <div class="form-group text-center">
                                                 <div class="custom-control custom-switch custom-switch-md">
                                                     <input type="checkbox" class="custom-control-input cetak"
-                                                        name="ckcetak" id="cetak"
-                                                        @if($cetak->aktif == 1 ) checked @endif>
+                                                        name="ckcetak" id="cetak" @if($cetak->aktif == 1 ) checked
+                                                    @endif>
                                                     <label class="custom-control-label" for="cetak"></label>
                                                 </div>
                                             </div>
@@ -555,6 +597,7 @@
                         method:"POST",
                         data:form,
                         success:function(data){
+                         
                            if(data['message']=='true'){
                             swal("Data berhasil di apply!", {
                                 icon: "success",

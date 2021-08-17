@@ -103,25 +103,31 @@ class SettingController extends Controller
         $name3 = $request->get('name3');
         $retname3 = Mssetting::where('Kode', $name3)->first();
         if ($retname3) {
-            $pengajuandayid = $request->get('pengajuandayid');
-            $pengajuanday = $request->get('pengajuanday');
+            $pengajuandayid1 = $request->get('pengajuandayid1');
+            $pengajuandayid2 = $request->get('pengajuandayid2');
+            $pengajuanday1 = $request->get('pengajuanday1');
+            $pengajuanday2 = $request->get('pengajuanday2');
             $ckpengajuanday = $request->get('ckmblpengajuanday');
-            foreach ($pengajuandayid as $key => $row) {
-                $findpengajuan = Mssetting::find($row);
 
-                if ($findpengajuan) {
-                    $findpengajuan->Nilai = $pengajuanday[$key];
-                    $findpengajuan->Nama = $request->get('inputmblpengajuan');
-                    if (isset($ckpengajuanday[$key])) {
-                        if ($ckpengajuanday[$key] == "on") {
-                            $findpengajuan->aktif = 1;
-                        }
-                    } else {
-                        $findpengajuan->aktif = 0;
-                    }
-                    $findpengajuan->save();
-                }
+            if ($ckpengajuanday== "on") {
+                $aktif = 1;
+            }else{
+                $aktif = 0;
             }
+
+            $updatename3 = Mssetting::where('Kode',$name3)->update([
+                'aktif' => $aktif,
+                'Nama' => $request->get('inputmblpengajuan')
+            ]);
+
+            $pengajuan1 = Mssetting::find($pengajuandayid1);
+            $pengajuan1->Nilai = $pengajuanday1;
+            $pengajuan1->save();
+
+            $pengajuan2 = Mssetting::find($pengajuandayid2);
+            $pengajuan2->Nilai = $pengajuanday2;
+            $pengajuan2->save();
+
         }
 
 
@@ -185,7 +191,7 @@ class SettingController extends Controller
             } else {
                 $retname8->aktif = 0;
             }
-            // $retname8->Nilai = $request->get('inputSaldoMinusResetPerBulannilai');
+            $retname8->Nilai = $request->get('inputSaldoMinusResetPerBulannilai');
             $retname8->Nama = $request->get('inputSaldoMinusResetPerBulannama');
             $retname8->save();
         }

@@ -163,7 +163,7 @@ class PenjualanController extends Controller
 
 
 
-                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup),);
+                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup,$periode1,$periode2),'laporan-penjualan-grup.xlsx');
             }
         }else if($grup == 'Group By Tanggal'){
             if ($request->get('transaksi') == 'semua' && $request->get('customer') == 'UMUM') {
@@ -215,17 +215,17 @@ class PenjualanController extends Controller
                 return $pdf->stream('laporan-penjualan-pdf', array('Attachment' => 0));
             }
 
-            // else {
-            //     $trmutasihd = json_decode(json_encode($trmutasihd), true);
-            //     $penjualan = $trmutasihd;
+            else {
+                $trmutasihd = json_decode(json_encode($trmutasihd), true);
+                $penjualan = $trmutasihd;
 
 
-            //     $penjualan = collect($penjualan);
+                $penjualan = collect($penjualan);
 
 
 
-            //     return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup), 'laporan-penjualan-grup.xlsx');
-            // }
+                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup,$periode1,$periode2), 'laporan-penjualan-grup.xlsx');
+            }
         }
         else {
 
@@ -326,7 +326,7 @@ class PenjualanController extends Controller
 
 
 
-                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup), 'laporan-penjualan.xlsx');
+                return Excel::download(new PenjualanExport($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup,$periode1,$periode2), 'laporan-penjualan.xlsx');
             }
         }
     }
