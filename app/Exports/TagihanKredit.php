@@ -38,6 +38,7 @@ class TagihanKredit implements FromCollection, WithEvents, WithMapping
     {
         return [
             $data['SubDept'],
+            $data['Kode'],
             $data['Nama'],
             $data['SaldoBelanjaKredit']
         ];
@@ -61,8 +62,8 @@ class TagihanKredit implements FromCollection, WithEvents, WithMapping
                 // at row 1, insert 2 rows
                 $event->sheet->insertNewRowBefore(1, 2);
 
-                $event->sheet->mergeCells('A1:C1');
-                $event->sheet->mergeCells('A2:C2');
+                $event->sheet->mergeCells('A1:D1');
+                $event->sheet->mergeCells('A2:D2');
 
                 $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
 
@@ -70,19 +71,21 @@ class TagihanKredit implements FromCollection, WithEvents, WithMapping
                 $event->sheet->setCellValue('A1', 'Laporan Penjualan Kredit');
                 $event->sheet->setCellValue('A2', 'Periode ' . $this->periode);
                 $event->sheet->setCellValue('A3', 'SubDept');
-                $event->sheet->setCellValue('B3', 'Nama');
-                $event->sheet->setCellValue('C3', 'Saldo Belanja Kredit');
+                $event->sheet->setCellValue('B3', 'Kode');
+                $event->sheet->setCellValue('C3', 'Nama');
+                $event->sheet->setCellValue('D3', 'Saldo Belanja Kredit');
 
                 $event->sheet->setCellValue(sprintf('A%d', $last_row), 'Total');
                 $event->sheet->setCellValue(sprintf('C%d', $last_row), $this->total);
 
 
                 // assign cell styles
-                $event->sheet->getStyle('A:C')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('A:C')->getAlignment()->setVertical('center');
+                $event->sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:D')->getAlignment()->setVertical('center');
                 $event->sheet->getColumnDimension('A')->setAutoSize(true);
                 $event->sheet->getColumnDimension('B')->setAutoSize(true);
                 $event->sheet->getColumnDimension('C')->setAutoSize(true);
+                $event->sheet->getColumnDimension('D')->setAutoSize(true);
 
                 $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },
