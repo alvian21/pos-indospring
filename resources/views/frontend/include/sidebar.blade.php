@@ -75,6 +75,7 @@
                     class="fas fa-columns"></i><span>Laporan</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Tagihan Penjualan Kredit</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Simpan Pinjam</a></li>
             </ul>
         </li>
         <li class="menu-header">POS | Point Of Sale</li>

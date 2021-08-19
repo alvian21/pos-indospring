@@ -163,7 +163,7 @@ class ProsesBulananController extends Controller
                     $loopa = Msanggota::where('Pangkat', '!=', 'karyawan kontrak')->where('Pangkat', '!=', null)->whereYear('TglKeluar', '<=', $year)->whereMonth('TglKeluar', '<=', $month)->get();
                     $loopb = Mstransaksi::leftjoin('mstransaksidetail', 'mstransaksi.Kode', 'mstransaksidetail.Kode')->where('Aktif', 1)->where('tahun', $year)->get();
 
-                    
+
                     foreach ($loopa as $key => $value) {
                         $tglmasuk = date('Ym', strtotime($value->TglMasuk));
                         foreach ($loopb as $key => $row) {
@@ -175,6 +175,7 @@ class ProsesBulananController extends Controller
                                 $trperiode->KodeUser = $value->Kode;
                                 $trperiode->KodeTransaksi = $row->Kode;
                                 $trperiode->Nilai = $row->Nilai;
+                                $trperiode->UserUpdate = auth('web')->user()->UserLogin;
                                 $trperiode->save();
 
                                 if ($row->Kode == '00' || $row->Kode == '01') {
