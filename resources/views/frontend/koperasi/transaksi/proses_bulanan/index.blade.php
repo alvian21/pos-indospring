@@ -34,6 +34,30 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-6">
+                <div class="card card-dark">
+                    <div class="card-header container-fluid d-flex justify-content-between">
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i>Simpan Pinjam</h4>
+                    </div>
+                    <div class="card-body">
+                        @include('frontend.include.alert')
+                        <form >
+                            @csrf
+                            <div class="form-group">
+                                <label for="periode">Tanggal Akhir</label>
+                                <input type="date" class="form-control" id="periode" required name="periode">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <button type="button" class="btn btn-primary btnprosessimpanpinjam">Proses</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -95,6 +119,90 @@
                             }else{
                                 swal("Error!", response.data, "error");
                             }
+                        })
+                    }
+              });
+
+            }
+        })
+
+        $('.btnprosessimpanpinjam').on('click', function(){
+            var periode = $('#periode').val()
+            if(periode != ''){
+            var $this = $(this)
+            swal({
+                    title: "Apa anda yakin?",
+                    text: "Apa anda yakin melakukan proses bulanan ini ?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    })
+                    .then((willInsert) => {
+                    if (willInsert) {
+                        BtnLoading($this)
+                        ajax()
+                        $.ajax({
+                            url:"{{route('koperasi.proses-bulanan.simpan.pinjam')}}",
+                            method:"POST",
+                            data:{
+                                'periode':periode,
+                                'status':'cek'
+                            }
+                        }).done(function(response){
+
+                            if(response.status){
+                                swal({
+                                    text: "Data sudah ada, apakah akan diproses ulang?",
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                    })
+                                    .then((willInsertData) => {
+                                    if (willInsertData) {
+                                        $.ajax({
+                                            url:"{{route('koperasi.proses-bulanan.simpan.pinjam')}}",
+                                            method:"POST",
+                                            data:{
+                                                'periode':periode,
+                                                'status':'insert'
+                                            }
+                                        }).done(function (responsedata) {
+                                            if(responsedata.status){
+                                                BtnReset($this)
+                                                $('#periode').val('')
+                                                swal("success!", "Proses Bulanan Simpan Pinjam Berhasil dilakukan!", "success");
+                                            }else{
+                                                swal("Error!", responsedata.data, "error");
+                                            }
+                                         })
+                                    }else{
+                                        BtnReset($this)
+                                         $('#periode').val('')
+                                    }
+                                    });
+
+
+                            }
+                            else{
+                                $.ajax({
+                                    url:"{{route('koperasi.proses-bulanan.simpan.pinjam')}}",
+                                    method:"POST",
+                                    data:{
+                                        'periode':periode,
+                                        'status':'insert'
+                                    }
+                                }).done(function (responsedata) {
+                                    console.log(responsedata);
+                                    if(responsedata.status){
+                                        BtnReset($this)
+                                        $('#periode').val('')
+                                        swal("success!", "Proses Bulanan Simpan Pinjam Berhasil dilakukan!", "success");
+                                    }else{
+                                        swal("Error!", responsedata.data, "error");
+                                    }
+                                    })
+                            }
+
                         })
                     }
               });

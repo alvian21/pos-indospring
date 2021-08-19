@@ -520,7 +520,39 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="card text-white bg-dark rounded" style="height: 14rem">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <input type="hidden" name="name13" value="{{$HitungSimPin->Kode}}">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control"
+                                                        id="exampleFormControlTextarea1" rows="6"
+                                                        name="inputHitungSimPinnama">{{$HitungSimPin->Nama}}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" class="text-center form-control"
+                                                        value="{{$HitungSimPin->Nilai}}"
+                                                        name="inputmblHitungSimPinnilai">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="MobileHitungSimPin" @if($HitungSimPin->aktif == 1 )
+                                                        checked
+                                                        @endif name="ckmblHitungSimPin">
+                                                        <label class="custom-control-label"
+                                                            for="MobileHitungSimPin"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
 
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
 
@@ -597,7 +629,7 @@
                         method:"POST",
                         data:form,
                         success:function(data){
-                         
+
                            if(data['message']=='true'){
                             swal("Data berhasil di apply!", {
                                 icon: "success",

@@ -89,6 +89,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::group(['prefix' => 'topup', 'as' => 'topup.'], function () {
             Route::get('ceksaldo', 'TopUpController@CekSaldo')->name('cek');
         });
+
+        Route::group(['prefix' => 'proses-bulanan', 'as' => 'proses-bulanan.'], function () {
+            Route::post('simpan_pinjam', 'ProsesBulananController@store_simpan_pinjam')->name('simpan.pinjam');
+        });
         Route::resource('topup', 'TopUpController');
         Route::resource('aktivasi', 'AktivasiController');
         Route::resource('proses-bulanan', 'ProsesBulananController');

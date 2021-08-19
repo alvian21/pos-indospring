@@ -9,8 +9,13 @@ use Illuminate\Http\Request;
 use App\Trsaldoreset;
 use App\Mssetting;
 use App\Msanggota;
+use App\Mstransaksi;
 use App\Trmutasihd;
+use App\Trpinjaman;
 use App\Trsaldoekop;
+use App\Trsaldohutang;
+use App\Trsaldosimpanan;
+use App\Trtransaksiperiode;
 
 class ProsesBulananController extends Controller
 {
@@ -134,6 +139,94 @@ class ProsesBulananController extends Controller
         }
     }
 
+
+    public function store_simpan_pinjam(Request $request)
+    {
+        if ($request->ajax()) {
+            $periode = $request->get('periode');
+            $month = date('m', strtotime($periode));
+            $year = date('Y', strtotime($periode));
+            $periode = date('Ym', strtotime($periode));
+            $status = $request->get('status');
+            DB::beginTransaction();
+
+            try {
+                $trperiode = Trtransaksiperiode::where('Periode', $periode)->first();
+                if ($trperiode && $status == 'cek') {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Data sudah ada',
+                        'data' => $trperiode
+                    ]);
+                } elseif ($status == 'insert') {
+
+                    $loopa = Msanggota::where('Pangkat', '!=', 'karyawan kontrak')->where('Pangkat', '!=', null)->whereYear('TglKeluar', '<=', $year)->whereMonth('TglKeluar', '<=', $month)->get();
+                    $loopb = Mstransaksi::leftjoin('mstransaksidetail', 'mstransaksi.Kode', 'mstransaksidetail.Kode')->where('Aktif', 1)->where('tahun', $year)->get();
+
+                    
+                    foreach ($loopa as $key => $value) {
+                        $tglmasuk = date('Ym', strtotime($value->TglMasuk));
+                        foreach ($loopb as $key => $row) {
+                            if ($row->CaraBayar == 'Tiap Bulan' || ($row->CaraBayar == 'Sekali Bayar' && $tglmasuk == $periode)) {
+                                $formatNomor = $this->generateNomor($month, $year);
+                                $trperiode = new Trtransaksiperiode();
+                                $trperiode->Nomor = $formatNomor;
+                                $trperiode->Periode = $periode;
+                                $trperiode->KodeUser = $value->Kode;
+                                $trperiode->KodeTransaksi = $row->Kode;
+                                $trperiode->Nilai = $row->Nilai;
+                                $trperiode->save();
+
+                                if ($row->Kode == '00' || $row->Kode == '01') {
+                                    $lastsimpan = Trsaldosimpanan::where('KodeUser', $value->Kode)->orderBy('Tanggal', 'DESC')->first();
+                                    $saldo = 0;
+                                    if ($lastsimpan) {
+                                        $saldo = $lastsimpan->Saldo;
+                                    }
+
+                                    $newsimpan = new Trsaldosimpanan();
+                                    $newsimpan->Tanggal = date('Y-m-d H:i:s');
+                                    $newsimpan->KodeUser = $value->Kode;
+                                    $newsimpan->Saldo = $saldo + $row->Nilai;
+                                    $newsimpan->save();
+                                }
+
+                                if ($row->Kode == '20') {
+                                    $trpinjaman = Trpinjaman::where('KodeAnggota', $value->Kode)->first();
+                                    if ($trpinjaman) {
+                                        $lastsaldo = Trsaldohutang::where('KodeAnggota', $value->Kode)->orderBy('Tanggal', 'DESC')->first();
+                                        $berapakali = 0;
+                                        if ($lastsaldo) {
+                                            $berapakali = $lastsaldo->BayarBerapaKali;
+                                        }
+                                        $saldohutang = new Trsaldohutang();
+                                        $saldohutang->Tanggal = date('Y-m-d H:i:s');
+                                        $saldohutang->KodeAnggota = $value->Kode;
+                                        $saldohutang->BayarBerapaKali = $berapakali + 1;
+                                        $saldohutang->CicilanTotal = $trpinjaman->CicilanTotal;
+                                        $saldohutang->Saldo = $saldohutang->BayarBerapaKali * $saldohutang->CicilanTotal;
+                                        $saldohutang->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    DB::commit();
+                    return response()->json(['status' => true]);
+                }
+            } catch (\Exception $th) {
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => false,
+                    'data' => 'maaf ada yang error'
+                ]);
+            }
+        }
+    }
+
     /**
      * Display the specified resource.
      *
@@ -177,5 +270,29 @@ class ProsesBulananController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function generateNomor($month, $year)
+    {
+        $trperiode = Trtransaksiperiode::whereYear('LastUpdate', $year)->whereMonth('LastUpdate', $month)->OrderBy('LastUpdate', 'DESC')->first();
+        if ($trperiode) {
+            $nomor = (int) substr($trperiode->Nomor, 14);
+            if ($nomor != 0) {
+                if ($nomor >= 9999) {
+                    $nomor = $nomor + 1;
+                    $formatNomor = "TB-" . date('Y-m-d') . "-" . $nomor;
+                } else {
+                    $nomor = $nomor + 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "TB-" . date('Y-m-d') . "-" . $addzero;
+                }
+            }
+        } else {
+            $nomor = 1;
+            $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+            $formatNomor = "TB-" . date('Y-m-d') . "-" . $addzero;
+        }
+
+        return $formatNomor;
     }
 }
