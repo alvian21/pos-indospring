@@ -18,8 +18,9 @@ class StatusPesananController extends Controller
      */
     public function index()
     {
-        $date = date('Y-m-d');
-        $trmutasihd = DB::table('trmutasihd')->join('msanggota','msanggota.Kode','trmutasihd.KodeSuppCust')->whereDate('Tanggal',$date)->where('Transaksi', 'CHECKOUT')->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
+        $today = date('Y-m-d');
+        $yesterday = date('Y-m-d',strtotime('-1 days'));
+        $trmutasihd = DB::table('trmutasihd')->join('msanggota','msanggota.Kode','trmutasihd.KodeSuppCust')->whereDate('Tanggal','<=',$today)->whereDate('Tanggal','>=',$yesterday)->where('Transaksi', 'CHECKOUT')->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
         return view("frontend.dashboard.status_pesanan.index",['trmutasihd'=>$trmutasihd]);
     }
 
