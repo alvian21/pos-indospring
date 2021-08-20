@@ -56,7 +56,7 @@ class DashboardController extends Controller
 
             array_push($arr, $x);
         }
-        return view("frontend.dashboard.index", ['lokasi' => $lokasi, 'pinjaman' => $arr, 'kuota' => $kuota,'total'=>$total]);
+        return view("frontend.dashboard.index", ['lokasi' => $lokasi, 'pinjaman' => $arr, 'kuota' => $kuota, 'total' => $total]);
     }
 
     /**
@@ -175,13 +175,15 @@ class DashboardController extends Controller
             $total = 0;
             $arr[0]['status'] = 'Pesanan';
             $arr[0]['total'] = 0;
+            $today = date('Y-m-d');
+            $yesterday = date('Y-m-d',strtotime('-1 days'));
             foreach ($status as $key => $value) {
                 $penjualanonline = Trmutasihd::select([
                     DB::raw('StatusPesanan as status'),
                     DB::raw('count(Nomor) as total')
                 ])->groupBy('status')->where('Transaksi', 'CHECKOUT')
                     ->where('LokasiAwal', auth('web')->user()->KodeLokasi)->where('StatusPesanan', $value)
-                    ->where('Tanggal', '>=', date('Y-m-d') . ' 00:00:00')
+                    ->whereDate('Tanggal','<=',$today)->whereDate('Tanggal','>=',$yesterday)
                     ->limit(10)->first();
                 if ($penjualanonline) {
                     $total += $penjualanonline->total;
