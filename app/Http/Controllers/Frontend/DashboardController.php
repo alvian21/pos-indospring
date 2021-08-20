@@ -155,6 +155,7 @@ class DashboardController extends Controller
             ])->groupBy('day')
                 ->where('Transaksi', 'CHECKOUT')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
+                ->where('StatusPesanan','Barang Telah Diambil')
                 ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
                 ->limit(10)->get()->toArray();
             $penjualanonline = $this->sortFunction($penjualanonline);
