@@ -246,7 +246,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         // Route::get('/penjualan/delete','PenjualanController@hapus');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('msbarang', 'MsBarangController');
-
+        Route::resource('setting', 'SettingController');
+        Route::resource('aktivasi', 'AktivasiController');
     });
 
     //logout

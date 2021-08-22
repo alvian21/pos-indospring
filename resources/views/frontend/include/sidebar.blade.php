@@ -13,38 +13,13 @@
             </a>
         </li>
         <li class="menu-header">SETTINGS</li>
-        <li @yield('server cloud')>
-            <a class="nav-link" href="#">
-                <i class="fas fa-file-alt"></i> <span>Server Cloud</span>
-            </a>
-        </li>
+
         <li class="nav-item @yield('setting') ">
             <a class="nav-link" href="{{route('settings.mssetting.index')}}">
                 <i class="fas fa-file-alt"></i> <span>Setting</span>
             </a>
         </li>
-        <li class="menu-header">MASTER</li>
-        <li @yield('menu')>
-            <a class="nav-link" href="#">
-                <i class="fas fa-file-alt"></i> <span>Menu</span>
-            </a>
-        </li>
-        <li class="nav-item @yield('user') ">
-            <a class="nav-link" href="{{route('master.user.index')}}">
-                <i class="fas fa-file-alt"></i> <span>User</span>
-            </a>
-        </li>
-        <li class="nav-item @yield('barang')">
-            <a class="nav-link" href="{{route('master.barang.index')}}">
-                <i class="fas fa-file-alt"></i> <span>Barang</span>
-            </a>
-        </li>
-        <li class="menu-header">Saldo</li>
-        <li class="nav-item @yield('saldo-awal') ">
-            <a class="nav-link" href="{{route('saldo.saldo_awal.index')}}">
-                <i class="fas fa-file-alt"></i> <span>Saldo awal hutang dan simpanan</span>
-            </a>
-        </li>
+
 
         <li class="menu-header">KOPERASI</li>
         <li class="nav-item dropdown @yield('koperasi')">
@@ -71,16 +46,7 @@
             </ul>
         </li>
         <li class="menu-header">POS | Point Of Sale</li>
-        <li class="nav-item dropdown  @yield('posmaster')">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
-                    class="fas fa-columns"></i><span>Master</span></a>
-            <ul class="dropdown-menu">
-                <li><a class="nav-link" href="#">Lokasi</a></li>
-                <li><a class="nav-link" href="#">Barang - Kategori</a></li>
-                <li><a class="nav-link" href="#">Barang</a></li>
-                <li><a class="nav-link" href="{{route('pos.master.supplier.index')}}">Supplier</a></li>
-            </ul>
-        </li>
+
         <li class="nav-item dropdown @yield('pos')">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Transaksi</span></a>
@@ -103,6 +69,10 @@
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('synchronize.penjualan.index')}}">Synchronize Penjualan</a></li>
                 <li><a class="nav-link" href="{{route('synchronize.msbarang.index')}}">Synchronize Master Barang</a>
+                </li>
+                <li><a class="nav-link" href="{{route('synchronize.setting.index')}}">Synchronize Setting</a>
+                </li>
+                <li><a class="nav-link" href="{{route('synchronize.aktivasi.index')}}">Synchronize Aktifasi Kartu e-Kop</a>
                 </li>
             </ul>
         </li>

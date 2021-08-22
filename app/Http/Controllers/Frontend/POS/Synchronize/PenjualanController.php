@@ -74,7 +74,7 @@ class PenjualanController extends Controller
                     foreach ($backuphd as $key => $value) {
                         $nomor = $this->generateNomor($tanggal);
                         $no = 1;
-                        $cek = DB::connection($koneksi)->table('trmutasihd')->whereDate('Tanggal', $tanggal)->where('NomorLokal', $value->Kode)->where('NomorLokal', '!=', null)->first();
+                        $cek = DB::connection($koneksi)->table('trmutasihd')->whereDate('Tanggal', $tanggal)->where('NomorLokal', $value->Nomor)->where('NomorLokal', '!=', null)->first();
 
                         if (!$cek) {
                             DB::connection($koneksi)->table('trmutasihd')->insert([
@@ -114,6 +114,18 @@ class PenjualanController extends Controller
                                     $trsaldobelanjatunai->Saldo = $tunai;
                                 }
                                 $trsaldobelanjatunai->save();
+
+
+                                $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
+                                $trsaldobelanjatunai->setConnection($koneksi);
+                                $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
+                                $trsaldobelanjatunai->KodeUser = $value->KodeSuppCust;
+                                if ($cektunai) {
+                                    $trsaldobelanjatunai->Saldo = $tunai + $cektunai->Saldo;
+                                } else {
+                                    $trsaldobelanjatunai->Saldo = $tunai;
+                                }
+                                $trsaldobelanjatunai->save();
                             }
 
                             //pembarayan ekop
@@ -130,6 +142,33 @@ class PenjualanController extends Controller
                                     $trsaldoekop->KodeUser = $value->KodeSuppCust;
                                     $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
                                     $trsaldoekop->save();
+
+
+                                    $trsaldoekop = new Trsaldoekop();
+                                    $trsaldoekop->setConnection($koneksi);
+                                    $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                                    $trsaldoekop->KodeUser = $value->KodeSuppCust;
+                                    $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
+                                    $trsaldoekop->save();
+
+                                    $gettotalbelanjaekop = Trsaldototalbelanjaekop::on($koneksi)->where('KodeUser', $value->KodeSuppCust)->orderBy('Tanggal', 'DESC')->first();
+                                    $totalbelanjaekop = 0;
+                                    if ($gettotalbelanjaekop) {
+                                        $totalbelanjaekop = $gettotalbelanjaekop->Saldo;
+                                    }
+
+                                    $trsaldototalbelanjaekop = new Trsaldototalbelanjaekop();
+                                    $trsaldototalbelanjaekop->Tanggal = date('Y-m-d H:i:s');
+                                    $trsaldototalbelanjaekop->KodeUser = $value->KodeSuppCust;
+                                    $trsaldototalbelanjaekop->Saldo = $totalbelanjaekop + $pembayaran_ekop;
+                                    $trsaldototalbelanjaekop->save();
+
+                                    $trsaldototalbelanjaekop = new Trsaldototalbelanjaekop();
+                                    $trsaldototalbelanjaekop->setConnection($koneksi);
+                                    $trsaldototalbelanjaekop->Tanggal = date('Y-m-d H:i:s');
+                                    $trsaldototalbelanjaekop->KodeUser = $value->KodeSuppCust;
+                                    $trsaldototalbelanjaekop->Saldo = $totalbelanjaekop + $pembayaran_ekop;
+                                    $trsaldototalbelanjaekop->save();
                                 }
                             }
 
@@ -163,6 +202,31 @@ class PenjualanController extends Controller
                                     }
                                     $trsaldoekop->save();
                                     $trsaldokredit->save();
+
+
+
+                                    $trsaldoekop = new Trsaldoekop();
+                                    $trsaldoekop->setConnection($koneksi);
+                                    $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
+                                    $trsaldoekop->KodeUser = $value->KodeSuppCust;
+
+
+                                    $trsaldokredit = new Trsaldototalbelanjakredit();
+                                    $trsaldokredit->setConnection($koneksi);
+                                    $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
+                                    $trsaldokredit->KodeUser = $value->KodeSuppCust;
+
+
+                                    $trsaldoekop->Saldo = round($cek[0]->Saldo, 2) + $pembayaran_kredit;
+
+                                    $cekkredit = Trsaldototalbelanjakredit::on($koneksi)->where('KodeUser', $value->KodeSuppCust)->OrderBy('Tanggal', 'DESC')->first();
+                                    if ($cekkredit) {
+                                        $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo, 2);
+                                    } else {
+                                        $trsaldokredit->Saldo = $pembayaran_kredit;
+                                    }
+                                    $trsaldoekop->save();
+                                    $trsaldokredit->save();
                                 }
                             }
 
@@ -170,6 +234,18 @@ class PenjualanController extends Controller
                             $cektotalbelanja = Trsaldototalbelanja::on($koneksi)->where('KodeUser', $value->KodeSuppCust)->OrderBy('Tanggal', 'DESC')->first();
                             $trsaldototalbelanja = new Trsaldototalbelanja();
 
+                            $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
+                            $trsaldototalbelanja->KodeUser = $value->KodeSuppCust;
+                            if ($cektotalbelanja) {
+                                $trsaldototalbelanja->Saldo = $pembayaran_kredit + $tunai + $pembayaran_ekop + $cektotalbelanja->Saldo;
+                            } else {
+                                $trsaldototalbelanja->Saldo = $pembayaran_kredit + $tunai + $pembayaran_ekop;
+                            }
+                            $trsaldototalbelanja->save();
+
+
+                            $trsaldototalbelanja = new Trsaldototalbelanja();
+                            $trsaldototalbelanja->setConnection($koneksi);
                             $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
                             $trsaldototalbelanja->KodeUser = $value->KodeSuppCust;
                             if ($cektotalbelanja) {
@@ -199,6 +275,20 @@ class PenjualanController extends Controller
                                 $getstok = Trsaldobarang::on($koneksi)->where('KodeBarang',  $row->KodeBarang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
                                 $trsaldobarang = new Trsaldobarang();
 
+                                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                                $trsaldobarang->KodeBarang =  $row->KodeBarang;
+                                if ($getstok) {
+                                    $trsaldobarang->Saldo = $getstok->Saldo -  $row->Jumlah;
+                                } else {
+                                    $trsaldobarang->Saldo = 0;
+                                }
+
+                                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                                $trsaldobarang->save();
+
+
+                                $trsaldobarang = new Trsaldobarang();
+                                $trsaldobarang->setConnection($koneksi);
                                 $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
                                 $trsaldobarang->KodeBarang =  $row->KodeBarang;
                                 if ($getstok) {
