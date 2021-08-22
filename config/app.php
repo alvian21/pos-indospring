@@ -179,6 +179,8 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
+        Shivella\Bitly\BitlyServiceProvider::class,
+
     ],
 
     /*
@@ -236,6 +238,7 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+        'Bitly' => Shivella\Bitly\Facade\Bitly::class,
     ],
 
 ];
