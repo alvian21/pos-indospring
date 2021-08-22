@@ -102,7 +102,8 @@ class PenjualanController extends Controller
 
                             //belanja tunai
                             $tunai = $value->PembayaranTunai;
-                            if ($tunai > 0) {
+                            $tunai = intval($tunai);
+                            if ($tunai > 0 && $tunai != 0) {
                                 $cektunai = Trsaldototalbelanjatunai::on($koneksi)->where('KodeUser', $value->KodeSuppCust)->OrderBy('Tanggal', 'DESC')->first();
                                 $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
 
@@ -274,11 +275,11 @@ class PenjualanController extends Controller
 
                                 $getstok = Trsaldobarang::on($koneksi)->where('KodeBarang',  $row->KodeBarang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
                                 $trsaldobarang = new Trsaldobarang();
-
+                                $saldobarang = $getstok->Saldo -  $row->Jumlah;
                                 $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
                                 $trsaldobarang->KodeBarang =  $row->KodeBarang;
                                 if ($getstok) {
-                                    $trsaldobarang->Saldo = $getstok->Saldo -  $row->Jumlah;
+                                    $trsaldobarang->Saldo = $saldobarang;
                                 } else {
                                     $trsaldobarang->Saldo = 0;
                                 }
@@ -287,18 +288,18 @@ class PenjualanController extends Controller
                                 $trsaldobarang->save();
 
 
-                                $trsaldobarang = new Trsaldobarang();
-                                $trsaldobarang->setConnection($koneksi);
-                                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-                                $trsaldobarang->KodeBarang =  $row->KodeBarang;
+                                $trsaldobaranglokal = new Trsaldobarang();
+                                $trsaldobaranglokal->setConnection($koneksi);
+                                $trsaldobaranglokal->Tanggal = date('Y-m-d H:i:s');
+                                $trsaldobaranglokal->KodeBarang =  $row->KodeBarang;
                                 if ($getstok) {
-                                    $trsaldobarang->Saldo = $getstok->Saldo -  $row->Jumlah;
+                                    $trsaldobaranglokal->Saldo = $saldobarang;
                                 } else {
-                                    $trsaldobarang->Saldo = 0;
+                                    $trsaldobaranglokal->Saldo = 0;
                                 }
 
-                                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
-                                $trsaldobarang->save();
+                                $trsaldobaranglokal->KodeLokasi = auth()->user()->KodeLokasi;
+                                $trsaldobaranglokal->save();
                             }
                         }
                     }
@@ -409,132 +410,5 @@ class PenjualanController extends Controller
         return $formatNomor;
     }
 
-    public function saveSaldo($kode, $saldoMinus = null, $saldoPlus = null, $saldototal, $saldokredit, $pembayaran_kredit, $tunai)
-    {
 
-        $trsalodekop = new Trsaldoekop();
-        if (is_null($saldoMinus)) {
-            $trsalodekop->Saldo = $saldoPlus;
-        } else {
-            $trsalodekop->Saldo = $saldoMinus;
-        }
-        $trsalodekop->Tanggal = date('Y-m-d H:i:s');
-        $trsalodekop->KodeUser = $kode;
-        $trsalodekop->save();
-
-        $totalbelanja = 0;
-        $totalbelanjaekop = 0;
-        $gettotalbelanja = TrSaldoTotalBelanja::where('KodeUser', $kode)->orderBy('Tanggal', 'DESC')->first();
-        $gettotalbelanjaekop = Trsaldototalbelanjaekop::where('KodeUser', $kode)->orderBy('Tanggal', 'DESC')->first();
-        if ($gettotalbelanja) {
-            $totalbelanja = $gettotalbelanja->Saldo;
-        }
-        if ($gettotalbelanjaekop) {
-            $totalbelanjaekop = $gettotalbelanjaekop->Saldo;
-        }
-
-        $trsaldototalbelanja = new TrSaldoTotalBelanja();
-        $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
-        $trsaldototalbelanja->KodeUser = $kode;
-        $trsaldototalbelanja->Saldo = $saldototal + $totalbelanja;
-        $trsaldototalbelanja->save();
-
-        $trsaldototalbelanjaekop = new Trsaldototalbelanjaekop();
-        $trsaldototalbelanjaekop->Tanggal = date('Y-m-d H:i:s');
-        $trsaldototalbelanjaekop->KodeUser = $kode;
-        $trsaldototalbelanjaekop->Saldo = $saldokredit + $totalbelanjaekop;
-        $trsaldototalbelanjaekop->save();
-
-
-        $trsaldokredit = new Trsaldototalbelanjakredit();
-        $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
-        $trsaldokredit->KodeUser = $kode;
-        $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $kode)->OrderBy('Tanggal', 'DESC')->first();
-        if ($cekkredit) {
-            $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo, 2);
-        } else {
-            $trsaldokredit->Saldo = $pembayaran_kredit;
-        }
-
-        $trsaldokredit->save();
-
-        $cektunai = Trsaldototalbelanjatunai::where('KodeUser', $kode)->OrderBy('Tanggal', 'DESC')->first();
-        $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
-        $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
-        $trsaldobelanjatunai->KodeUser = $kode;
-        if ($cektunai) {
-            $trsaldobelanjatunai->Saldo = $tunai + $cektunai->Saldo;
-        } else {
-            $trsaldobelanjatunai->Saldo = $tunai;
-        }
-        $trsaldobelanjatunai->save();
-    }
-
-
-    public function saveSaldoCloud($kode, $saldoMinus = null, $saldoPlus = null, $saldototal, $saldokredit, $pembayaran_kredit, $tunai)
-    {
-        $koneksi = 'mysql2';
-
-        $trsalodekop = new Trsaldoekop();
-        $trsalodekop->setConnection($koneksi);
-        if (is_null($saldoMinus)) {
-            $trsalodekop->Saldo = $saldoPlus;
-        } else {
-            $trsalodekop->Saldo = $saldoMinus;
-        }
-        $trsalodekop->Tanggal = date('Y-m-d H:i:s');
-        $trsalodekop->KodeUser = $kode;
-        $trsalodekop->save();
-
-        $totalbelanja = 0;
-        $totalbelanjaekop = 0;
-        $gettotalbelanja = TrSaldoTotalBelanja::on($koneksi)->where('KodeUser', $kode)->orderBy('Tanggal', 'DESC')->first();
-        $gettotalbelanjaekop = Trsaldototalbelanjaekop::on($koneksi)->where('KodeUser', $kode)->orderBy('Tanggal', 'DESC')->first();
-        if ($gettotalbelanja) {
-            $totalbelanja = $gettotalbelanja->Saldo;
-        }
-        if ($gettotalbelanjaekop) {
-            $totalbelanjaekop = $gettotalbelanjaekop->Saldo;
-        }
-
-        $trsaldototalbelanja = new TrSaldoTotalBelanja();
-        $trsaldototalbelanja->setConnection($koneksi);
-        $trsaldototalbelanja->Tanggal = date('Y-m-d H:i:s');
-        $trsaldototalbelanja->KodeUser = $kode;
-        $trsaldototalbelanja->Saldo = $saldototal + $totalbelanja;
-        $trsaldototalbelanja->save();
-
-        $trsaldototalbelanjaekop = new Trsaldototalbelanjaekop();
-        $trsaldototalbelanjaekop->setConnection($koneksi);
-        $trsaldototalbelanjaekop->Tanggal = date('Y-m-d H:i:s');
-        $trsaldototalbelanjaekop->KodeUser = $kode;
-        $trsaldototalbelanjaekop->Saldo = $saldokredit + $totalbelanjaekop;
-        $trsaldototalbelanjaekop->save();
-
-
-        $trsaldokredit = new Trsaldototalbelanjakredit();
-        $trsaldokredit->setConnection($koneksi);
-        $trsaldokredit->Tanggal = date('Y-m-d H:i:s');
-        $trsaldokredit->KodeUser = $kode;
-        $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $kode)->OrderBy('Tanggal', 'DESC')->first();
-        if ($cekkredit) {
-            $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo, 2);
-        } else {
-            $trsaldokredit->Saldo = $pembayaran_kredit;
-        }
-
-        $trsaldokredit->save();
-
-        $cektunai = Trsaldototalbelanjatunai::on($koneksi)->where('KodeUser', $kode)->OrderBy('Tanggal', 'DESC')->first();
-        $trsaldobelanjatunai = new Trsaldototalbelanjatunai();
-        $trsaldobelanjatunai->setConnection($koneksi);
-        $trsaldobelanjatunai->Tanggal = date('Y-m-d H:i:s');
-        $trsaldobelanjatunai->KodeUser = $kode;
-        if ($cektunai) {
-            $trsaldobelanjatunai->Saldo = $tunai + $cektunai->Saldo;
-        } else {
-            $trsaldobelanjatunai->Saldo = $tunai;
-        }
-        $trsaldobelanjatunai->save();
-    }
 }

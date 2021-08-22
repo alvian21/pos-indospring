@@ -397,7 +397,7 @@ class KasirController extends Controller
                 $trmutasihd->LokasiAwal = $trkasir["lokasi"];
                 $trmutasihd->TotalHarga = $trkasir["total_harga"];
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-                if (($tunai != '' || $tunai > 0) && $pembayaran_ekop != $trkasir["total_harga_setelah_pajak"] && $pembayaran_kredit != $trkasir["total_harga_setelah_pajak"]) {
+                if ($tunai > 0 && $pembayaran_ekop != $trkasir["total_harga_setelah_pajak"] && $pembayaran_kredit != $trkasir["total_harga_setelah_pajak"]) {
                     $trmutasihd->PembayaranTunai = $tunai;
                     //saldototalbelanjatunai
                     $cektunai = Trsaldototalbelanjatunai::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
@@ -440,21 +440,6 @@ class KasirController extends Controller
 
                     $trmutasihd->PembayaranKredit = $pembayaran_kredit;
                     $trsaldoekop->Saldo = round($cek[0]->Saldo, 2) + $pembayaran_kredit;
-                    // if ($SaldoMinusBunga->aktif == 1) {
-                    //     $hitungkredit = $pembayaran_kredit + ($pembayaran_kredit * ($SaldoMinusBunga->Nilai / 100));
-                    //     $bayar_kredit = $hitungkredit;
-                    //     $trmutasihd->PembayaranKredit = $bayar_kredit;
-                    //     $trsaldokredit->Saldo = $hitungkredit;
-
-                    //     //hitung trsaldoekop
-                    //     $trsaldoekop->Saldo = $cek[0]->Saldo + $hitungkredit;
-
-                    // } else {
-                    //     $bayar_kredit = $pembayaran_kredit;
-                    //     $trmutasihd->PembayaranKredit = $bayar_kredit;
-                    //     $trsaldokredit->Saldo = $pembayaran_kredit;
-                    //     $trsaldoekop->Saldo = $cek[0]->Saldo + $bayar_kredit;
-                    // }
                     $trmutasihd->DueDate = date('Y-m-t');
                     $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
                     if ($cekkredit) {

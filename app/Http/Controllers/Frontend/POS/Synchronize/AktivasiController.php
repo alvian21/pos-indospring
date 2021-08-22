@@ -45,7 +45,7 @@ class AktivasiController extends Controller
             DB::beginTransaction();
             try {
                 $traktifasicloud = Traktifasi::on($koneksi)->get();
-
+                $delaktivasi = Traktifasi::query()->delete();
                 foreach ($traktifasicloud as $key => $value) {
                     $lokalraktifasi = new Traktifasi();
                     $lokalraktifasi->Nomor = $value->Nomor;
