@@ -199,7 +199,32 @@
                                 <div class="col-md-6">
                                     <div class="card text-white bg-dark rounded" style="height: 14rem">
                                         <div class="card-body">
-
+                                            <div class="row">
+                                                <input type="hidden" name="name13" value="{{$HitungSimPin->Kode}}">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control" readonly
+                                                        id="exampleFormControlTextarea1" rows="6"
+                                                        name="inputHitungSimPinnama">{{$HitungSimPin->Nama}}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" readonly class="text-center form-control"
+                                                        value="{{$HitungSimPin->Nilai}}"
+                                                        name="inputmblHitungSimPinnilai">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="MobileHitungSimPin" disabled @if($HitungSimPin->aktif == 1 )
+                                                        checked
+                                                        @endif name="ckmblHitungSimPin">
+                                                        <label class="custom-control-label"
+                                                            for="MobileHitungSimPin"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-md-10">
                                                     <input type="hidden" name="name12" value="{{$cetak->Kode}}">
@@ -237,86 +262,4 @@
     </div>
 </section>
 
-@endsection
-@section('scripts')
-<script>
-    $(document).ready(function(){
-        $('.cardpengajuanday').each(function () {
-          var select = $(this).find('select')
-            select.each(function () {
-                $(this).select2()
-            })
-         })
-        function ajax() {
-            $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-         }
-
-         $('.btnapply').on('click', function () {
-             var form =$('#formSetting').serialize()
-             var inputtext = $('input:text').val();
-             var inputtime1 = $('#inputmblbelanjajamoff').val();
-             var inputnumber = $('input[type=number]');
-             var resnumber = false;
-             var select = $('select');
-             var resselect = false;
-             select.each(function () {
-                if($(this).val() == '0'){
-                    resselect = true;
-                }
-              })
-
-              inputnumber.each(function () {
-                if($(this).val() == ''){
-                    resnumber = true;
-                }
-              })
-            //  console.log(select)
-             if(inputtext == '' || inputtext== undefined){
-                swal("form harus diisi semua!");
-                return false;
-             }else if(resselect){
-                swal("Tanggal pinjaman harus dipilih!");
-                return false;
-             }else if(inputtime1 == '' || inputtime1== undefined){
-                swal("form waktu harus diisi!");
-                return false;
-             }else if(resnumber){
-                swal("form harus diisi semua!");
-                return false;
-             }
-
-             swal({
-                text: "Apa kamu yakin apply data ini ?",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                })
-                .then((willInsert) => {
-                if (willInsert) {
-                    ajax();
-                    $.ajax({
-                        url:"{{route('settings.mssetting.store')}}",
-                        method:"POST",
-                        data:form,
-                        success:function(data){
-                           if(data['message']=='true'){
-                            swal("Data berhasil di apply!", {
-                                icon: "success",
-                                });
-                           }
-                        }
-                    })
-
-
-                }
-                });
-
-          })
-
-    })
-</script>
 @endsection
