@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2806dfc42ac490c19c085087c7b6f734",
+    "content-hash": "08bf28de6a096665de90ad9bde932a17",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3269,6 +3269,72 @@
                 "source": "https://github.com/sabberworm/PHP-CSS-Parser/tree/8.3.1"
             },
             "time": "2020-06-01T09:10:00+00:00"
+        },
+        {
+            "name": "shivella/laravel-bitly",
+            "version": "1.1.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Shivella/laravel-bitly.git",
+                "reference": "c7a81df3e87a3ca5b81e19c558ab5d774d637251"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Shivella/laravel-bitly/zipball/c7a81df3e87a3ca5b81e19c558ab5d774d637251",
+                "reference": "c7a81df3e87a3ca5b81e19c558ab5d774d637251",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "~6.0 || ^7.0.1 || ^7.1 || ^7.2 || ^7.3",
+                "illuminate/support": "^5.8 || ^6.0 || ^7.0 || ^8.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.1",
+                "symfony/http-foundation": "^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Shivella\\Bitly\\BitlyServiceProvider"
+                    ],
+                    "aliases": {
+                        "Bitly": "Shivella\\Bitly\\Facade\\Bitly"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Shivella\\Bitly\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wessel Strengholt",
+                    "email": "wessel.strengholt@gmail.com"
+                }
+            ],
+            "description": "Laravel package for generating bitly url",
+            "homepage": "https://github.com/Shivella/laravel-bitly",
+            "keywords": [
+                "bitly",
+                "laravel",
+                "link",
+                "package",
+                "short",
+                "url"
+            ],
+            "support": {
+                "issues": "https://github.com/Shivella/laravel-bitly/issues",
+                "source": "https://github.com/Shivella/laravel-bitly"
+            },
+            "time": "2021-03-27T17:30:32+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
