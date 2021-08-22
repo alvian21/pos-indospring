@@ -30,6 +30,7 @@ class SettingController extends Controller
         $PajakPenjualan = Mssetting::where('Kode', 'PajakPenjualan')->first();
         $DiskonRpPenjualanReadOnly = Mssetting::where('Kode', 'DiskonRpPenjualanReadOnly')->first();
         $DiskonPersenPenjualanReadOnly = Mssetting::where('Kode', 'DiskonPersenPenjualanReadOnly')->first();
+        $HitungSimPin = Mssetting::where('Kode', 'HitungSimPin')->first();
         $cetak = Mssetting::where('Kode', 'Cetak')->first();
         return view(
             "frontend.settings.setting.index",
@@ -46,7 +47,8 @@ class SettingController extends Controller
                 'PajakPenjualan' => $PajakPenjualan,
                 'DiskonRpPenjualanReadOnly' => $DiskonRpPenjualanReadOnly,
                 'DiskonPersenPenjualanReadOnly' => $DiskonPersenPenjualanReadOnly,
-                'cetak' => $cetak
+                'cetak' => $cetak,
+                'HitungSimPin' => $HitungSimPin,
             ]
         );
     }
