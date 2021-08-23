@@ -96,7 +96,7 @@ class MsBarangController extends Controller
                         session()->forget('totalpersen');
                         session(['totalpersen' => $total]);
                         session()->save();
-                        $updatelokal = Msbarang::updateOrCreate($updateOrCreate);
+                        $updatelokal = Msbarang::updateOrCreate(['Kode' => $value->Kode], $updateOrCreate);
                     }
                     session()->save();
 
