@@ -46,7 +46,10 @@
                 </li>
                 <li><a class="nav-link" href="{{route('synchronize.setting.index')}}">Synchronize Setting</a>
                 </li>
-                <li><a class="nav-link" href="{{route('synchronize.aktivasi.index')}}">Synchronize Aktifasi Kartu e-Kop</a>
+                <li><a class="nav-link" href="{{route('synchronize.aktivasi.index')}}">Synchronize Aktifasi Kartu
+                        e-Kop</a>
+                </li>
+                <li><a class="nav-link" href="{{route('synchronize.ekop.index')}}">Synchronize E-Kop</a>
                 </li>
             </ul>
         </li>

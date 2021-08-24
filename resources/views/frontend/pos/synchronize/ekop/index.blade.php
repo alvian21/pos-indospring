@@ -1,6 +1,6 @@
 @extends('frontend.master')
 
-@section('title', 'Synchronize Setting')
+@section('title', 'Synchronize Ekop')
 
 @section('synchronize', 'active')
 
@@ -9,14 +9,14 @@
 
 <section class="section">
     <div class="section-header">
-        <h1>Synchronize Setting</h1>
+        <h1>Synchronize Ekop</h1>
     </div>
     <div class="section-body">
         <div class="row">
             <div class="col-6">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Synchronize Setting</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Synchronize Ekop</h4>
                     </div>
                     <div class="card-body  justify-content-center align-items-center">
                         @include('frontend.include.alert')
@@ -64,7 +64,7 @@
 
                 ajax()
                 $.ajax({
-                    url:"{{route('synchronize.setting.store')}}",
+                    url:"{{route('synchronize.ekop.store')}}",
                     method:"POST",
                 }).done(function (response) {
 

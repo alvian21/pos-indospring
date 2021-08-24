@@ -248,6 +248,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('msbarang', 'MsBarangController');
         Route::resource('setting', 'SettingController');
         Route::resource('aktivasi', 'AktivasiController');
+        Route::resource('ekop', 'EkopController');
+
     });
 
     //logout
