@@ -55,6 +55,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'localBackup' => [
+            'driver' => 'local',
+            'root' => storage_path('app/Laravel') // your folder,
+        ],
+
         'indospring' => [
             'driver' => 'local',
             'root' => '/var/www/html/indospring/images',

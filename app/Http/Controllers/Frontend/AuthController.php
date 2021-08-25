@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Client;
 
 class AuthController extends Controller
 {
@@ -40,10 +41,24 @@ class AuthController extends Controller
                 $auth = Auth::guard("web")->login($user);
                 $user = Auth::guard('web')->user();
                 $anggota = Msanggota::where("Kode", $user->KodeAnggota)->first();
-                if($anggota){
+                if ($anggota) {
                     session(['nama_anggota' => $anggota->Nama]);
                 }
 
+                $client = new Client();
+                $url = config('app.api_url') . 'auth/login';
+                $response = $client->post($url, [
+                    'form_params' => [
+                        'UserLogin' => $user->UserLogin,
+                        'UserPassword' => $user->UserPassword,
+                    ]
+                ]);
+
+                $response = $response->getBody()->getContents();
+                $response = json_decode($response, true);
+                if ($response['status']) {
+                    session(['api_token' => $response['access_token']]);
+                }
                 session()->flash('info', 'Selamat Datang  !');
                 return redirect()->route('dashboard.index');
             } else {
