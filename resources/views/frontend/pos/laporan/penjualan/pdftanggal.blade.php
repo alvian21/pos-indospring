@@ -18,7 +18,7 @@
 
         body {
             position: relative;
-            width: 40cm;
+            width: 21cm;
             height: 29.7cm;
             margin: 0 auto;
             color: #001028;
@@ -31,6 +31,7 @@
         header {
             padding: 10px 0;
             margin-bottom: 30px;
+            margin-right: 30px;
         }
 
         #logo {
@@ -51,7 +52,7 @@
             font-weight: normal;
             text-align: center;
             margin: 0 0 20px 0;
-            background: url("../images/dimension.png");
+            /* background: url("../images/dimension.png"); */
         }
 
         #project {
@@ -78,7 +79,7 @@
         }
 
         table {
-            width: 100%;
+            width: 90%;
             border-collapse: collapse;
             border-spacing: 0;
             margin-bottom: 20px;
@@ -151,22 +152,19 @@
         <div id="logo">
             <img src="http://31.220.50.154/toko/assets/img/logo.png">
         </div>
-        <h1 style="color: #34abeb">Laporan Penjualan | Summary</h1>
+        <h1 class="center" style="color: #34abeb">Laporan Penjualan | Summary Harian</h1>
 
         <h3 class="center" style="color: #eb5f34">{{$periode1}} - {{$periode2}}</h3>
 
     </header>
     <main>
-        @if ($grup == 'Group By Customer')
+
         <table>
             <thead>
                 <tr>
 
-                    <th rowspan="2">Customer</th>
-                    <th rowspan="2">Nama</th>
-                    <th rowspan="2">Subdept</th>
-                    <th rowspan="2">Pangkat</th>
-                    <th rowspan="2">Total</th>
+                    <th rowspan="2">Tanggal</th>
+                    <th rowspan="2">Total Belanja</th>
                     <th colspan="3">Pembayaran</th>
 
                 </tr>
@@ -179,14 +177,7 @@
             <tbody>
                 @forelse ($laporan as $item)
                 <tr>
-                    <td>{{$item->KodeSuppCust}}</td>
-                    <td>@if ($item->Nama == null)
-                        UMUM
-                        @else
-                        {{$item->Nama}}
-                        @endif</td>
-                    <td>{{$item->SubDept}}</td>
-                    <td>{{$item->Pangkat}}</td>
+                    <td>{{$item->day}}</td>
                     <td align="right">{{"Rp " . number_format($item->TotalHarga,2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($item->PembayaranEkop,2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($item->PembayaranTunai,2,',','.')}}</td>
@@ -199,7 +190,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" class="center">Total</td>
+                    <td colspan="1" class="center">Total</td>
                     <td align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
                     <td align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
@@ -208,64 +199,6 @@
                 </tr>
             </tfoot>
         </table>
-        @else
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2">Penjualan</th>
-                    <th rowspan="2">Lokasi</th>
-                    <th rowspan="2">Tanggal</th>
-                    <th rowspan="2">Nomor</th>
-                    <th rowspan="2">Customer</th>
-                    <th rowspan="2">Diskon</th>
-                    <th rowspan="2">Pajak</th>
-                    <th rowspan="2">Total</th>
-                    <th colspan="3">Pembayaran</th>
-                    <th rowspan="2">DueDate</th>
-                </tr>
-                <tr>
-                    <th>eKop</th>
-                    <th>Tunai</th>
-                    <th>Kredit</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($laporan as $item)
-                <tr>
-                    <td align="left">{{$item['Penjualan']}}</td>
-                    <td align="left">{{$item['Lokasi']}}</td>
-                    <td align="left">{{$item['Tanggal']}}</td>
-                    <td align="left">{{$item['Nomor']}}</td>
-                    <td align="left">{{$item['Customer']}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Diskon'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Pajak'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Total'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Ekop'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Tunai'],2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($item['Kredit'],2,',','.')}}</td>
-                    <td align="left">{{$item['DueDate']}}</td>
-
-                </tr>
-
-
-                @empty
-
-                @endforelse
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5" class="text-center">Total</td>
-                    <td align="right">{{"Rp " . number_format($diskon,2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($pajak,2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($total,2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($ekop,2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($tunai,2,',','.')}}</td>
-                    <td align="right">{{"Rp " . number_format($kredit,2,',','.')}}</td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-        @endif
 
     </main>
 

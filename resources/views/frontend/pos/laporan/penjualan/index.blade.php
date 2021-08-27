@@ -69,10 +69,11 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="grup">Group By Customer</label>
+                                <label for="grup">Group By</label>
                                 <select class="form-control" id="grup" name="grup">
-                                    <option value="ya">Ya</option>
-                                    <option value="tidak">Tidak</option>
+                                    <option value="Group By Customer">Group By Customer</option>
+                                    <option value="Group By Tanggal">Group By Tanggal</option>
+                                    <option value="Tanpa Group">Tanpa Group</option>
                                 </select>
                             </div>
                             <div class="row">

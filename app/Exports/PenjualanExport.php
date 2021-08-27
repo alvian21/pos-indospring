@@ -21,7 +21,7 @@ class PenjualanExport implements FromCollection, WithEvents
 
     protected $penjualan;
 
-    function __construct($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup)
+    function __construct($penjualan, $sumdiskon, $sumpajak, $sumtotal, $sumtunai, $sumkredit, $sumekop, $grup, $periode1, $periode2)
     {
         $this->penjualan = $penjualan;
         $this->sumdiskon = $sumdiskon;
@@ -31,6 +31,8 @@ class PenjualanExport implements FromCollection, WithEvents
         $this->sumkredit = $sumkredit;
         $this->sumekop = $sumekop;
         $this->grup = $grup;
+        $this->periode1 = $periode1;
+        $this->periode2 = $periode2;
     }
 
     public function collection()
@@ -54,7 +56,7 @@ class PenjualanExport implements FromCollection, WithEvents
                     ]
                 ];
 
-                if ($this->grup != 'ya') {
+                if ($this->grup == 'Tanpa Group') {
                     // at row 1, insert 2 rows
                     $event->sheet->insertNewRowBefore(1, 2);
 
@@ -115,8 +117,9 @@ class PenjualanExport implements FromCollection, WithEvents
                     $event->sheet->getColumnDimension('K')->setAutoSize(true);
                     $event->sheet->getColumnDimension('L')->setAutoSize(true);
                     $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
-                } else {
+                } else if($this->grup == 'Group By Customer'){
                      // at row 1, insert 2 rows
+
                      $event->sheet->insertNewRowBefore(1, 2);
 
                      // merge cells for full-width
@@ -165,12 +168,48 @@ class PenjualanExport implements FromCollection, WithEvents
                      $event->sheet->getColumnDimension('F')->setAutoSize(true);
                      $event->sheet->getColumnDimension('G')->setAutoSize(true);
                      $event->sheet->getColumnDimension('H')->setAutoSize(true);
-                    //  $event->sheet->getColumnDimension('I')->setAutoSize(true);
-                    //  $event->sheet->getColumnDimension('J')->setAutoSize(true);
-                    //  $event->sheet->getColumnDimension('K')->setAutoSize(true);
-                    //  $event->sheet->getColumnDimension('L')->setAutoSize(true);
+
                      $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
-                }
+                }else if($this->grup == 'Group By Tanggal'){
+                    // at row 1, insert 2 rows
+                    $last_row = count($this->penjualan) + 5;
+                    $event->sheet->insertNewRowBefore(1, 4);
+
+                    $event->sheet->mergeCells('A1:E1');
+                    $event->sheet->mergeCells('A2:E2');
+                    $event->sheet->mergeCells('A3:A4');
+                    $event->sheet->mergeCells('B3:B4');
+                    $event->sheet->mergeCells('C3:E3');
+
+
+                    // assign cell values
+                    $event->sheet->setCellValue('A1', 'Laporan Penjualan Summary Harian');
+                    $event->sheet->setCellValue('A2', $this->periode1 .' s/d '.$this->periode2);
+                    $event->sheet->setCellValue('A3', 'Tanggal');
+                    $event->sheet->setCellValue('B3', 'Total Belanja');
+                    $event->sheet->setCellValue('C3', 'Pembayaran');
+                    $event->sheet->setCellValue('C4', 'Ekop');
+                    $event->sheet->setCellValue('D4', 'Tunai');
+                    $event->sheet->setCellValue('E4', 'Kredit');
+
+                    $event->sheet->setCellValue(sprintf('A%d', $last_row), 'Total');
+                    $event->sheet->setCellValue(sprintf('B%d', $last_row), $this->sumtotal);
+                    $event->sheet->setCellValue(sprintf('C%d', $last_row), $this->sumekop);
+                    $event->sheet->setCellValue(sprintf('D%d', $last_row), $this->sumtunai);
+                    $event->sheet->setCellValue(sprintf('E%d', $last_row), $this->sumkredit);
+
+
+                   //  // assign cell styles
+                    $event->sheet->getStyle('A:H')->getAlignment()->setHorizontal('center');
+                    $event->sheet->getStyle('A:H')->getAlignment()->setVertical('center');
+                    $event->sheet->getColumnDimension('A')->setAutoSize(true);
+                    $event->sheet->getColumnDimension('B')->setAutoSize(true);
+                    $event->sheet->getColumnDimension('C')->setAutoSize(true);
+                    $event->sheet->getColumnDimension('D')->setAutoSize(true);
+                    $event->sheet->getColumnDimension('E')->setAutoSize(true);
+
+                    $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
+               }
             },
         ];
     }

@@ -32,7 +32,7 @@
                         </div>
                         @yield('content')
                         <div class="simple-footer">
-                            Copyright &copy; {{env('APP_NAME') }} - {{ date('Y') }}
+                            Copyright &copy; Big D Team - {{ date('Y') }}
                         </div>
                     </div>
                 </div>
