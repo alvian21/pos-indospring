@@ -41,15 +41,14 @@
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Synchronize</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{route('synchronize.penjualan.index')}}">Synchronize Penjualan</a></li>
-                <li><a class="nav-link" href="{{route('synchronize.msbarang.index')}}">Synchronize Master Barang</a>
+                <li><a class="nav-link" href="{{route('synchronize.penjualan.index')}}"> Penjualan</a></li>
+                <li><a class="nav-link" href="{{route('synchronize.msbarang.index')}}"> Master Barang</a>
                 </li>
-                <li><a class="nav-link" href="{{route('synchronize.setting.index')}}">Synchronize Setting</a>
+                <li><a class="nav-link" href="{{route('synchronize.setting.index')}}"> Setting</a>
                 </li>
-                <li><a class="nav-link" href="{{route('synchronize.aktivasi.index')}}">Synchronize Aktifasi Kartu
-                        e-Kop</a>
+                <li><a class="nav-link" href="{{route('synchronize.aktivasi.index')}}"> Aktifasi Kartu</a>
                 </li>
-                <li><a class="nav-link" href="{{route('synchronize.ekop.index')}}">Synchronize E-Kop</a>
+                <li><a class="nav-link" href="{{route('synchronize.ekop.index')}}">Saldo E-Kop</a>
                 </li>
             </ul>
         </li>
