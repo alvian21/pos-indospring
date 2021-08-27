@@ -431,7 +431,19 @@ class KasirController extends Controller
                     $trsaldoekop->Tanggal = date('Y-m-d H:i:s');
                     $trsaldoekop->KodeUser = $barcode_cust;
                     // $trsaldoekop->Saldo = -1 * (abs($cek[0]->Saldo) -  $pembayaran_kredit);
+                    $cekreset = Mssetting::where('Kode', 'SaldoMinusResetPerBulan')->where('aktif', 1)->first();
 
+                    $tanggal = '';
+                    if ($cekreset) {
+                        if ($day < $cekreset->Nilai) {
+                            $nilai = $cekreset->Nilai - 1;
+                            $tanggal = date('Y-m-' . $nilai);
+                        } elseif ($day >= $cekreset->Nilai) {
+                            $nilai = $cekreset->Nilai - 1;
+                            $firstdate = date('Y-m-' . $nilai);
+                            $tanggal = date("Y-m-d", strtotime('+1 month', strtotime($firstdate)));
+                        }
+                    }
                     $SaldoMinusBunga = Mssetting::where('Kode', 'SaldoMinusBunga')->first();
 
                     $trsaldokredit = new Trsaldototalbelanjakredit();
@@ -440,7 +452,7 @@ class KasirController extends Controller
 
                     $trmutasihd->PembayaranKredit = $pembayaran_kredit;
                     $trsaldoekop->Saldo = round($cek[0]->Saldo, 2) + $pembayaran_kredit;
-                    $trmutasihd->DueDate = date('Y-m-t');
+                    $trmutasihd->DueDate = $tanggal;
                     $cekkredit = Trsaldototalbelanjakredit::where('KodeUser', $barcode_cust)->OrderBy('Tanggal', 'DESC')->first();
                     if ($cekkredit) {
                         $trsaldokredit->Saldo = $pembayaran_kredit + round($cekkredit->Saldo, 2);

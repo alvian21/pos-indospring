@@ -245,6 +245,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('setting', 'SettingController');
         Route::resource('aktivasi', 'AktivasiController');
         Route::resource('ekop', 'EkopController');
+        Route::resource('saldobarang', 'SaldoBarangController');
     });
 
     Route::group(['namespace' => 'POS\Backup', 'prefix' => 'pos/backup', 'as' => 'backup.'], function () {

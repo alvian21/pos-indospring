@@ -50,6 +50,8 @@
                 </li>
                 <li><a class="nav-link" href="{{route('synchronize.ekop.index')}}">Saldo E-Kop</a>
                 </li>
+                <li><a class="nav-link" href="{{route('synchronize.saldobarang.index')}}">Saldo Barang</a>
+                </li>
             </ul>
         </li>
         <li class="nav-item dropdown @yield('backup')">
