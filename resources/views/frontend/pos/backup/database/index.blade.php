@@ -67,7 +67,7 @@
                     url:"{{route('backup.database.store')}}",
                     method:"POST",
                 }).done(function (response) {
-
+                    // console.log(response);
                     if(response.status){
                         swal("Success!", response.message, "success");
                         $('.spinner-border').remove()
