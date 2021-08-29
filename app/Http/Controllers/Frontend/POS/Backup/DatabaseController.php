@@ -43,7 +43,7 @@ class DatabaseController extends Controller
     {
         if ($request->ajax()) {
 
-            // try {
+            try {
                 Artisan::call('backup:run --only-db');
                 $path = session('path_backup');
                 $token = session('api_token');
@@ -76,12 +76,12 @@ class DatabaseController extends Controller
                         'response' => $response
                     ]
                 );
-            // } catch (\Throwable $th) {
-            //     return response()->json([
-            //         'status' => false,
-            //         'message' => 'Maaf ada yang error'
-            //     ]);
-            // }
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Maaf ada yang error'
+                ]);
+            }
         }
     }
 
