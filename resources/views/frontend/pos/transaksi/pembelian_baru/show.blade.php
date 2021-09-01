@@ -40,7 +40,7 @@
                                         <td>{{$row->KodeBarang}}</td>
                                         <td>{{$row->Nama}}</td>
                                         <td>{{$row->Jumlah}}</td>
-                                        <td>{{$res}}</td>
+                                        <td>@rupiah($res)</td>
                                     </tr>
                                     @empty
 

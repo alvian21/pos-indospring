@@ -75,6 +75,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get("/updateemail", "ListAnggotaController@UpdateEmail")->name('updateemail');
         });
         Route::resource('anggota', 'ListAnggotaController');
+        Route::resource('transaksi', 'MsTransaksiController');
     });
 
     //koperasi transaksi

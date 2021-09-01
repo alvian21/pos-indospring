@@ -58,8 +58,8 @@
                                            <td>{{$row->Tanggal}}</td>
                                            <td>{{$row->KodeSuppCust}}</td>
                                            <td>{{$row->LokasiTujuan}}</td>
-                                           <td>{{$row->TotalHarga}}</td>
-                                           <td>{{$row->TotalHargaSetelahPajak}}</td>
+                                           <td>@rupiah($row->TotalHarga)</td>
+                                           <td>@rupiah($row->TotalHargaSetelahPajak)</td>
                                            <td>
                                             <a href="{{route('pos.pembelianbaru.show',[$row->Nomor])}}" class="btn btn-success">Detail</a>
                                             <button type="button" data-nomor="{{$row->Nomor}}" class="btn btn-danger btnpost" @if($row->StatusPesanan == 'POST' ) disabled @endif>@if($row->StatusPesanan == 'POST' ) POSTED @else POST @endif</button>

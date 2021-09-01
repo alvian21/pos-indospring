@@ -2,7 +2,7 @@
 
 @section('title', 'Msbarang')
 
-@section('barang', 'active')
+@section('posmaster', 'active')
 
 @section('content')
 <section class="section">

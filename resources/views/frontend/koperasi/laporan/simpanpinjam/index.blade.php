@@ -1,20 +1,20 @@
 @extends('frontend.master')
 
-@section('title', 'Laporan Penjualan Kredit')
+@section('title', 'Laporan Simpan Pinjam')
 
 @section('laporan', 'active')
 
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Laporan Penjualan Kredit</h1>
+        <h1>Laporan Simpan Pinjam</h1>
     </div>
     <div class="section-body">
         <div class="row">
             <div class="col-6">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Laporan Penjualan Kredit</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Laporan Simpan Pinjam</h4>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')

@@ -13,30 +13,16 @@
             </a>
         </li>
         <li class="menu-header">SETTINGS</li>
-        <li @yield('server cloud')>
-            <a class="nav-link" href="#">
-                <i class="fas fa-file-alt"></i> <span>Server Cloud</span>
-            </a>
-        </li>
+
         <li class="nav-item @yield('setting') ">
             <a class="nav-link" href="{{route('settings.mssetting.index')}}">
                 <i class="fas fa-file-alt"></i> <span>Setting</span>
             </a>
         </li>
         <li class="menu-header">MASTER</li>
-        <li @yield('menu')>
-            <a class="nav-link" href="#">
-                <i class="fas fa-file-alt"></i> <span>Menu</span>
-            </a>
-        </li>
         <li class="nav-item @yield('user') ">
             <a class="nav-link" href="{{route('master.user.index')}}">
                 <i class="fas fa-file-alt"></i> <span>User</span>
-            </a>
-        </li>
-        <li class="nav-item @yield('barang')">
-            <a class="nav-link" href="{{route('master.barang.index')}}">
-                <i class="fas fa-file-alt"></i> <span>Barang</span>
             </a>
         </li>
         <li class="menu-header">Saldo</li>
@@ -51,9 +37,9 @@
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Master</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{route('koperasi.anggota.index')}}">List Anggota</a></li>
-                <li><a class="nav-link" href="#">Transaksi</a></li>
-                <li><a class="nav-link" href="#">Account Lain-lain</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.anggota.index')}}">Anggota</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.transaksi.index')}}">Transaksi</a></li>
+                {{-- <li><a class="nav-link" href="#">Account Lain-lain</a></li> --}}
                 <li><a class="nav-link" href="#">Cicilan</a></li>
             </ul>
         </li>
@@ -67,7 +53,6 @@
                 <li><a class="nav-link" href="#">Pembayaran</a></li>
                 <li><a class="nav-link" href="{{route('koperasi.aktivasi.index')}}">Aktivasi e-kop</a></li>
                 <li><a class="nav-link" href="{{route('koperasi.proses-bulanan.index')}}">Proses Bulanan</a></li>
-                <li><a class="nav-link" href="#">Web</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown @yield('laporan')">
@@ -75,7 +60,7 @@
                     class="fas fa-columns"></i><span>Laporan</span></a>
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Tagihan Penjualan Kredit</a></li>
-                <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Simpan Pinjam</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.simpan-pinjam.index')}}">Simpan Pinjam</a></li>
             </ul>
         </li>
         <li class="menu-header">POS | Point Of Sale</li>
@@ -85,7 +70,7 @@
             <ul class="dropdown-menu">
                 <li><a class="nav-link" href="#">Lokasi</a></li>
                 <li><a class="nav-link" href="#">Barang - Kategori</a></li>
-                <li><a class="nav-link" href="#">Barang</a></li>
+                <li><a class="nav-link" href="{{route('master.barang.index')}}">Barang</a></li>
                 <li><a class="nav-link" href="{{route('pos.master.supplier.index')}}">Supplier</a></li>
             </ul>
         </li>
@@ -93,8 +78,8 @@
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Transaksi</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{route('pos.pembelian.index')}}">Pembelian</a></li>
-                <li><a class="nav-link" href="{{route('pos.pembelianbaru.index')}}">Pembelian - Baru</a></li>
+
+                <li><a class="nav-link" href="{{route('pos.pembelianbaru.index')}}">Pembelian</a></li>
                 <li><a class="nav-link" href="{{route('pos.penjualan.index')}}">Penjualan</a></li>
                 <li><a class="nav-link" href="{{route('pos.tfantartoko.index')}}">Transfer Antar Toko</a></li>
                 <li><a class="nav-link" href="{{route('pos.stockopname.index')}}">Stock Opname</a></li>
