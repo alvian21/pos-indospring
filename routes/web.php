@@ -50,14 +50,16 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     Route::group(['prefix' => 'master', 'namespace' => 'Master', 'as' => 'master.'], function () {
 
         Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
-            Route::get('/delete_detail/{id}', 'UserController@delete_detail');
+            Route::get('/delete_detail/{id}', 'UserDetailController@delete_detail');
+            Route::get('/delete_detail_item', 'UserDetailController@delete_detail_byitem')->name('deleteitem');
             Route::get('/check_user', 'UserController@checkUser')->name('checkuser');
-            Route::get('/data_detail', 'UserController@getDataDetail')->name('datadetail');
+            Route::get('/data_detail', 'UserDetailController@getDataDetail')->name('datadetail');
             Route::post('/data_detail', 'UserController@saveDetail')->name('savedetail');
-            Route::post('/saveheader', 'UserController@saveHeader')->name('saveheader');
-            Route::resource('/', 'UserController');
+            Route::post('/saveheader', 'UserDetailController@saveHeader')->name('saveheader');
+            Route::get("/getdata", "UserController@getData")->name('getdata');
+            Route::resource('detail', 'UserDetailController');
         });
-
+        Route::resource('user', 'UserController');
         Route::group(['prefix' => 'barang', 'as' => 'barang.'], function () {
             Route::get("/kode_barang", "BarangController@CheckKodeBarang")->name("check.kodebarang");
             Route::get("/kode_barcode", "BarangController@CheckKodeBarcode")->name("check.kodebarcode");
@@ -244,6 +246,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('stockopname', 'StockOpnameController');
         Route::resource('stockhilang', 'StockHilangController');
         Route::resource('kasir', 'KasirController');
+        Route::resource('harga', 'HargaController');
     });
 
 

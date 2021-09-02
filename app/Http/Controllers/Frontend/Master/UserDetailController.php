@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Frontend\Master;
 
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Msloginhd;
@@ -11,7 +10,7 @@ use App\Mslogindt;
 use App\Mslokasi;
 use App\Msmenu;
 
-class UserController extends Controller
+class UserDetailController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,9 +20,8 @@ class UserController extends Controller
     public function index()
     {
         $msloginhd = Msloginhd::max('KodeUser');
-        $user = Msloginhd::all();
         $msmenu = Msmenu::all();
-        $msanggota = Msanggota::all();
+        $user = Msloginhd::all();
         $mslokasi = Mslokasi::all();
         $kodeuser = 0;
         if (!is_null($msloginhd)) {
@@ -33,7 +31,18 @@ class UserController extends Controller
             $addzero = str_pad($nomor, 3, '0', STR_PAD_LEFT);
             $kodeuser = date('y') . $addzero;
         }
-        return view("frontend.master.user.index", ['msanggota' => $msanggota, 'mslokasi' => $mslokasi, 'user' => $user, 'kodeuser' => $kodeuser]);
+        // session()->forget('master_user');
+        if (session()->has('master_user')) {
+            $datauser = session('master_user');
+        } else {
+            $data = [
+                'user' => $kodeuser,
+                'menu' => '-'
+            ];
+            session(['master_user' => $data]);
+            $datauser = session('master_user');
+        }
+        return view("frontend.master.user.detail.index", ['datauser' => $datauser, 'user' => $user, 'mslokasi' => $mslokasi, 'msmenu' => $msmenu]);
     }
 
     /**
@@ -55,52 +64,46 @@ class UserController extends Controller
     public function store(Request $request)
     {
         if ($request->ajax()) {
-            $validator = Validator::make($request->all(), [
-                'user_login' => 'required|unique:msloginhd,UserLogin',
-                'user_password' => 'required',
-                'level_approval' => 'nullable',
-                'lokasi' => 'nullable',
-                'boleh_backup' => 'required',
-                'anggota' => 'nullable',
-            ]);
-            if ($validator->fails()) {
-                $error = '<div class="alert alert-danger" role="alert">
-            ' . $validator->errors()->first() . '
-           </div>';
-                return response()->json([
-                    'status' => false,
-                    'data' => $error
-                ]);
-            } else {
-                try {
-
-                    $msloginhd = Msloginhd::max('KodeUser');
-                    $kodeuser = 0;
-                    if (!is_null($msloginhd)) {
-                        $kodeuser = $msloginhd + 1;
-                    } else {
-                        $nomor = 1;
-                        $addzero = str_pad($nomor, 3, '0', STR_PAD_LEFT);
-                        $kodeuser = date('y') . $addzero;
-                    }
-                    $user = new Msloginhd();
-                    $user->KodeUser = $kodeuser;
-                    $user->UserLogin     = $request->get('user_login');
-                    $user->UserPassword = $request->get('user_password');
-                    $user->LevelApprovalPengajuan = $request->get('level_approval');
-                    $user->KodeLokasi = $request->get('lokasi');
-                    $user->BolehBackup = $request->get('boleh_backup');
-                    $user->UserUpdate =  auth('web')->user()->UserLogin;
-                    $user->KodeAnggota = $request->get('anggota');
-                    $user->LastUpdate = date('Y-m-d H:i:s');
-                    $user->save();
-
+            if ($request->get('status') == 'check') {
+                if (session()->has('detail_user')) {
                     return response()->json([
-                        'status' => true,
-                        'message' => 'success'
+                        'message' => 'true'
                     ]);
-                } catch (\Exception $th) {
-                    //throw $th;
+                } else {
+                    return response()->json([
+                        'message' => 'false'
+                    ]);
+                }
+            }
+            if ($request->get('status') == 'save') {
+                $datauser = session('master_user');
+                if (session()->has('detail_user')) {
+                    $datadetail = session('detail_user');
+
+                    foreach ($datadetail as $key => $value) {
+                        $cek = Mslogindt::where('KodeUser', $value['user'])->where('ItemIndex', $value['user'])->first();
+                        if (!$cek) {
+                            $mslogindt = new Mslogindt();
+                            $mslogindt->KodeUser = $value['user'];
+                            $mslogindt->ItemIndex = $value['ItemIndex'];
+                            $mslogindt->Lvl = $value['Level'];
+                            $mslogindt->Grup = $value['Grup'];
+                            $mslogindt->Nama = $value['Nama'];
+                            $mslogindt->UserUpdate =  auth('web')->user()->UserLogin;
+                            $mslogindt->LastUpdate = date('Y-m-d H:i:s');
+                            $mslogindt->save();
+                        }
+                    }
+                    session()->forget('detail_user');
+                    session()->forget('master_user');
+                    session()->flash('success', 'Detail dan data user berhasil disimpan');
+                    return response()->json([
+                        'message' => 'true'
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'false'
+                    ]);
                 }
             }
         }
@@ -114,8 +117,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $detail = Mslogindt::where('KodeUser', $id)->get();
-        return view("frontend.master.user.show", ['detail' => $detail]);
+        //
     }
 
     /**
@@ -138,43 +140,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->ajax()) {
-            $validator = Validator::make($request->all(), [
-                'user_password' => 'required',
-                'level_approval' => 'nullable',
-                'lokasi' => 'nullable',
-                'boleh_backup' => 'required',
-                'anggota' => 'nullable',
-            ]);
-            if ($validator->fails()) {
-                $error = '<div class="alert alert-danger" role="alert">
-            ' . $validator->errors()->first() . '
-           </div>';
-                return response()->json([
-                    'status' => false,
-                    'data' => $error
-                ]);
-            } else {
-                try {
-                    $user = Msloginhd::findOrFail($id);
-                    $user->UserPassword = $request->get('user_password');
-                    $user->LevelApprovalPengajuan = $request->get('level_approval');
-                    $user->KodeLokasi = $request->get('lokasi');
-                    $user->BolehBackup = $request->get('boleh_backup');
-                    $user->UserUpdate =  auth('web')->user()->UserLogin;
-                    $user->KodeAnggota = $request->get('anggota');
-                    $user->LastUpdate = date('Y-m-d H:i:s');
-                    $user->save();
-
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'success'
-                    ]);
-                } catch (\Exception $th) {
-                    //throw $th;
-                }
-            }
-        }
+        //
     }
 
     /**
@@ -192,15 +158,58 @@ class UserController extends Controller
     {
         if ($request->ajax()) {
             $datauser = session('master_user');
-            $data = [
-                'KodeUser' => $request->get('KodeUser'),
-                'UserLogin' => $request->get('UserLogin'),
-                'UserPassword' => $request->get('UserPassword'),
-                'anggota' =>  $request->get('anggota'),
-                'level' =>  $request->get('level'),
-                'lokasi' =>  $request->get('lokasi'),
+            $msloginhd = Msloginhd::findOrFail($request->get('user'));
+            $datauser = [
+                'user' =>  $request->get('user'),
+                'menu' =>  $request->get('menu'),
             ];
-            session(['master_user' => $data]);
+            $menu = Msmenu::find($request->get('menu'));
+            $arr = [];
+            $no = 1;
+            if (session()->has('detail_user')) {
+                $datadetail = session('detail_user');
+                $status = false;
+                foreach ($datadetail as $key => $value) {
+                    $value['no'] = $no;
+                    if ($value['ItemIndex'] == $menu->ItemIndex && $value['user'] == $request->get('user')) {
+                        $status = true;
+
+                        array_push($arr, $value);
+                    } else {
+                        array_push($arr, $value);
+                    }
+                    $no++;
+                }
+
+                if (!$status) {
+                    $data = [
+                        'no' => $no,
+                        'ItemIndex' => $menu->ItemIndex,
+                        'Level' => $menu->Lvl,
+                        'Grup' => $menu->Grup,
+                        'Nama' => $menu->Nama,
+                        'user' =>  $request->get('user'),
+                        'UserLogin' => $msloginhd->UserLogin
+                    ];
+                    array_push($arr, $data);
+                }
+            } else {
+
+                $data = [
+                    'no' => $no,
+                    'ItemIndex' => $menu->ItemIndex,
+                    'Level' => $menu->Lvl,
+                    'Grup' => $menu->Grup,
+                    'Nama' => $menu->Nama,
+                    'user' =>  $request->get('user'),
+                    'UserLogin' => $msloginhd->UserLogin
+                ];
+                array_push($arr, $data);
+            }
+
+            session(['detail_user' => $arr]);
+
+            session(['master_user' => $datauser]);
             session()->save();
 
             return response()->json(
@@ -261,56 +270,6 @@ class UserController extends Controller
         }
     }
 
-
-    public function updateDetail(Request $request)
-    {
-        if ($request->ajax()) {
-
-            $menu = Msmenu::find($request->get('item_index'));
-            $arr = [];
-            $no = 1;
-            if (session()->has('detail_user')) {
-                $datadetail = session('detail_user');
-                $status = false;
-                foreach ($datadetail as $key => $value) {
-                    if ($value['ItemIndex'] == $menu->ItemIndex) {
-                        $status = true;
-                    } else {
-                        $no++;
-                        array_push($arr, $value);
-                    }
-                }
-
-                if (!$status) {
-                    $data = [
-                        'no' => $no,
-                        'ItemIndex' => $menu->ItemIndex,
-                        'Level' => $menu->Lvl,
-                        'Grup' => $menu->Grup,
-                        'Nama' => $menu->Nama
-                    ];
-                    array_push($arr, $data);
-                }
-            } else {
-
-                $data = [
-                    'no' => $no,
-                    'ItemIndex' => $menu->ItemIndex,
-                    'Level' => $menu->Lvl,
-                    'Grup' => $menu->Grup,
-                    'Nama' => $menu->Nama
-                ];
-                array_push($arr, $data);
-            }
-
-            session(['detail_user' => $arr]);
-
-            return response()->json([
-                'message' => 'true'
-            ]);
-        }
-    }
-
     public function getDataDetail(Request $request)
     {
         if ($request->ajax()) {
@@ -322,11 +281,12 @@ class UserController extends Controller
                 foreach ($datadetail as $row) {
                     $sub = array();
                     $sub["no"] = $row['no'];
+                    $sub["UserLogin"] = $row['UserLogin'];
                     $sub["item"] = $row['ItemIndex'];
                     $sub["level"] = $row['Level'];
                     $sub["grup"] = $row['Grup'];
                     $sub["nama"] = $row['Nama'];
-                    $sub["action"] = '<button data-item="' . $row['ItemIndex'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
+                    $sub["action"] = '<button data-item="' . $row['no'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
                     $data2[] = $sub;
                 }
             } else {
@@ -348,7 +308,7 @@ class UserController extends Controller
             $datadetail = session('detail_user');
             $arr = [];
             foreach ($datadetail as $key => $value) {
-                if ($value['ItemIndex'] != $id) {
+                if ($value['no'] != $id) {
                     array_push($arr, $value);
                 }
             }
@@ -356,34 +316,17 @@ class UserController extends Controller
             session(['detail_user' => $arr]);
 
             session()->save();
-            return redirect()->route('master.user.index')->with("success", "Detail user berhasil dihapus");
+            return redirect()->route('master.user.detail.index')->with("success", "Detail user berhasil dihapus");
         }
     }
 
-    public function checkUser(Request $request)
+    public function delete_detail_byitem(Request $request)
     {
         if ($request->ajax()) {
-            $msloginhd = Msloginhd::where('UserLogin', $request->get('UserLogin'))->first();
-            if ($msloginhd) {
-                return response()->json([
-                    'message' => 'true'
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'false'
-                ]);
-            }
-        }
-    }
+            $dt = Mslogindt::where('KodeUser', $request->get('kode'))->where('ItemIndex', $request->get('item'))->delete();
 
-
-    public function getData(Request $request)
-    {
-        if ($request->ajax()) {
-            $user = Msloginhd::findOrFail($request->get('id'));
             return response()->json([
-                'status' => true,
-                'data' => $user
+                'status' => true
             ]);
         }
     }

@@ -106,6 +106,7 @@ $datarole = session('data_role');
                 <li><a class="nav-link" href="{{route('pos.stockopname.index')}}">Stock Opname</a></li>
                 <li><a class="nav-link" href="{{route('pos.stockhilang.index')}}">Stock Hilang / Rusak</a></li>
                 <li><a class="nav-link" href="{{route('pos.kasir.index')}}">Kasir</a></li>
+                <li><a class="nav-link" href="{{route('pos.harga.index')}}">Cek Harga</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown @yield('poslaporan')">
