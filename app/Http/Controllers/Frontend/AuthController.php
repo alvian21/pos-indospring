@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\User;
+use App\Mslogindt;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -40,9 +41,17 @@ class AuthController extends Controller
                 $auth = Auth::guard("web")->login($user);
                 $user = Auth::guard('web')->user();
                 $anggota = Msanggota::where("Kode", $user->KodeAnggota)->first();
-                if($anggota){
+                if ($anggota) {
                     session(['nama_anggota' => $anggota->Nama]);
                 }
+
+                $logindt = Mslogindt::where('KodeUser', $user->KodeUser)->get();
+                $arr = [];
+                foreach ($logindt as $key => $value) {
+                    array_push($arr, $value->Nama);
+                }
+
+                session(['data_role' => $arr]);
 
                 session()->flash('info', 'Selamat Datang  !');
                 return redirect()->route('dashboard.index');

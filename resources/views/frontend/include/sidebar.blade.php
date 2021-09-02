@@ -1,3 +1,6 @@
+@php
+$datarole = session('data_role');
+@endphp
 <aside id="sidebar-wrapper">
     <div class="sidebar-brand">
         <a href="#">KopKar PT.ISP</a>
@@ -12,6 +15,9 @@
                 <i class="fas fa-columns"></i> <span>Dashboard</span>
             </a>
         </li>
+
+        @forelse ($datarole as $item)
+        @if ($item == 'Settings')
         <li class="menu-header">SETTINGS</li>
 
         <li class="nav-item @yield('setting') ">
@@ -19,6 +25,11 @@
                 <i class="fas fa-file-alt"></i> <span>Setting</span>
             </a>
         </li>
+        @endif
+        @empty
+
+        @endforelse
+
         <li class="menu-header">MASTER</li>
         <li class="nav-item @yield('user') ">
             <a class="nav-link" href="{{route('master.user.index')}}">
@@ -32,6 +43,9 @@
             </a>
         </li>
 
+
+        @forelse ($datarole as $item)
+        @if ($item == 'Koperasi')
         <li class="menu-header">KOPERASI</li>
         <li class="nav-item dropdown @yield('koperasi')">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
@@ -40,9 +54,10 @@
                 <li><a class="nav-link" href="{{route('koperasi.anggota.index')}}">Anggota</a></li>
                 <li><a class="nav-link" href="{{route('koperasi.transaksi.index')}}">Transaksi</a></li>
                 {{-- <li><a class="nav-link" href="#">Account Lain-lain</a></li> --}}
-                <li><a class="nav-link" href="#">Cicilan</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.cicilan.index')}}">Cicilan</a></li>
             </ul>
         </li>
+
         <li class="nav-item dropdown @yield('transaksi')">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Transaksi</span></a>
@@ -59,10 +74,16 @@
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                     class="fas fa-columns"></i><span>Laporan</span></a>
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Tagihan Penjualan Kredit</a></li>
+                <li><a class="nav-link" href="{{route('koperasi.tagihan-kredit.index')}}">Tagihan Penjualan Kredit</a>
+                </li>
                 <li><a class="nav-link" href="{{route('koperasi.simpan-pinjam.index')}}">Simpan Pinjam</a></li>
             </ul>
         </li>
+        @endif
+        @empty
+
+        @endforelse
+
         <li class="menu-header">POS | Point Of Sale</li>
         <li class="nav-item dropdown  @yield('posmaster')">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i

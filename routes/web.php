@@ -74,8 +74,13 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get("/updatepassword", "ListAnggotaController@UpdatePassword")->name('updatepassword');
             Route::get("/updateemail", "ListAnggotaController@UpdateEmail")->name('updateemail');
         });
+
+        Route::group(['prefix' => 'cicilan','as'=>'cicilan.'], function () {
+            Route::get("/getdata", "MsCicilanController@getData")->name('getdata');
+        });
         Route::resource('anggota', 'ListAnggotaController');
         Route::resource('transaksi', 'MsTransaksiController');
+        Route::resource('cicilan', 'MsCicilanController');
     });
 
     //koperasi transaksi
