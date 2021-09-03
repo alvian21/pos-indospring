@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Frontend\Koperasi\Master;
+namespace App\Http\Controllers\Frontend\POS\Master;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Mscicilan;
+use App\Mskategori;
 
-class MsCicilanController extends Controller
+class KategoriController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,8 +16,14 @@ class MsCicilanController extends Controller
      */
     public function index()
     {
-        $cicilan = Mscicilan::all();
-        return view("frontend.koperasi.master.cicilan.index", ['cicilan' => $cicilan]);
+        $kategori = Mskategori::all()->whereNotNull('Kode');
+        $kode = Mskategori::max('Kode');
+        if (empty($kode)) {
+            $kode = "01";
+        } else {
+            $kode = $kode + 1;
+        }
+        return view("frontend.pos.master.kategori.index", ['kategori' => $kategori, 'kode' => $kode]);
     }
 
     /**
@@ -40,11 +46,7 @@ class MsCicilanController extends Controller
     {
         if ($request->ajax()) {
             $validator = Validator::make($request->all(), [
-                'bulan' => 'required',
-                'nominal' => 'required|min:0|integer',
-                'cicilan_total' => 'required|min:0|integer',
-                'cicilan_pokok' => 'required|min:0|integer',
-                'cicilan_bunga' => 'required|min:0|integer',
+                'nama' => 'required|unique:mskategori,Nama',
             ]);
             if ($validator->fails()) {
                 $error = '<div class="alert alert-danger" role="alert">
@@ -56,15 +58,16 @@ class MsCicilanController extends Controller
                 ]);
             } else {
                 try {
-                    $cicilan = new Mscicilan();
-                    $cicilan->Bulan = $request->get('bulan');
-                    $cicilan->Nominal = $request->get('nominal');
-                    $cicilan->CicilanTotal = $request->get('cicilan_total');
-                    $cicilan->CicilanPokok = $request->get('cicilan_pokok');
-                    $cicilan->CicilanBunga = $request->get('cicilan_bunga');
-                    $cicilan->UserUpdate = auth('web')->user()->UserLogin;
-                    $cicilan->LastUpdate = date('Y-m-d H:i:s');
-                    $cicilan->save();
+                    $kode = Mskategori::max('Kode');
+                    if (empty($kode)) {
+                        $kode = "01";
+                    } else {
+                        $kode = $kode + 1;
+                    }
+                    $kategori = new Mskategori();
+                    $kategori->Kode = $kode;
+                    $kategori->Nama = $request->get('nama');
+                    $kategori->save();
 
                     return response()->json([
                         'status' => true,
@@ -72,6 +75,7 @@ class MsCicilanController extends Controller
                     ]);
                 } catch (\Exception $th) {
                     //throw $th;
+                    return response()->json($th);
                 }
             }
         }
@@ -109,12 +113,9 @@ class MsCicilanController extends Controller
     public function update(Request $request, $id)
     {
         if ($request->ajax()) {
+            $kategori = Mskategori::findOrFail($id);
             $validator = Validator::make($request->all(), [
-                'bulan' => 'required',
-                'nominal' => 'required|min:0|integer',
-                'cicilan_total' => 'required|min:0|integer',
-                'cicilan_pokok' => 'required|min:0|integer',
-                'cicilan_bunga' => 'required|min:0|integer',
+                'nama' => 'required|unique:mskategori,Nama,'.$kategori->Nama.',Nama',
             ]);
             if ($validator->fails()) {
                 $error = '<div class="alert alert-danger" role="alert">
@@ -126,15 +127,9 @@ class MsCicilanController extends Controller
                 ]);
             } else {
                 try {
-                    $cicilan = Mscicilan::findOrFail($id);
-                     $cicilan->Bulan = $request->get('bulan');
-                    $cicilan->Nominal = $request->get('nominal');
-                    $cicilan->CicilanTotal = $request->get('cicilan_total');
-                    $cicilan->CicilanPokok = $request->get('cicilan_pokok');
-                    $cicilan->CicilanBunga = $request->get('cicilan_bunga');
-                    $cicilan->UserUpdate = auth('web')->user()->UserLogin;
-                    $cicilan->LastUpdate = date('Y-m-d H:i:s');
-                    $cicilan->save();
+                    $kategori = Mskategori::findOrFail($id);
+                    $kategori->Nama = $request->get('nama');
+                    $kategori->save();
 
                     return response()->json([
                         'status' => true,
@@ -142,6 +137,7 @@ class MsCicilanController extends Controller
                     ]);
                 } catch (\Exception $th) {
                     //throw $th;
+                    return response()->json($th);
                 }
             }
         }
@@ -156,16 +152,5 @@ class MsCicilanController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function getData(Request $request)
-    {
-        if ($request->ajax()) {
-            $cicilan = Mscicilan::findOrFail($request->get('id'));
-            return response()->json([
-                'status' => true,
-                'data' => $cicilan
-            ]);
-        }
     }
 }

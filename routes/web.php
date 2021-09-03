@@ -134,10 +134,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
     //POS-master
     Route::group(['namespace' => 'POS\Master', 'prefix' => 'pos', 'as' => 'pos.'], function () {
-
         Route::group(['prefix' => 'master', 'as' => 'master.'], function () {
-
             Route::resource('supplier', 'SupplierController');
+            Route::resource('lokasi', 'LokasiController');
+            Route::resource('kategori', 'KategoriController');
         });
     });
 

@@ -139,9 +139,9 @@ function customSearch($keyword, $arrayToSearch){
             <ul class="dropdown-menu">
                 @forelse ($datarole as $item)
                 @if ($item == 'POS - Master - Lokasi')
-                <li><a class="nav-link" href="#">Lokasi</a></li>
+                <li><a class="nav-link" href="{{route('pos.master.lokasi.index')}}">Lokasi</a></li>
                 @elseif ($item == 'POS - Master - Barang-Kategori')
-                <li><a class="nav-link" href="#">Barang - Kategori</a></li>
+                <li><a class="nav-link" href="{{route('pos.master.kategori.index')}}">Barang - Kategori</a></li>
                 @elseif ($item == 'POS - Master - Barang')
                 <li><a class="nav-link" href="{{route('master.barang.index')}}">Barang</a></li>
                 @elseif ($item == 'POS - Master - Supplier')
