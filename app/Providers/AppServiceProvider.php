@@ -26,5 +26,13 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('rupiah', function ($expression) {
             return "Rp. <?php echo number_format($expression, 2, ',', '.'); ?>";
         });
+
+        Blade::directive('customSearch', function ($keyword,$arrayToSearch) {
+            foreach($arrayToSearch as $key => $arrayItem){
+                if( stristr( $arrayItem, $keyword ) ){
+                    return true;
+                }
+            }
+        });
     }
 }

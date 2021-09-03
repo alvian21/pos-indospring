@@ -86,8 +86,6 @@
                                         <th>No</th>
                                         <th>User Login</th>
                                         <th>Item Index</th>
-                                        <th>Level</th>
-                                        <th>Group</th>
                                         <th>Nama</th>
                                         <th>Action</th>
                                     </tr>
@@ -138,8 +136,6 @@
             {data: 'no', name: 'no'},
             {data: 'UserLogin', name: 'UserLogin'},
             {data: 'item', name: 'item'},
-            {data: 'level', name: 'level'},
-            {data: 'grup', name: 'grup'},
             {data: 'nama', name: 'nama'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
 

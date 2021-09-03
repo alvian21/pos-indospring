@@ -86,8 +86,6 @@ class UserDetailController extends Controller
                             $mslogindt = new Mslogindt();
                             $mslogindt->KodeUser = $value['user'];
                             $mslogindt->ItemIndex = $value['ItemIndex'];
-                            $mslogindt->Lvl = $value['Level'];
-                            $mslogindt->Grup = $value['Grup'];
                             $mslogindt->Nama = $value['Nama'];
                             $mslogindt->UserUpdate =  auth('web')->user()->UserLogin;
                             $mslogindt->LastUpdate = date('Y-m-d H:i:s');
@@ -185,8 +183,6 @@ class UserDetailController extends Controller
                     $data = [
                         'no' => $no,
                         'ItemIndex' => $menu->ItemIndex,
-                        'Level' => $menu->Lvl,
-                        'Grup' => $menu->Grup,
                         'Nama' => $menu->Nama,
                         'user' =>  $request->get('user'),
                         'UserLogin' => $msloginhd->UserLogin
@@ -198,8 +194,6 @@ class UserDetailController extends Controller
                 $data = [
                     'no' => $no,
                     'ItemIndex' => $menu->ItemIndex,
-                    'Level' => $menu->Lvl,
-                    'Grup' => $menu->Grup,
                     'Nama' => $menu->Nama,
                     'user' =>  $request->get('user'),
                     'UserLogin' => $msloginhd->UserLogin
@@ -244,8 +238,6 @@ class UserDetailController extends Controller
                     $data = [
                         'no' => $no,
                         'ItemIndex' => $menu->ItemIndex,
-                        'Level' => $menu->Lvl,
-                        'Grup' => $menu->Grup,
                         'Nama' => $menu->Nama
                     ];
                     array_push($arr, $data);
@@ -255,8 +247,6 @@ class UserDetailController extends Controller
                 $data = [
                     'no' => $no,
                     'ItemIndex' => $menu->ItemIndex,
-                    'Level' => $menu->Lvl,
-                    'Grup' => $menu->Grup,
                     'Nama' => $menu->Nama
                 ];
                 array_push($arr, $data);
@@ -283,8 +273,6 @@ class UserDetailController extends Controller
                     $sub["no"] = $row['no'];
                     $sub["UserLogin"] = $row['UserLogin'];
                     $sub["item"] = $row['ItemIndex'];
-                    $sub["level"] = $row['Level'];
-                    $sub["grup"] = $row['Grup'];
                     $sub["nama"] = $row['Nama'];
                     $sub["action"] = '<button data-item="' . $row['no'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
                     $data2[] = $sub;
