@@ -58,9 +58,10 @@ class TopUpController extends Controller
         } else {
             $barcode = $request->get('barcode');
             $topup = $request->get('jumlah_topup');
+
             DB::beginTransaction();
             try {
-                $traktifasi = Traktifasi::where('Nomor', $barcode)->first();
+                $traktifasi = Traktifasi::where('Kode', $barcode)->orWhere('NoEkop',$barcode)->first();
                 $ekop = Trsaldoekop::where('KodeUser', $traktifasi->Kode)->orderBy('Tanggal', 'DESC')->first();
                 $day = date('d');
                 $month = date('m');
@@ -126,6 +127,7 @@ class TopUpController extends Controller
             } catch (\Throwable $th) {
                 DB::rollBack();
                 //throw $th;
+             return   response()->json($th);
             }
         }
     }
