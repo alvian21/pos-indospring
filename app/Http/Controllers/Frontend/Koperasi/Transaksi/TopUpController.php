@@ -61,8 +61,11 @@ class TopUpController extends Controller
 
             DB::beginTransaction();
             try {
-                $traktifasi = Traktifasi::where('Kode', $barcode)->orWhere('NoEkop',$barcode)->first();
+                $traktifasi = Traktifasi::where('Status', 'aktif')->where(function ($q) use ($barcode) {
+                    $q->where('Kode', $barcode)->orWhere('NoEkop', $barcode);
+                })->first();
                 $ekop = Trsaldoekop::where('KodeUser', $traktifasi->Kode)->orderBy('Tanggal', 'DESC')->first();
+
                 $day = date('d');
                 $month = date('m');
                 $year = date('Y');
