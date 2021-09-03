@@ -1,13 +1,13 @@
 @extends('frontend.master')
 
-@section('title', 'TopUp e-kop')
+@section('title', 'TopUp Pembayaran')
 
 @section('transaksi', 'active')
 
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>TopUp e-kop</h1>
+        <h1>TopUp Pembayaran</h1>
     </div>
     <div class="section-body">
         <form id="formTopUp">
@@ -15,13 +15,18 @@
                 <div class="col-6">
                     <div class="card card-dark">
                         <div class="card-header container-fluid d-flex justify-content-between">
-                            <h4 class="text-dark"><i class="fas fa-list pr-2"></i>TopUp e-kop</h4>
+                            <h4 class="text-dark"><i class="fas fa-list pr-2"></i>TopUp Pembayaran</h4>
                         </div>
                         <div class="card-body">
                             @include('frontend.include.alert')
                             <div id="data-alert"></div>
 
                             @csrf
+                            <div class="form-group">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="date" class="form-control" id="tanggal">
+                            </div>
+
                             <div class="form-group">
                                 <label for="barcode">Barcode / Ekop</label>
                                 <input type="text" class="form-control" id="barcode">
@@ -42,7 +47,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="jumlah_topup">TopUp</label>
+                                <label for="jumlah_topup">Nilai</label>
                                 <input type="number" class="form-control" id="jumlah_topup">
                             </div>
                             <div class="row">
@@ -84,7 +89,8 @@
 </section>
 
 @endsection
-@section('scripts')
+
+{{-- @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -217,4 +223,4 @@
 
      })
 </script>
-@endsection
+@endsection --}}

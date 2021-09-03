@@ -102,6 +102,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::post('simpan_pinjam', 'ProsesBulananController@store_simpan_pinjam')->name('simpan.pinjam');
         });
         Route::resource('topup', 'TopUpController');
+        Route::resource('pembayaran', 'PembayaranController');
         Route::resource('aktivasi', 'AktivasiController');
         Route::resource('proses-bulanan', 'ProsesBulananController');
     });

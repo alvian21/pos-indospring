@@ -8,20 +8,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Msanggota;
 use App\Traktifasi;
+use App\Trpembayaran;
 use App\Trsaldoekop;
 use App\TrTopUp;
 
-class TopUpController extends Controller
+class PembayaranController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $traktifasi = Traktifasi::leftjoin('msanggota', 'traktifasi.Kode', 'msanggota.Kode')->where('Status', 'aktif')->get();
-        return view("frontend.koperasi.transaksi.top_up.index", ['traktifasi' => $traktifasi]);
+
+        return view("frontend.koperasi.transaksi.pembayaran.index");
     }
 
     /**
@@ -102,9 +98,9 @@ class TopUpController extends Controller
                     $saldo = $topup;
                 }
 
-                $trtopup = new TrTopUp();
+                $trtopup = new Trpembayaran();
                 $trtopup->Nomor = $formatNomor;
-                $trtopup->Tanggal = date('Y-m-d H:i:s');
+                $trtopup->Tanggal = date('Y-m-d',strtotime($request->get('tanggal')));
                 $trtopup->Kode = $traktifasi->Kode;
                 $trtopup->NoEkop = $traktifasi->NoEkop;
                 $trtopup->Nilai = $topup;
