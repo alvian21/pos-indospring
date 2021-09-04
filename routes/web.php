@@ -98,6 +98,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('ceksaldo', 'TopUpController@CekSaldo')->name('cek');
         });
 
+        Route::group(['prefix' => 'pembayaran', 'as' => 'pembayaran.'], function () {
+            Route::get('ceksaldo', 'PembayaranController@CekSaldo')->name('cek');
+        });
+
         Route::group(['prefix' => 'proses-bulanan', 'as' => 'proses-bulanan.'], function () {
             Route::post('simpan_pinjam', 'ProsesBulananController@store_simpan_pinjam')->name('simpan.pinjam');
         });

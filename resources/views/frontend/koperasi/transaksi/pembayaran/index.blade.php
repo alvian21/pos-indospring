@@ -90,7 +90,7 @@
 
 @endsection
 
-{{-- @section('scripts')
+@section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -129,11 +129,12 @@
             var barcode = $(this).val()
             if(barcode != ''){
                 $.ajax({
-                    url:"{{route('koperasi.topup.cek')}}",
+                    url:"{{route('koperasi.pembayaran.cek')}}",
                     method:"GET",
                     async:false,
                     data:{'cari':barcode}
                 }).done(function (response) {
+
                     if(response.status){
                         var data = response.data;
                         $('#kode').val(data.kode)
@@ -156,18 +157,15 @@
          {
             var topup = $('#jumlah_topup').val()
              topup = convertToAngka(topup);
-
                 var saldo_awal =normalsaldo
                 var tambah = 0;
-                if(saldo_awal > 0 && topup > 0){
+                if(saldo_awal >= 0 && topup > 0){
                     var tambah = parseInt(saldo_awal) + topup
-                }else if(topup < 0 && saldo_awal <0){
-                    var tambah = parseInt(saldo_awal) + topup
-                }else if(topup > 0 && saldo_awal < 0){
-                    var tambah = topup
                 }
 
                 if(!topup){
+                    topup = 0
+                }else if(topup < 0){
                     topup = 0
                 }
 
@@ -183,12 +181,17 @@
           $('.btnpost').on('click', function () {
             var topup = $("#jumlah_topup").val()
             var barcode = $("#barcode").val()
+            var tanggal = $("#tanggal").val()
             var cvtopup = formatRupiah(convertToAngka(topup))
             topup = convertToAngka(topup)
-            if(barcode != '' &&  topup != ''){
+
+            if(topup < 0 ){
+                swal("Error!", "Form nilai tidak boleh minus!", "error");
+            }
+            if(barcode != '' &&  topup != '' && tanggal != ''){
                 swal({
                 title: "Apa anda yakin?",
-                text: "Anda akan TopUp Senilai "+cvtopup,
+                text: "Anda akan TopUp pembayaran Senilai "+cvtopup,
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -197,18 +200,19 @@
                     if (willInsert) {
                             ajax()
                             $.ajax({
-                                url:"{{route('koperasi.topup.store')}}",
+                                url:"{{route('koperasi.pembayaran.store')}}",
                                 method:"POST",
                                 data:{
                                     'jumlah_topup':topup,
-                                    'barcode':barcode
+                                    'barcode':barcode,
+                                    'tanggal':tanggal,
                                 }
                             }).done(function (response) {
-                                console.log(response);
+
                                 if(response.status){
                                     $('#formTopUp').trigger('reset')
 
-                                    swal("Success!", "TopUp Berhasil Dilakukan!", "success");
+                                    swal("Success!", "TopUp pembayaran Berhasil Dilakukan!", "success");
                                 }else{
                                     $('#data-alert').html(response.data)
                                 }
@@ -223,4 +227,4 @@
 
      })
 </script>
-@endsection --}}
+@endsection
