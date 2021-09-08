@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::resource('detail', 'UserDetailController');
         });
         Route::resource('user', 'UserController');
+        Route::resource('wa', 'WaController');
         Route::group(['prefix' => 'barang', 'as' => 'barang.'], function () {
             Route::get("/kode_barang", "BarangController@CheckKodeBarang")->name("check.kodebarang");
             Route::get("/kode_barcode", "BarangController@CheckKodeBarcode")->name("check.kodebarcode");

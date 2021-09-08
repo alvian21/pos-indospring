@@ -42,6 +42,12 @@ function customSearch($keyword, $arrayToSearch){
             <a class="nav-link" href="{{route('master.user.index')}}">
                 <i class="fas fa-file-alt"></i> <span>User</span>
             </a>
+
+        </li>
+        <li class="nav-item @yield('wa')">
+            <a class="nav-link" href="{{route('master.wa.index')}}">
+                <i class="fas fa-file-alt"></i> <span>Test Wa</span>
+            </a>
         </li>
         @elseif ($item == 'Saldo - Saldo Awal Hutang dan Simpanan')
         <li class="menu-header">Saldo</li>
