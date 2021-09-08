@@ -44,7 +44,6 @@ class sendWa
             $success = $resbody['success'];
             $message = $resbody['message'];
             $res = [
-                'status' => $getstatus,
                 'success' => $success,
                 'message' => $message,
             ];
@@ -87,7 +86,6 @@ class sendWa
             $success = $resbody['success'];
             $message = $resbody['message'];
             $res = [
-                'status' => $getstatus,
                 'success' => $success,
                 'message' => $message,
             ];

@@ -58,10 +58,11 @@ class WaController extends Controller
                 $apiwa = new sendWa($nomor, $request->get('text'));
                 $apiwa = $apiwa->text();
             }
+         
             if ($apiwa['success']) {
-                return redirect()->back()->with("success", "Test wa berhasil dikirim");
+                return redirect()->back()->with("success", $apiwa['message']);
             } else {
-                return redirect()->back()->with("error", "Test wa gagal dikirim");
+                return redirect()->back()->with("error", $apiwa['message']);
             }
         }
     }
