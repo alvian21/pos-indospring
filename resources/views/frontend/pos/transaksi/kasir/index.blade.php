@@ -16,7 +16,7 @@
                     <div class="card-header container-fluid d-flex justify-content-between">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi | Kasir
                             {{auth()->user()->KodeLokasi}}</h4>
-                            <a href="{{route('pos.print')}}"  class="btn btn-primary">Test Print</a>
+                            {{-- <a href="{{route('pos.print')}}"  class="btn btn-primary">Test Print</a> --}}
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -340,19 +340,6 @@
 
     //get status print
     var status = false;
-    $.ajax({
-        url:"{{route('pos.kasir.status')}}",
-        method:"GET",
-        async:false,
-        success:function(data){
-            if(data["status"] == true){
-                status = true;
-            }else{
-                status = false;
-            }
-        }
-    })
-
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
 
@@ -1084,10 +1071,6 @@
             else{
                 // console.log("mantap")
                 $('#formTotal').submit();
-                if(status){
-                    var url = "{{route('pos.kasir.receipt')}}"
-                    window.open(url, "_blank").focus();
-                }
 
                 return true
             }

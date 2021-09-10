@@ -511,7 +511,10 @@ class KasirController extends Controller
                     $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
                     $trsaldobarang->save();
                 }
-                session(['receipt_kasir' => $formatNomor]);
+
+                $this->CetakStruk($datadetail);
+
+                // session(['receipt_kasir' => $formatNomor]);
                 session()->forget('detail_transaksi_kasir');
                 session()->forget('transaksi_kasir');
                 session()->save();
@@ -928,7 +931,7 @@ class KasirController extends Controller
         }
     }
 
-    public function testPrint()
+    public function CetakStruk($datadetail)
     {
         function buatBaris1Kolom($kolom1)
         {
@@ -1012,7 +1015,22 @@ class KasirController extends Controller
         $printer->text(buatBaris1Kolom('Tanggal : '.date('Y-m-d H:i:s')));
 
         $printer->text(buatBaris1Kolom('-----------------------'));
+        $totalPembayaran = 0;
+        foreach ($datadetail as $key => $value) {
+                $barang = Msbarang::where('Kode', $value['barang'])->first();
+                if($barang){
+                    $subtotal = $value['qty'] * $value['harga'];
+                    $printer->text(buatBaris1Kolom("$barang->Nama"));
+                    $printer->text(buatBaris3Kolom(number_format($value['qty'],0).' pcs',number_format($value['harga'], 0), number_format($subtotal,0)));
+                    $totalPembayaran += $subtotal;
+                }
+        }
+
         $printer->text(buatBaris1Kolom('-----------------------'));
+        $printer->text(buatBaris3Kolom("","Total :",number_format($totalPembayaran,0)));
+        $printer->text("\n");
+        $printer->text(buatBaris1Kolom("Terima Kasih Atas Kunjungannya........"));
+
         $printer->feed(4);
         $printer->cut();
         $printer->close();
