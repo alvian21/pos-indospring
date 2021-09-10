@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Frontend\POS\Transaksi;
+
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 use App\Http\Controllers\Controller;
@@ -398,6 +399,8 @@ class KasirController extends Controller
                 $trmutasihd->LokasiAwal = $trkasir["lokasi"];
                 $trmutasihd->TotalHarga = $trkasir["total_harga"];
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+                $statusbayar = '';
+                $totalbayar = 0;
                 if ($tunai > 0 && $pembayaran_ekop != $trkasir["total_harga_setelah_pajak"] && $pembayaran_kredit != $trkasir["total_harga_setelah_pajak"]) {
                     $trmutasihd->PembayaranTunai = $tunai;
                     //saldototalbelanjatunai
@@ -411,6 +414,8 @@ class KasirController extends Controller
                         $trsaldobelanjatunai->Saldo = $tunai;
                     }
                     $trsaldobelanjatunai->save();
+                    $statusbayar = 'Tunai';
+                    $totalbayar += $tunai;
                 }
                 if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
                     $cek = DB::select('call CEKSALDOEKOP(?)', [
@@ -422,6 +427,8 @@ class KasirController extends Controller
                     $trsaldoekop->KodeUser = $barcode_cust;
                     $trsaldoekop->Saldo = $cek[0]->Saldo -  $pembayaran_ekop;
                     $trsaldoekop->save();
+                    $statusbayar = 'Ekop';
+                    $totalbayar += $pembayaran_ekop;
                 }
                 if (($pembayaran_kredit != '' || $pembayaran_kredit > 0) && $pembayaran_kredit != 0) {
                     $cek = DB::select('call CEKSALDOEKOP(?)', [
@@ -462,6 +469,8 @@ class KasirController extends Controller
                     }
                     $trsaldoekop->save();
                     $trsaldokredit->save();
+                    $statusbayar = 'Kredit';
+                    $totalbayar += $pembayaran_kredit;
                 }
 
 
@@ -512,7 +521,12 @@ class KasirController extends Controller
                     $trsaldobarang->save();
                 }
 
-                $this->CetakStruk($datadetail);
+                $cetak = Mssetting::where('Kode', 'Cetak')->where('aktif', 1)->first();
+
+                if ($cetak) {
+                    $this->CetakStruk($datadetail, $formatNomor, $barcode_cust, $statusbayar,$totalbayar);
+                }
+
 
                 // session(['receipt_kasir' => $formatNomor]);
                 session()->forget('detail_transaksi_kasir');
@@ -931,7 +945,7 @@ class KasirController extends Controller
         }
     }
 
-    public function CetakStruk($datadetail)
+    public function CetakStruk($datadetail, $nomor, $anggota, $pembayaran,$totalbayar)
     {
         function buatBaris1Kolom($kolom1)
         {
@@ -961,15 +975,15 @@ class KasirController extends Controller
             }
 
             // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode("\n",$hasilBaris) . "\n";
+            return implode("\n", $hasilBaris) . "\n";
         }
 
         function buatBaris3Kolom($kolom1, $kolom2, $kolom3)
         {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 11;
-            $lebar_kolom_2 = 11;
-            $lebar_kolom_3 = 11;
+            $lebar_kolom_1 = 9;
+            $lebar_kolom_2 = 9;
+            $lebar_kolom_3 = 9;
 
             // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
             $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
@@ -1002,7 +1016,7 @@ class KasirController extends Controller
             }
 
             // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode("\n",$hasilBaris) . "\n";
+            return implode("\n", $hasilBaris) . "\n";
         }
 
         $profile = CapabilityProfile::load("simple");
@@ -1012,29 +1026,29 @@ class KasirController extends Controller
         $printer->initialize();
         $printer->selectPrintMode(Printer::MODE_FONT_A);
         $printer->text(buatBaris1Kolom("Koperasi Karyawan PT. ISP"));
-        $printer->text(buatBaris1Kolom('Tanggal : '.date('Y-m-d H:i:s')));
-
-        $printer->text(buatBaris1Kolom('-----------------------'));
+        $printer->text(buatBaris1Kolom('Tanggal : ' . date('Y-m-d H:i:s')));
+        $printer->text(buatBaris1Kolom($nomor . ' | ' . $anggota));
+        $printer->text(buatBaris1Kolom('--------------------------'));
         $totalPembayaran = 0;
         foreach ($datadetail as $key => $value) {
-                $barang = Msbarang::where('Kode', $value['barang'])->first();
-                if($barang){
-                    $subtotal = $value['qty'] * $value['harga'];
-                    $printer->text(buatBaris1Kolom("$barang->Nama"));
-                    $printer->text(buatBaris3Kolom(number_format($value['qty'],0).' pcs',number_format($value['harga'], 0), number_format($subtotal,0)));
-                    $totalPembayaran += $subtotal;
-                }
+            $barang = Msbarang::where('Kode', $value['barang'])->first();
+            if ($barang) {
+                $subtotal = $value['qty'] * $value['harga'];
+                $printer->text(buatBaris1Kolom("$barang->Nama"));
+                $printer->text(buatBaris3Kolom(number_format($value['qty'], 0) . ' pcs', number_format($value['harga'], 0), number_format($subtotal, 0)));
+                $totalPembayaran += $subtotal;
+            }
         }
 
-        $printer->text(buatBaris1Kolom('-----------------------'));
-        $printer->text(buatBaris3Kolom("","Total :",number_format($totalPembayaran,0)));
+        $printer->text(buatBaris1Kolom('--------------------------'));
+        $printer->text(buatBaris3Kolom("", "Total :", number_format($totalbayar, 0)));
+        $printer->text(buatBaris3Kolom("", "Pembayaran :", $pembayaran));
         $printer->text("\n");
-        $printer->text(buatBaris1Kolom("Terima Kasih Atas Kunjungannya........"));
+        $printer->text(buatBaris1Kolom("Terima Kasih Atas Kunjungannya"));
 
         $printer->feed(4);
         $printer->cut();
         $printer->close();
-
     }
 
     public function reindex()
@@ -1046,31 +1060,31 @@ class KasirController extends Controller
         foreach ($trmutasihd as $key => $value) {
             // $cekmutasi = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereTime('Tanggal', $value->Tanggal)->where('Nomor', $value->Nomor)->first();
             // if ($cekmutasi) {
-                // $tanggal = date('Y-m-d', strtotime($cekmutasi->Tanggal));
-                // $nomor = $this->generateNomor($tanggal);
+            // $tanggal = date('Y-m-d', strtotime($cekmutasi->Tanggal));
+            // $nomor = $this->generateNomor($tanggal);
 
-                // if ($backupdt->isNotEmpty()) {
+            // if ($backupdt->isNotEmpty()) {
 
-                    DB::table('trmutasihd')->insert([
-                        'Transaksi' => 'PENJUALAN',
-                        'Nomor' => $value->Nomor,
-                        // 'NomorLokal' => $value->Nomor,
-                        'Tanggal' => $value->Tanggal,
-                        'KodeSuppCust' => $value->KodeSuppCust,
-                        'DiskonPersen' => $value->DiskonPersen,
-                        'DiskonTunai' => $value->DiskonTunai,
-                        'Pajak' => $value->Pajak,
-                        'LokasiAwal' => $value->LokasiAwal,
-                        'PembayaranTunai' => $value->PembayaranTunai,
-                        'PembayaranKredit' => $value->PembayaranKredit,
-                        'PembayaranEkop' => $value->PembayaranEkop,
-                        'TotalHarga' => $value->TotalHarga,
-                        'StatusPesanan' =>  $value->StatusPesanan,
-                        'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
-                        'DueDate' => $value->DueDate,
-                    ]);
+            DB::table('trmutasihd')->insert([
+                'Transaksi' => 'PENJUALAN',
+                'Nomor' => $value->Nomor,
+                // 'NomorLokal' => $value->Nomor,
+                'Tanggal' => $value->Tanggal,
+                'KodeSuppCust' => $value->KodeSuppCust,
+                'DiskonPersen' => $value->DiskonPersen,
+                'DiskonTunai' => $value->DiskonTunai,
+                'Pajak' => $value->Pajak,
+                'LokasiAwal' => $value->LokasiAwal,
+                'PembayaranTunai' => $value->PembayaranTunai,
+                'PembayaranKredit' => $value->PembayaranKredit,
+                'PembayaranEkop' => $value->PembayaranEkop,
+                'TotalHarga' => $value->TotalHarga,
+                'StatusPesanan' =>  $value->StatusPesanan,
+                'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
+                'DueDate' => $value->DueDate,
+            ]);
 
-                // }
+            // }
             // }
         }
         // dd($arr);
