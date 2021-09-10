@@ -958,7 +958,7 @@ class KasirController extends Controller
             }
 
             // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode($hasilBaris, "\n") . "\n";
+            return implode("\n",$hasilBaris) . "\n";
         }
 
         function buatBaris3Kolom($kolom1, $kolom2, $kolom3)
@@ -999,7 +999,7 @@ class KasirController extends Controller
             }
 
             // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode($hasilBaris, "\n") . "\n";
+            return implode("\n",$hasilBaris) . "\n";
         }
 
         $profile = CapabilityProfile::load("simple");
