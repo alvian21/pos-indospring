@@ -121,6 +121,7 @@ return [
     */
 
     'key' => env('APP_KEY'),
+    'printer' => env('NAMA_PRINTER'),
 
     'cipher' => 'AES-256-CBC',
 

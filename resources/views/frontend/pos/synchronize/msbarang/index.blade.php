@@ -103,9 +103,11 @@
                         if(waktu != undefined){
                            setTimeout(function () {  clearTimeout(waktu) },10000)
                         }
+                    }else{
+                        swal(response.message);
                     }
                 })
-                getProgress()
+                // getProgress()
 
         })
      })

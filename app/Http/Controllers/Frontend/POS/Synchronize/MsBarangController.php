@@ -115,13 +115,10 @@ class MsBarangController extends Controller
             } catch (\Exception $e) {
                 DB::rollBack();
                 DB::connection($koneksi)->rollBack();
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => $e,
-                        'code' => Response::HTTP_BAD_REQUEST
-                    ]
-                );
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Maaf ada yang error'
+                ]);
             }
         }
     }

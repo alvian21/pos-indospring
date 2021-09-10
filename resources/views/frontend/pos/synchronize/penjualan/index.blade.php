@@ -97,10 +97,12 @@
                         $('.spinner-border').remove()
                         $('.btnsync').prop("disabled", false);
                         $('.btnsync').text('Sync Now')
+                    }else{
+                        
                     }
                 })
 
-                getProgress(tanggal)
+                // getProgress(tanggal)
             }
 
 

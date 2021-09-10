@@ -81,13 +81,10 @@ class SettingController extends Controller
                     //throw $th;
                     DB::rollBack();
 
-                    return response()->json(
-                        [
-                            'status' => false,
-                            'message' => $th,
-                            'code' => Response::HTTP_BAD_REQUEST
-                        ]
-                    );
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Maaf ada yang error'
+                    ]);
             }
 
         }

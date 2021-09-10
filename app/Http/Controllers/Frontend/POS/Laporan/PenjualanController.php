@@ -357,7 +357,7 @@ class PenjualanController extends Controller
                     ->orWhere('Transaksi', 'CHECKOUT');
             })->get();
         } else if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'semua') {
-            $trmutasihd =  DB::table('msanggota')->leftJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal', $lokasi)->where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->get();
+            $trmutasihd =  DB::table('msanggota')->rightJoin('trmutasihd', 'msanggota.Kode', 'trmutasihd.KodeSuppCust')->where('LokasiAwal', $lokasi)->where('Transaksi', $status)->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->get();
         } else  if ($request->get('transaksi') != 'semua' && $request->get('customer') == 'UMUM') {
             $trmutasihd =  DB::table('trmutasihd')->where('Transaksi', $status)->where('LokasiAwal', $lokasi)->where('trmutasihd.KodeSuppCust', $request->get('customer'))->whereDate('Tanggal', '>=', $periode1)->whereDate('Tanggal', '<=', $periode2)->get();
         } else {
@@ -376,7 +376,7 @@ class PenjualanController extends Controller
 
         $periode1 = date("l, F j, Y", strtotime($periode1));
         $periode2 = date("l, F j, Y", strtotime($periode2));
-
+        set_time_limit(1800);
         $pdf = PDF::loadview(
             "frontend.pos.laporan.penjualan.detail.pdf",
             ['data' => $arr, 'periode1' => $periode1, 'periode2' => $periode2]

@@ -53,29 +53,10 @@ class PenjualanController extends Controller
             DB::connection($koneksi)->beginTransaction();
             try {
                 $backuphd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $tanggal)->get();
-                $jumlahhd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $tanggal)->count();
-                $jumlahhdcloud = Trmutasihd::on($koneksi)->where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $tanggal)->where('NomorLokal', '!=', null)->count();
-
-                if ($request->get('status') == 'progress') {
-
-                    $persen = ($jumlahhdcloud / $jumlahhd) * 100;
-                    $persen = round($persen);
-                    $html = '<div class="progress-bar" role="progressbar" style="width: ' . $persen . '%;" aria-valuenow="' . $persen . '"
-                    aria-valuemin="0" aria-valuemax="100">' . $persen . '%</div>';
-
-
-                    return response()->json([
-                        'status' => true,
-                        'data' => $html,
-                        'jumlah' => $jumlahhd
-
-                    ]);
-                } else {
                     foreach ($backuphd as $key => $value) {
                         $nomor = $this->generateNomor($tanggal);
                         $no = 1;
                         $cek = DB::connection($koneksi)->table('trmutasihd')->whereDate('Tanggal', $tanggal)->where('NomorLokal', $value->Nomor)->where('NomorLokal', '!=', null)->first();
-
                         if (!$cek) {
                             DB::connection($koneksi)->table('trmutasihd')->insert([
                                 'Transaksi' => 'PENJUALAN',
@@ -275,10 +256,10 @@ class PenjualanController extends Controller
 
                                 $getstok = Trsaldobarang::on($koneksi)->where('KodeBarang',  $row->KodeBarang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
                                 $trsaldobarang = new Trsaldobarang();
-                                $saldobarang = $getstok->Saldo -  $row->Jumlah;
                                 $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
                                 $trsaldobarang->KodeBarang =  $row->KodeBarang;
                                 if ($getstok) {
+                                    $saldobarang = $getstok->Saldo -  $row->Jumlah;
                                     $trsaldobarang->Saldo = $saldobarang;
                                 } else {
                                     $trsaldobarang->Saldo = 0;
@@ -293,6 +274,7 @@ class PenjualanController extends Controller
                                 $trsaldobaranglokal->Tanggal = date('Y-m-d H:i:s');
                                 $trsaldobaranglokal->KodeBarang =  $row->KodeBarang;
                                 if ($getstok) {
+                                    $saldobarang = $getstok->Saldo -  $row->Jumlah;
                                     $trsaldobaranglokal->Saldo = $saldobarang;
                                 } else {
                                     $trsaldobaranglokal->Saldo = 0;
@@ -302,7 +284,7 @@ class PenjualanController extends Controller
                                 $trsaldobaranglokal->save();
                             }
                         }
-                    }
+
 
                     DB::commit();
                     DB::connection($koneksi)->commit();

@@ -16,7 +16,7 @@
                     <div class="card-header container-fluid d-flex justify-content-between">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi | Kasir
                             {{auth()->user()->KodeLokasi}}</h4>
-
+                            <a href="{{route('pos.print')}}"  class="btn btn-primary">Test Print</a>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')

@@ -69,13 +69,10 @@ class EkopController extends Controller
             } catch (\Exception $th) {
                 //throw $th;
                 DB::rollBack($th);
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => $th,
-                        'code' => Response::HTTP_BAD_REQUEST
-                    ]
-                );
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Maaf ada yang error'
+                ]);
             }
         }
     }

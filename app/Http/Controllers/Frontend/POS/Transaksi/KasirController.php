@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Frontend\POS\Transaksi;
-
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\CapabilityProfile;
 use App\Http\Controllers\Controller;
 use App\Msbarang;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ use App\Trsaldototalbelanjatunai;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Svg\Tag\Rect;
+use Mike42\Escpos\Printer;
 
 class KasirController extends Controller
 {
@@ -378,7 +380,6 @@ class KasirController extends Controller
                     $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
                     $formatNomor = "PE-" . date('Y-m-d') . "-" . $addzero;
                 }
-
                 $trkasir = session('transaksi_kasir');
                 $ds_tunai = str_replace('.', '', $trkasir["diskon_rp"]);
                 $trmutasihd = new Trmutasihd();
@@ -925,5 +926,174 @@ class KasirController extends Controller
                 'status' => $status
             ]);
         }
+    }
+
+    public function testPrint()
+    {
+        function buatBaris1Kolom($kolom1)
+        {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+            $lebar_kolom_1 = 33;
+
+            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
+            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+
+            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+            $kolom1Array = explode("\n", $kolom1);
+
+            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+            $jmlBarisTerbanyak = count($kolom1Array);
+
+            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+            $hasilBaris = array();
+
+            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris
+            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
+                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+
+                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+                $hasilBaris[] = $hasilKolom1;
+            }
+
+            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+            return implode($hasilBaris, "\n") . "\n";
+        }
+
+        function buatBaris3Kolom($kolom1, $kolom2, $kolom3)
+        {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+            $lebar_kolom_1 = 11;
+            $lebar_kolom_2 = 11;
+            $lebar_kolom_3 = 11;
+
+            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
+            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+            $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+            $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+
+            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+            $kolom1Array = explode("\n", $kolom1);
+            $kolom2Array = explode("\n", $kolom2);
+            $kolom3Array = explode("\n", $kolom3);
+
+            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+            $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array));
+
+            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+            $hasilBaris = array();
+
+            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris
+            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
+                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+                // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
+
+                $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+
+                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+                $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3;
+            }
+
+            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+            return implode($hasilBaris, "\n") . "\n";
+        }
+
+        $profile = CapabilityProfile::load("simple");
+        $connector = new WindowsPrintConnector(config('app.printer'));
+        $printer = new Printer($connector, $profile);
+
+        $printer->initialize();
+        $printer->selectPrintMode(Printer::MODE_FONT_A);
+        $printer->text(buatBaris1Kolom("Koperasi Karyawan PT. ISP"));
+        $printer->text(buatBaris1Kolom('Tanggal : '.date('Y-m-d H:i:s')));
+
+        $printer->text(buatBaris1Kolom('-----------------------'));
+        $printer->text(buatBaris1Kolom('-----------------------'));
+        $printer->feed(4);
+        $printer->cut();
+        $printer->close();
+
+    }
+
+    public function reindex()
+    {
+        $koneksi = 'mysql2';
+        $year = date('Y');
+        $trmutasihd =  DB::connection($koneksi)->table('trmutasihd')->get();
+
+        foreach ($trmutasihd as $key => $value) {
+            // $cekmutasi = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereTime('Tanggal', $value->Tanggal)->where('Nomor', $value->Nomor)->first();
+            // if ($cekmutasi) {
+                // $tanggal = date('Y-m-d', strtotime($cekmutasi->Tanggal));
+                // $nomor = $this->generateNomor($tanggal);
+
+                // if ($backupdt->isNotEmpty()) {
+
+                    DB::table('trmutasihd')->insert([
+                        'Transaksi' => 'PENJUALAN',
+                        'Nomor' => $value->Nomor,
+                        // 'NomorLokal' => $value->Nomor,
+                        'Tanggal' => $value->Tanggal,
+                        'KodeSuppCust' => $value->KodeSuppCust,
+                        'DiskonPersen' => $value->DiskonPersen,
+                        'DiskonTunai' => $value->DiskonTunai,
+                        'Pajak' => $value->Pajak,
+                        'LokasiAwal' => $value->LokasiAwal,
+                        'PembayaranTunai' => $value->PembayaranTunai,
+                        'PembayaranKredit' => $value->PembayaranKredit,
+                        'PembayaranEkop' => $value->PembayaranEkop,
+                        'TotalHarga' => $value->TotalHarga,
+                        'StatusPesanan' =>  $value->StatusPesanan,
+                        'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
+                        'DueDate' => $value->DueDate,
+                    ]);
+
+                // }
+            // }
+        }
+        // dd($arr);
+        $backupdt =  DB::connection($koneksi)->table('trmutasidt')->get();
+
+        foreach ($backupdt as $key => $row) {
+            DB::table('trmutasidt')->insert([
+                'Transaksi' => 'PENJUALAN',
+                'Nomor' => $row->Nomor,
+                'Urut' => $row->Urut,
+                'KodeBarang' => $row->KodeBarang,
+                'DiskonPersen' => $row->DiskonPersen,
+                'DiskonTunai' => $row->DiskonTunai,
+                'UserUpdate' => $row->UserUpdate,
+                'LastUpdate' => $row->LastUpdate,
+                'Jumlah' => $row->Jumlah,
+                'Harga' => $row->Harga,
+                'Satuan' => $row->Satuan,
+                'HargaLama' => 0,
+            ]);
+        }
+        return response()->json(['message' => 'success']);
+    }
+
+
+    public function generateNomor($tanggal)
+    {
+        $nomor =  DB::connection('mysql2')->table('trmutasihd')->where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $tanggal)->max('Nomor');
+
+        if (!is_null($nomor)) {
+            $substr = substr($nomor, -5);
+            $substr = (int) str_replace('-', '', $substr);
+            $nomor = $substr + 1;
+            $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
+            $formatNomor = "PE-" . $tanggal . "-" . $addzero;
+        } else {
+            $nomor = 1;
+            $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
+            $formatNomor = "PE-" . $tanggal . "-" . $addzero;
+        }
+
+        return $formatNomor;
     }
 }

@@ -11,4 +11,8 @@ class Trmutasihd extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $primaryKey = "Nomor";
+
+    protected $casts = [
+        'Tanggal' => 'datetime:Y-m-d H:00',
+    ];
 }
