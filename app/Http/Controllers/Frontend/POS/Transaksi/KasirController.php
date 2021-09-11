@@ -1042,7 +1042,7 @@ class KasirController extends Controller
 
         $printer->text(buatBaris1Kolom('--------------------------'));
         $printer->text(buatBaris3Kolom("", "Total :", number_format($totalbayar, 0)));
-        $printer->text(buatBaris3Kolom("", "Pembayaran :", $pembayaran));
+        $printer->text(buatBaris1Kolom(str_repeat('&nbsp;', 10).'Pembayaran :'.$pembayaran));
         $printer->text("\n");
         $printer->text(buatBaris1Kolom("Terima Kasih Atas Kunjungannya"));
 
