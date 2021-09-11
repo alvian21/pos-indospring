@@ -44,7 +44,7 @@ class DatabaseController extends Controller
         if ($request->ajax()) {
 
             try {
-                Artisan::call('backup:run --only-db --disable-notifications');
+                Artisan::call('backup:run --only-db');
                 $path = session('path_backup');
                 $token = session('api_token');
                 $client = new Client();
