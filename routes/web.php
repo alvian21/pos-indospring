@@ -189,7 +189,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/getstatus', 'KasirController@getStatus')->name('kasir.status');
 
             Route::get('/reindex', 'KasirController@reindex');
-            // Route::get('/testprint','KasirController@testPrint')->name('print');
+            Route::get('/testprint','KasirController@testPrint')->name('print');
         });
 
         Route::group(['prefix' => 'pembelianbaru'], function () {
