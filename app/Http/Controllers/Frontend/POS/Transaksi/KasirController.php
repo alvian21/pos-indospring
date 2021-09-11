@@ -997,6 +997,7 @@ class KasirController extends Controller
 
         // Membuat judul
         $printer->initialize();
+        $printer->setFont(Printer::FONT_B);
         $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT); // Setting teks menjadi lebih besar
         $printer->setJustification(Printer::JUSTIFY_CENTER); // Setting teks menjadi rata tengah
         $printer->text("Koperasi Karyawan PT. ISP\n");
@@ -1009,6 +1010,7 @@ class KasirController extends Controller
 
         // Membuat tabel
         $printer->initialize(); // Reset bentuk/jenis teks
+        $printer->setFont(Printer::FONT_B);
         $printer->text("----------------------------------------\n");
         $printer->text(buatBaris4Kolom("Barang", "qty", "Harga", "Subtotal"));
         $printer->text("----------------------------------------\n");
@@ -1021,6 +1023,7 @@ class KasirController extends Controller
 
          // Pesan penutup
         $printer->initialize();
+        $printer->setFont(Printer::FONT_B);
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->text("Terima Kasih Atas Kunjungannya\n");
 
