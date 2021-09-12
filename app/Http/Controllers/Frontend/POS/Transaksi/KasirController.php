@@ -955,7 +955,7 @@ class KasirController extends Controller
             // Mengatur lebar setiap kolom (dalam satuan karakter)
             $lebar_kolom_1 = 15;
             $lebar_kolom_2 = 5;
-            $lebar_kolom_3 = 8;
+            $lebar_kolom_3 = 9;
             $lebar_kolom_4 = 9;
 
             // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
