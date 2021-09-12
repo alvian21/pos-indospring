@@ -417,7 +417,7 @@ class KasirController extends Controller
                     $trsaldobelanjatunai->save();
                     $statusbayar = 'Tunai';
                     $totalbayar += $tunai;
-                    $kembalian = $tunai -  $trkasir["total_harga_setelah_pajak"];
+                    $kembalian += $pembayaran_tunai -  $trkasir["total_harga_setelah_pajak"];
                 }
                 if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
                     $cek = DB::select('call CEKSALDOEKOP(?)', [
@@ -1043,7 +1043,7 @@ class KasirController extends Controller
         function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4)
         {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 17;
+            $lebar_kolom_1 = 15;
             $lebar_kolom_2 = 5;
             $lebar_kolom_3 = 8;
             $lebar_kolom_4 = 9;
@@ -1111,7 +1111,7 @@ class KasirController extends Controller
                 $subtotal = $value['qty'] * $value['harga'];
                 $totalharga += $subtotal;
                 $totalitem +=  $value['qty'];
-                $printer->text(buatBaris4Kolom(substr($barang->Nama,0,16), $value['qty'], number_format($value['harga'], 0), number_format($subtotal, 0)));
+                $printer->text(buatBaris4Kolom(substr($barang->Nama,0,14), $value['qty'], number_format($value['harga'], 0), number_format($subtotal, 0)));
             }
         }
         $printer->text("----------------------------------------\n");
