@@ -953,9 +953,9 @@ class KasirController extends Controller
 
         function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 12;
-            $lebar_kolom_2 = 8;
-            $lebar_kolom_3 = 8;
+            $lebar_kolom_1 = 16;
+            $lebar_kolom_2 = 5;
+            $lebar_kolom_3 = 9;
             $lebar_kolom_4 = 9;
 
             // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
@@ -1012,9 +1012,9 @@ class KasirController extends Controller
            $printer->text("----------------------------------------\n");
            $printer->text(buatBaris4Kolom("Barang", "qty", "Harga", "Subtotal"));
            $printer->text("----------------------------------------\n");
-           $printer->text(buatBaris4Kolom("Makaroni 250gr", "2pcs", "15.000", "30.000"));
-           $printer->text(buatBaris4Kolom("Telur", "2pcs", "5.000", "10.000"));
-           $printer->text(buatBaris4Kolom("Tepung terigu", "1pcs", "8.200", "16.400"));
+           $printer->text(buatBaris4Kolom("Makaroni 250gr", "2", "15.000", "30.000"));
+           $printer->text(buatBaris4Kolom("Telur", "2", "5.000", "10.000"));
+           $printer->text(buatBaris4Kolom("Tepung terigu", "1", "8.200", "16.400"));
            $printer->text("----------------------------------------\n");
            $printer->text(buatBaris4Kolom('', '', "Total", "56.400"));
            $printer->text(buatBaris4Kolom('', '', "Tunai", "56.400"));
