@@ -953,9 +953,9 @@ class KasirController extends Controller
 
         function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 16;
+            $lebar_kolom_1 = 15;
             $lebar_kolom_2 = 5;
-            $lebar_kolom_3 = 9;
+            $lebar_kolom_3 = 8;
             $lebar_kolom_4 = 9;
 
             // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
@@ -981,7 +981,7 @@ class KasirController extends Controller
 
                 // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
                 $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ");
+                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ",STR_PAD_LEFT);
 
                 // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
                 $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
