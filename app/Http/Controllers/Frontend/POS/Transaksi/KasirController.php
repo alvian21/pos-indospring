@@ -995,132 +995,40 @@ class KasirController extends Controller
             return implode( "\n",$hasilBaris) . "\n";
         }
 
-        $printer->initialize();
-        $printer->text("Ini teks biasa \n");
-        $printer->text("\n");
+           // Membuat judul
+           $printer->initialize();
+           $printer->selectPrintMode(Printer::MODE_FONT_B); // Setting teks menjadi lebih besar
+           $printer->setJustification(Printer::JUSTIFY_CENTER); // Setting teks menjadi rata tengah
+           $printer->text("Koperasi Karyawan PT.ISP\n");
+           $printer->text("\n");
 
-        /* ---------------------------------------------------------
-         * Select print mode | selectPrintMode()
-         */
-        // Printer::MODE_FONT_A
-        $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_FONT_A);
-        $printer->text("teks dengan MODE_FONT_A \n");
-        $printer->text("\n");
+           // Data transaksi
+           $printer->initialize();
+           $printer->text("Tanggal : ".date('Y-m-d H:i:s')."\n");
 
-        // Printer::MODE_FONT_B
-        $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_FONT_B);
-        $printer->text("teks dengan MODE_FONT_B \n");
-        $printer->text("\n");
+           // Membuat tabel
+           $printer->initialize(); // Reset bentuk/jenis teks
+           $printer->setFont(Printer::FONT_B);
+           $printer->text("----------------------------------------\n");
+           $printer->text(buatBaris4Kolom("Barang", "qty", "Harga", "Subtotal"));
+           $printer->text("----------------------------------------\n");
+           $printer->text(buatBaris4Kolom("Makaroni 250gr", "2pcs", "15.000", "30.000"));
+           $printer->text(buatBaris4Kolom("Telur", "2pcs", "5.000", "10.000"));
+           $printer->text(buatBaris4Kolom("Tepung terigu", "1pcs", "8.200", "16.400"));
+           $printer->text("----------------------------------------\n");
+           $printer->text(buatBaris4Kolom('', '', "Total", "56.400"));
+           $printer->text(buatBaris4Kolom('', '', "Tunai", "56.400"));
+           $printer->text(buatBaris4Kolom('', '', "Kembalian", "0"));
+           $printer->text("\n");
 
-        // Printer::MODE_EMPHASIZED
-        $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-        $printer->text("teks dengan MODE_EMPHASIZED \n");
-        $printer->text("\n");
+            // Pesan penutup
+           $printer->initialize();
+           $printer->setJustification(Printer::JUSTIFY_CENTER);
+           $printer->text("Terima atas kunjungannya\n");
 
-        // Printer::MODE_DOUBLE_HEIGHT
-        $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT);
-        $printer->text("teks dengan MODE_DOUBLE_HEIGHT \n");
-        $printer->text("\n");
-
-        // Printer::MODE_DOUBLE_WIDTH
-        $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-        $printer->text("teks dengan MODE_DOUBLE_WIDTH \n");
-        $printer->text("\n");
-
-        // Printer::MODE_UNDERLINE
-        $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_UNDERLINE);
-        $printer->text("teks dengan MODE_UNDERLINE \n");
-        $printer->text("\n");
-
-
-        /* ---------------------------------------------------------
-         * Teks dengan garis bawah  | setUnderline()
-         */
-        $printer->initialize();
-        $printer->setUnderline(Printer::UNDERLINE_DOUBLE);
-        $printer->text("Ini teks dengan garis bawah \n");
-        $printer->text("\n");
-
-        /* ---------------------------------------------------------
-         * Rata kiri, tengah, dan kanan (JUSTIFICATION) | setJustification()
-         */
-        // Teks rata kiri JUSTIFY_LEFT
-        $printer->initialize();
-        $printer->setJustification(Printer::JUSTIFY_LEFT);
-        $printer->text("Ini teks rata kiri \n");
-        $printer->text("\n");
-
-        // Teks rata tengah JUSTIFY_CENTER
-        $printer->initialize();
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("Ini teks rata tengah \n");
-        $printer->text("\n");
-
-        // Teks rata kanan JUSTIFY_RIGHT
-        $printer->initialize();
-        $printer->setJustification(Printer::JUSTIFY_RIGHT);
-        $printer->text("Ini teks rata kanan \n");
-        $printer->text("\n");
-
-
-        /* ---------------------------------------------------------
-         * Font A, B dan C | setFont()
-         */
-        // Teks dengan font A
-        $printer->initialize();
-        $printer->setFont(Printer::FONT_A);
-        $printer->text("Ini teks dengan font A \n");
-        $printer->text("\n");
-
-        // Teks dengan font B
-        $printer->initialize();
-        $printer->setFont(Printer::FONT_B);
-        $printer->text("Ini teks dengan font B \n");
-        $printer->text("\n");
-
-        // Teks dengan font C
-        $printer->initialize();
-        $printer->setFont(Printer::FONT_C);
-        $printer->text("Ini teks dengan font C \n");
-        $printer->text("\n");
-
-        /* ---------------------------------------------------------
-         * Jarak perbaris 40 (linespace) | setLineSpacing()
-         */
-        $printer->initialize();
-        $printer->setLineSpacing(40);
-        $printer->text("Ini paragraf dengan \nline spacing sebesar 40 \ndi printer dotmatrix \n");
-        $printer->text("\n");
-
-        /* ---------------------------------------------------------
-         * Jarak dari kiri (Margin Left) | setPrintLeftMargin()
-         */
-        $printer->initialize();
-        $printer->setPrintLeftMargin(10);
-        $printer->text("Ini teks berjarak 10 dari kiri (Margin left) \n");
-        $printer->text("\n");
-
-        /* ---------------------------------------------------------
-         * membalik warna teks (background menjadi hitam) | setReverseColors()
-         */
-        $printer->initialize();
-        $printer->setReverseColors(TRUE);
-        $printer->text("Warna Teks ini terbalik \n");
-        $printer->text("\n");
-
-
-        /* ---------------------------------------------------------
-         * Menyelesaikan printer
-         */
-        $printer->feed(4); // mencetak 2 baris kosong, agar kertas terangkat ke atas
-        $printer->cut();
-        $printer->close();
+           $printer->feed(4); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
+           $printer->cut();
+           $printer->close();
     }
 
     public function CetakStruk($datadetail, $nomor, $anggota, $pembayaran,$totalbayar)
