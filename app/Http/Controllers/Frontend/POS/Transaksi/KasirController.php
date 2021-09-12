@@ -1016,7 +1016,7 @@ class KasirController extends Controller
            $printer->text(buatBaris4Kolom("Telur", "2", "5.000", "10.000"));
            $printer->text(buatBaris4Kolom("Tepung terigu", "1", "8.200", "16.400"));
            $printer->text("----------------------------------------\n");
-           $printer->text(buatBaris4Kolom('', '', "Total", "56.400"));
+           $printer->text(buatBaris4Kolom('Total Item', '5', "Total", "56.400"));
            $printer->text(buatBaris4Kolom('', '', "Tunai", "56.400"));
            $printer->text(buatBaris4Kolom('', '', "Kembalian", "0"));
            $printer->text("\n");
