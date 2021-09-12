@@ -401,6 +401,7 @@ class KasirController extends Controller
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
                 $statusbayar = '';
                 $totalbayar = 0;
+                $kembalian  = 0;
                 if ($tunai > 0 && $pembayaran_ekop != $trkasir["total_harga_setelah_pajak"] && $pembayaran_kredit != $trkasir["total_harga_setelah_pajak"]) {
                     $trmutasihd->PembayaranTunai = $tunai;
                     //saldototalbelanjatunai
@@ -416,6 +417,7 @@ class KasirController extends Controller
                     $trsaldobelanjatunai->save();
                     $statusbayar = 'Tunai';
                     $totalbayar += $tunai;
+                    $kembalian = $tunai -  $trkasir["total_harga_setelah_pajak"];
                 }
                 if (($pembayaran_ekop != '' || $pembayaran_ekop > 0) && $pembayaran_ekop != 0) {
                     $cek = DB::select('call CEKSALDOEKOP(?)', [
@@ -524,7 +526,7 @@ class KasirController extends Controller
                 $cetak = Mssetting::where('Kode', 'Cetak')->where('aktif', 1)->first();
 
                 if ($cetak) {
-                    $this->CetakStruk($datadetail, $formatNomor, $barcode_cust, $statusbayar,$totalbayar);
+                    $this->CetakStruk($datadetail, $formatNomor, $barcode_cust, $statusbayar, $totalbayar,$kembalian);
                 }
 
 
@@ -947,13 +949,101 @@ class KasirController extends Controller
 
     public function testPrint()
     {
+        // $profile = CapabilityProfile::load("simple");
+        // $connector = new WindowsPrintConnector(config('app.printer'));
+        // $printer = new Printer($connector, $profile);
+
+        // function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4)
+        // {
+        //     // Mengatur lebar setiap kolom (dalam satuan karakter)
+        //     $lebar_kolom_1 = 15;
+        //     $lebar_kolom_2 = 5;
+        //     $lebar_kolom_3 = 8;
+        //     $lebar_kolom_4 = 9;
+
+        //     // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
+        //     $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+        //     $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+        //     $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+        //     $kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
+
+        //     // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+        //     $kolom1Array = explode("\n", $kolom1);
+        //     $kolom2Array = explode("\n", $kolom2);
+        //     $kolom3Array = explode("\n", $kolom3);
+        //     $kolom4Array = explode("\n", $kolom4);
+
+        //     // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+        //     $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array), count($kolom4Array));
+
+        //     // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+        //     $hasilBaris = array();
+
+        //     // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris
+        //     for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+        //         // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
+        //         $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+        //         $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
+
+        //         // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+        //         $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+        //         $hasilKolom4 = str_pad((isset($kolom4Array[$i]) ? $kolom4Array[$i] : ""), $lebar_kolom_4, " ", STR_PAD_LEFT);
+
+        //         // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+        //         $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3 . " " . $hasilKolom4;
+        //     }
+
+        //     // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+        //     return implode("\n", $hasilBaris) . "\n";
+        // }
+
+        // // Membuat judul
+        // $printer->initialize();
+        // $printer->selectPrintMode(Printer::MODE_FONT_B); // Setting teks menjadi lebih besar
+        // $printer->setJustification(Printer::JUSTIFY_CENTER); // Setting teks menjadi rata tengah
+        // $printer->text("Koperasi Karyawan PT.ISP\n");
+        // $printer->text("\n");
+
+        // // Data transaksi
+        // $printer->initialize();
+        // $printer->text("Tanggal : " . date('Y-m-d H:i:s') . "\n");
+
+        // // Membuat tabel
+        // $printer->initialize(); // Reset bentuk/jenis teks
+        // $printer->setFont(Printer::FONT_B);
+        // $printer->text("----------------------------------------\n");
+        // $printer->text(buatBaris4Kolom("Barang", "qty", "Harga", "Subtotal"));
+        // $printer->text("----------------------------------------\n");
+        // $printer->text(buatBaris4Kolom("Makaroni 250gr", "2", "15.000", "30.000"));
+        // $printer->text(buatBaris4Kolom("Telur", "2", "5.000", "10.000"));
+        // $printer->text(buatBaris4Kolom("Tepung terigu", "1", "8.200", "16.400"));
+        // $printer->text("----------------------------------------\n");
+        // $printer->text(buatBaris4Kolom('Total Item', '5', "", "56.400"));
+        // $printer->text(buatBaris4Kolom('Tunai', '', "", "56.400"));
+        // $printer->text(buatBaris4Kolom('Kembalian', '', "", "0"));
+        // $printer->text("\n");
+
+        // // Pesan penutup
+        // $printer->initialize();
+        // $printer->setJustification(Printer::JUSTIFY_CENTER);
+        // $printer->text("Terima atas kunjungannya\n");
+
+        // $printer->feed(4); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
+        // $printer->cut();
+        // $printer->close();
+    }
+
+    public function CetakStruk($datadetail, $nomor, $anggota, $pembayaran, $totalbayar,$kembalian)
+    {
         $profile = CapabilityProfile::load("simple");
         $connector = new WindowsPrintConnector(config('app.printer'));
         $printer = new Printer($connector, $profile);
 
-        function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
+        function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4)
+        {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 15;
+            $lebar_kolom_1 = 17;
             $lebar_kolom_2 = 5;
             $lebar_kolom_3 = 8;
             $lebar_kolom_4 = 9;
@@ -981,7 +1071,7 @@ class KasirController extends Controller
 
                 // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
                 $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ",STR_PAD_LEFT);
+                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
 
                 // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
                 $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
@@ -992,147 +1082,50 @@ class KasirController extends Controller
             }
 
             // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode( "\n",$hasilBaris) . "\n";
-        }
-
-           // Membuat judul
-           $printer->initialize();
-           $printer->selectPrintMode(Printer::MODE_FONT_B); // Setting teks menjadi lebih besar
-           $printer->setJustification(Printer::JUSTIFY_CENTER); // Setting teks menjadi rata tengah
-           $printer->text("Koperasi Karyawan PT.ISP\n");
-           $printer->text("\n");
-
-           // Data transaksi
-           $printer->initialize();
-           $printer->text("Tanggal : ".date('Y-m-d H:i:s')."\n");
-
-           // Membuat tabel
-           $printer->initialize(); // Reset bentuk/jenis teks
-           $printer->setFont(Printer::FONT_B);
-           $printer->text("----------------------------------------\n");
-           $printer->text(buatBaris4Kolom("Barang", "qty", "Harga", "Subtotal"));
-           $printer->text("----------------------------------------\n");
-           $printer->text(buatBaris4Kolom("Makaroni 250gr", "2", "15.000", "30.000"));
-           $printer->text(buatBaris4Kolom("Telur", "2", "5.000", "10.000"));
-           $printer->text(buatBaris4Kolom("Tepung terigu", "1", "8.200", "16.400"));
-           $printer->text("----------------------------------------\n");
-           $printer->text(buatBaris4Kolom('Total Item', '5', "", "56.400"));
-           $printer->text(buatBaris4Kolom('Tunai', '', "", "56.400"));
-           $printer->text(buatBaris4Kolom('Kembalian', '', "", "0"));
-           $printer->text("\n");
-
-            // Pesan penutup
-           $printer->initialize();
-           $printer->setJustification(Printer::JUSTIFY_CENTER);
-           $printer->text("Terima atas kunjungannya\n");
-
-           $printer->feed(4); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
-           $printer->cut();
-           $printer->close();
-    }
-
-    public function CetakStruk($datadetail, $nomor, $anggota, $pembayaran,$totalbayar)
-    {
-        function buatBaris1Kolom($kolom1)
-        {
-            // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 33;
-
-            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
-            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-
-            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
-            $kolom1Array = explode("\n", $kolom1);
-
-            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-            $jmlBarisTerbanyak = count($kolom1Array);
-
-            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-            $hasilBaris = array();
-
-            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris
-            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
-
-                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
-                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-
-                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-                $hasilBaris[] = $hasilKolom1;
-            }
-
-            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
             return implode("\n", $hasilBaris) . "\n";
         }
 
-        function buatBaris3Kolom($kolom1, $kolom2, $kolom3)
-        {
-            // Mengatur lebar setiap kolom (dalam satuan karakter)
-            $lebar_kolom_1 = 9;
-            $lebar_kolom_2 = 9;
-            $lebar_kolom_3 = 9;
-
-            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
-            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-            $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
-            $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
-
-            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
-            $kolom1Array = explode("\n", $kolom1);
-            $kolom2Array = explode("\n", $kolom2);
-            $kolom3Array = explode("\n", $kolom3);
-
-            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-            $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array));
-
-            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-            $hasilBaris = array();
-
-            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris
-            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
-
-                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
-                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-                // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
-                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
-
-                $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
-
-                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-                $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3;
-            }
-
-            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-            return implode("\n", $hasilBaris) . "\n";
-        }
-
-        $profile = CapabilityProfile::load("simple");
-        $connector = new WindowsPrintConnector(config('app.printer'));
-        $printer = new Printer($connector, $profile);
-
+        // Membuat judul
         $printer->initialize();
-        $printer->selectPrintMode(Printer::MODE_FONT_A);
-        $printer->text(buatBaris1Kolom("Koperasi Karyawan PT. ISP"));
-        $printer->text(buatBaris1Kolom('Tanggal : ' . date('Y-m-d H:i:s')));
-        $printer->text(buatBaris1Kolom($nomor . ' | ' . $anggota));
-        $printer->text(buatBaris1Kolom('--------------------------'));
-        $totalPembayaran = 0;
+        $printer->selectPrintMode(Printer::MODE_FONT_B); // Setting teks menjadi lebih besar
+        $printer->setJustification(Printer::JUSTIFY_CENTER); // Setting teks menjadi rata tengah
+        $printer->text("Koperasi Karyawan PT.ISP\n");
+        $printer->text("\n");
+
+        // Data transaksi
+        $printer->initialize();
+        $printer->text("Tanggal : " . date('Y-m-d H:i:s') . "\n");
+        $printer->text($nomor.' | '.$anggota . "\n");
+
+        // Membuat tabel
+        $printer->initialize(); // Reset bentuk/jenis teks
+        $printer->setFont(Printer::FONT_B);
+        $printer->text("----------------------------------------\n");
+        $printer->text(buatBaris4Kolom("Barang", "qty", "Harga", "Subtotal"));
+        $printer->text("----------------------------------------\n");
+        $totalharga = 0;
+        $totalitem = 0;
         foreach ($datadetail as $key => $value) {
             $barang = Msbarang::where('Kode', $value['barang'])->first();
             if ($barang) {
                 $subtotal = $value['qty'] * $value['harga'];
-                $printer->text(buatBaris1Kolom("$barang->Nama"));
-                $printer->text(buatBaris3Kolom(number_format($value['qty'], 0) . ' pcs', number_format($value['harga'], 0), number_format($subtotal, 0)));
-                $totalPembayaran += $subtotal;
+                $totalharga += $subtotal;
+                $totalitem +=  $value['qty'];
+                $printer->text(buatBaris4Kolom(substr($barang->Nama,0,16), $value['qty'], number_format($value['harga'], 0), number_format($subtotal, 0)));
             }
         }
-
-        $printer->text(buatBaris1Kolom('--------------------------'));
-        $printer->text(buatBaris3Kolom("", "Total :", number_format($totalbayar, 0)));
-        $printer->text(buatBaris1Kolom('          Pembayaran :'.$pembayaran));
+        $printer->text("----------------------------------------\n");
+        $printer->text(buatBaris4Kolom('Total Item', $totalitem, "", $totalharga));
+        $printer->text(buatBaris4Kolom('Tunai', '', "", $totalbayar));
+        $printer->text(buatBaris4Kolom('Kembalian', '', "", $kembalian));
         $printer->text("\n");
-        $printer->text(buatBaris1Kolom("Terima Kasih Atas Kunjungannya"));
 
-        $printer->feed(4);
+        // Pesan penutup
+        $printer->initialize();
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("Terima atas kunjungannya\n");
+
+        $printer->feed(4); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
         $printer->cut();
         $printer->close();
     }
