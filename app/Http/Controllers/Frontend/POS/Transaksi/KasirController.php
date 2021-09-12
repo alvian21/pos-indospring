@@ -955,7 +955,7 @@ class KasirController extends Controller
             // Mengatur lebar setiap kolom (dalam satuan karakter)
             $lebar_kolom_1 = 15;
             $lebar_kolom_2 = 5;
-            $lebar_kolom_3 = 9;
+            $lebar_kolom_3 = 8;
             $lebar_kolom_4 = 9;
 
             // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
@@ -1016,9 +1016,9 @@ class KasirController extends Controller
            $printer->text(buatBaris4Kolom("Telur", "2", "5.000", "10.000"));
            $printer->text(buatBaris4Kolom("Tepung terigu", "1", "8.200", "16.400"));
            $printer->text("----------------------------------------\n");
-           $printer->text(buatBaris4Kolom('Total Item', '5', "Total", "56.400"));
-           $printer->text(buatBaris4Kolom('', '', "Tunai", "56.400"));
-           $printer->text(buatBaris4Kolom('', '', "Kembalian", "0"));
+           $printer->text(buatBaris4Kolom('Total Item', '5', "", "56.400"));
+           $printer->text(buatBaris4Kolom('Tunai', '', "", "56.400"));
+           $printer->text(buatBaris4Kolom('Kembalian', '', "", "0"));
            $printer->text("\n");
 
             // Pesan penutup
