@@ -111,7 +111,7 @@
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Mssetting</h4>
-
+                        <button type="button" class="btn btn-primary btnapply">Apply</button>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -124,21 +124,22 @@
                                                 <input type="hidden" name="name9" value="{{$PajakPenjualan->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <input type="text" readonly class="text-center form-control"
+                                                        <input type="text"  class="text-center form-control"
                                                             value="{{$PajakPenjualan->Nama}}"
                                                             name="inputmblPajakPenjualannama">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" readonly class="text-center form-control"
+                                                    <input type="number"  class="text-center form-control"
                                                         value="{{$PajakPenjualan->Nilai}}"
                                                         name="inputmblPajakPenjualannilai">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
-                                                        <input type="checkbox" disabled class="custom-control-input"
-                                                            id="MobilePajakPenjualan"
-                                                            @if($PajakPenjualan->aktif == 1 ) checked
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox"  class="custom-control-input"
+                                                            id="MobilePajakPenjualan" @if($PajakPenjualan->aktif == 1 )
+                                                        checked
                                                         @endif name="ckmblPajakPenjualan">
                                                         <label class="custom-control-label"
                                                             for="MobilePajakPenjualan"></label>
@@ -146,22 +147,25 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <input type="hidden" name="name10" value="{{$DiskonRpPenjualanReadOnly->Kode}}">
+                                                <input type="hidden" name="name10"
+                                                    value="{{$DiskonRpPenjualanReadOnly->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="form-group">
 
-                                                            <input type="text" readonly class="text-center form-control"
-                                                            value="{{$DiskonRpPenjualanReadOnly->Nama}}"
-                                                            name="inputmblDiskonRpPenjualanReadOnlynama">
+                                                            <input type="text"  class="text-center form-control"
+                                                                value="{{$DiskonRpPenjualanReadOnly->Nama}}"
+                                                                name="inputmblDiskonRpPenjualanReadOnlynama">
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
-                                                        <input type="checkbox" disabled class="custom-control-input"
-                                                            id="DiskonRpPenjualanReadOnly" name="ckDiskonRpPenjualanReadOnly"
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox"  class="custom-control-input"
+                                                            id="DiskonRpPenjualanReadOnly"
+                                                            name="ckDiskonRpPenjualanReadOnly"
                                                             @if($DiskonRpPenjualanReadOnly->aktif == 1 ) checked
                                                         @endif>
                                                         <label class="custom-control-label"
@@ -170,22 +174,25 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <input type="hidden" name="name11" value="{{$DiskonPersenPenjualanReadOnly->Kode}}">
+                                                <input type="hidden" name="name11"
+                                                    value="{{$DiskonPersenPenjualanReadOnly->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="form-group">
 
                                                             <textarea class="form-control"
-                                                                id="exampleFormControlTextarea1" rows="6" readonly
+                                                                id="exampleFormControlTextarea1" rows="6"
                                                                 name="inputDiskonPersenPenjualanReadOnlynama">{{$DiskonPersenPenjualanReadOnly->Nama}}</textarea>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div class="custom-control custom-switch custom-switch-md float-right">
-                                                        <input type="checkbox" disabled class="custom-control-input"
-                                                            id="DiskonPersenPenjualanReadOnly" name="ckDiskonPersenPenjualanReadOnly"
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox"  class="custom-control-input"
+                                                            id="DiskonPersenPenjualanReadOnly"
+                                                            name="ckDiskonPersenPenjualanReadOnly"
                                                             @if($DiskonPersenPenjualanReadOnly->aktif == 1 ) checked
                                                         @endif>
                                                         <label class="custom-control-label"
@@ -203,13 +210,13 @@
                                                 <input type="hidden" name="name13" value="{{$HitungSimPin->Kode}}">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <textarea class="form-control" readonly
-                                                        id="exampleFormControlTextarea1" rows="6"
-                                                        name="inputHitungSimPinnama">{{$HitungSimPin->Nama}}</textarea>
+                                                        <textarea class="form-control"
+                                                            id="exampleFormControlTextarea1" rows="6"
+                                                            name="inputHitungSimPinnama">{{$HitungSimPin->Nama}}</textarea>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" readonly class="text-center form-control"
+                                                    <input type="number"  class="text-center form-control"
                                                         value="{{$HitungSimPin->Nilai}}"
                                                         name="inputmblHitungSimPinnilai">
                                                 </div>
@@ -217,7 +224,8 @@
                                                     <div
                                                         class="custom-control custom-switch custom-switch-md float-right">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="MobileHitungSimPin" disabled @if($HitungSimPin->aktif == 1 )
+                                                            id="MobileHitungSimPin"  @if($HitungSimPin->aktif ==
+                                                        1 )
                                                         checked
                                                         @endif name="ckmblHitungSimPin">
                                                         <label class="custom-control-label"
@@ -237,16 +245,32 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group text-center">
                                                         <div class="custom-control custom-switch custom-switch-md">
-                                                            <input type="checkbox" disabled class="custom-control-input cetak"
-                                                                name="ckcetak" id="cetak"
-                                                                @if($cetak->aktif == 1 ) checked @endif>
+                                                            <input type="checkbox" 
+                                                                class="custom-control-input cetak" name="ckcetak"
+                                                                id="cetak" @if($cetak->aktif == 1 ) checked @endif>
                                                             <label class="custom-control-label" for="cetak"></label>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-group">
 
+                                                        <select class="form-control" id="jenis_printer" name="jenis_printer">
+                                                         @forelse ($printer as $item)
+                                                             <option value="{{$item->id}}" @if($item->aktif == 1) selected @endif >{{$item->Nama}}</option>
+                                                         @empty
+
+                                                         @endforelse
+
+                                                        </select>
+                                                      </div>
+                                                </div>
+
+
+                                            </div>
 
                                         </div>
                                     </div>
@@ -262,4 +286,76 @@
     </div>
 </section>
 
+@endsection
+@section('scripts')
+<script>
+    $(document).ready(function(){
+        $('.cardpengajuanday').each(function () {
+          var select = $(this).find('select')
+            select.each(function () {
+                $(this).select2()
+            })
+         })
+        function ajax() {
+            $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+         }
+         $('.btnapply').on('click', function () {
+             var form =$('#formSetting').serialize()
+             var inputtext = $('input:text').val();
+             var inputtime1 = $('#inputmblbelanjajamoff').val();
+             var inputnumber = $('input[type=number]');
+             var resnumber = false;
+             var select = $('select');
+             var resselect = false;
+             select.each(function () {
+                if($(this).val() == '0'){
+                    resselect = true;
+                }
+              })
+              inputnumber.each(function () {
+                if($(this).val() == ''){
+                    resnumber = true;
+                }
+              })
+            //  console.log(select)
+             if(inputtext == '' || inputtext== undefined){
+                swal("form harus diisi semua!");
+                return false;
+             }else if(resselect){
+                swal("Tanggal pinjaman harus dipilih!");
+                return false;
+             }else if(resnumber){
+                swal("form harus diisi semua!");
+                return false;
+             }
+             swal({
+                text: "Apa kamu yakin apply data ini ?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willInsert) => {
+                if (willInsert) {
+                    ajax();
+                    $.ajax({
+                        url:"{{route('settings.mssetting.store')}}",
+                        method:"POST",
+                        data:form,
+                        success:function(data){
+                           if(data['message']=='true'){
+                            swal("Data berhasil di apply!", {
+                                icon: "success",
+                                });
+                           }
+                        }
+                    })
+                }
+                });
+          })
+    })
+</script>
 @endsection
