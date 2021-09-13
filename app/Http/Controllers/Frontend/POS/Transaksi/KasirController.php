@@ -1191,7 +1191,7 @@ class KasirController extends Controller
                         $subtotal = $value['qty'] * $value['harga'];
                         $totalharga += $subtotal;
                         $totalitem +=  $value['qty'];
-                        $printer->text(buatBaris4Kolom33(substr($barang->Nama, 0, 14), $value['qty'], number_format($value['harga'], 0), number_format($subtotal, 0)));
+                        $printer->text(buatBaris4Kolom33(substr($barang->Nama, 0, 10), $value['qty'], number_format($value['harga'], 0), number_format($subtotal, 0)));
                     }
                 }
                 $printer->text("----------------------------------------\n");
