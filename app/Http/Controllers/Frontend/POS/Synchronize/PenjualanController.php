@@ -56,7 +56,7 @@ class PenjualanController extends Controller
                     foreach ($backuphd as $key => $value) {
                         $nomor = $this->generateNomor($tanggal);
                         $no = 1;
-                        $cek = DB::connection($koneksi)->table('trmutasihd')->whereDate('Tanggal', $tanggal)->where('NomorLokal', $value->Nomor)->where('NomorLokal', '!=', null)->first();
+                        $cek = Trmutasihd::on($koneksi)->whereDate('Tanggal', $tanggal)->where('NomorLokal', $value->Nomor)->whereNotNull('NomorLokal')->first();
                         if (!$cek) {
                             DB::connection($koneksi)->table('trmutasihd')->insert([
                                 'Transaksi' => 'PENJUALAN',
@@ -286,17 +286,18 @@ class PenjualanController extends Controller
                         }
 
 
-                    DB::commit();
-                    DB::connection($koneksi)->commit();
-                    return response()->json(
-                        [
-                            'status' => true,
-                            'message' => 'Penjualan Berhasil di Synchronize',
-                            'code' => Response::HTTP_OK,
-                            'data' => $backuphd
-                        ]
-                    );
                 }
+
+                DB::commit();
+                DB::connection($koneksi)->commit();
+                return response()->json(
+                    [
+                        'status' => true,
+                        'message' => 'Penjualan Berhasil di Synchronize',
+                        'code' => Response::HTTP_OK,
+                        'data' => $backuphd
+                    ]
+                );
             } catch (\Exception $th) {
                 //throw $th;
                 DB::rollBack();

@@ -1176,7 +1176,7 @@ class KasirController extends Controller
                 $printer->feed(4); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
                 $printer->close();
-            }else{
+            } else {
                 // Membuat tabel
                 $printer->initialize(); // Reset bentuk/jenis teks
                 $printer->setFont(Printer::FONT_B);
@@ -1216,75 +1216,84 @@ class KasirController extends Controller
     {
         $koneksi = 'mysql2';
         $year = date('Y');
-        $trmutasihd =  DB::connection($koneksi)->table('trmutasihd')->get();
+        $trmutasihd = Trmutasihd::all();
 
         foreach ($trmutasihd as $key => $value) {
-            // $cekmutasi = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereTime('Tanggal', $value->Tanggal)->where('Nomor', $value->Nomor)->first();
-            // if ($cekmutasi) {
-            // $tanggal = date('Y-m-d', strtotime($cekmutasi->Tanggal));
-            // $nomor = $this->generateNomor($tanggal);
+            $cekmutasi =Trmutasihd::where('Transaksi', $value->Transaksi)->whereTime('Tanggal', $value->Tanggal)->where('Nomor', $value->Nomor)->first();
 
-            // if ($backupdt->isNotEmpty()) {
+            if ($cekmutasi) {
 
-            DB::table('trmutasihd')->insert([
-                'Transaksi' => 'PENJUALAN',
-                'Nomor' => $value->Nomor,
-                // 'NomorLokal' => $value->Nomor,
-                'Tanggal' => $value->Tanggal,
-                'KodeSuppCust' => $value->KodeSuppCust,
-                'DiskonPersen' => $value->DiskonPersen,
-                'DiskonTunai' => $value->DiskonTunai,
-                'Pajak' => $value->Pajak,
-                'LokasiAwal' => $value->LokasiAwal,
-                'PembayaranTunai' => $value->PembayaranTunai,
-                'PembayaranKredit' => $value->PembayaranKredit,
-                'PembayaranEkop' => $value->PembayaranEkop,
-                'TotalHarga' => $value->TotalHarga,
-                'StatusPesanan' =>  $value->StatusPesanan,
-                'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
-                'DueDate' => $value->DueDate,
-            ]);
+                $tanggal = date('Y-m-d', strtotime($cekmutasi->Tanggal));
+                $nomor = $this->generateNomor($tanggal, $value->Transaksi,substr($value->Nomor,0,2));
+                DB::connection($koneksi)->table('trmutasihd')->insert([
+                    'Transaksi' => $value->Transaksi,
+                    'Nomor' =>$nomor,
+                    'NomorLokal' => $value->NomorLokal,
+                    'Tanggal' => $value->Tanggal,
+                    'KodeSuppCust' => $value->KodeSuppCust,
+                    'Keterangan' => $value->Keterangan,
+                    'DiskonPersen' => $value->DiskonPersen,
+                    'DiskonTunai' => $value->DiskonTunai,
+                    'Pajak' => $value->Pajak,
+                    'LokasiAwal' => $value->LokasiAwal,
+                    'LokasiTujuan' => $value->LokasiTujuan,
+                    'PembayaranTunai' => $value->PembayaranTunai,
+                    'PembayaranKredit' => $value->PembayaranKredit,
+                    'PembayaranEkop' => $value->PembayaranEkop,
+                    'TotalHarga' => $value->TotalHarga,
+                    'StatusPesanan' =>  $value->StatusPesanan,
+                    'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
+                    'UserUpdateSP' => $value->UserUpdateSP,
+                    'LastUpdateSP' => $value->LastUpdateSP,
+                    'DueDate' => $value->DueDate,
+                    'TglAwal' => $value->TglAwal,
+                    'TglAkhir' => $value->TglAkhir,
+                ]);
 
-            // }
-            // }
+                $backupdt =  Trmutasidt::where('Nomor',$value->Nomor)->whereTime('LastUpdate',$value->Tanggal)->get();
+
+                foreach ($backupdt as $key => $row) {
+                    DB::connection($koneksi)->table('trmutasidt')->insert([
+                        'Transaksi' => $value->Transaksi,
+                        'Nomor' =>  $nomor,
+                        'Urut' => $row->Urut,
+                        'KodeBarang' => $row->KodeBarang,
+                        'DiskonPersen' => $row->DiskonPersen,
+                        'DiskonTunai' => $row->DiskonTunai,
+                        'UserUpdate' => $row->UserUpdate,
+                        'LastUpdate' => $row->LastUpdate,
+                        'Jumlah' => $row->Jumlah,
+                        'Harga' => $row->Harga,
+                        'Satuan' => $row->Satuan,
+                        'HargaLama' => 0,
+                    ]);
+                }
+                // if ($cekmutasi->isNotEmpty()) {
+
+
+                // }
+            }
         }
         // dd($arr);
-        $backupdt =  DB::connection($koneksi)->table('trmutasidt')->get();
 
-        foreach ($backupdt as $key => $row) {
-            DB::table('trmutasidt')->insert([
-                'Transaksi' => 'PENJUALAN',
-                'Nomor' => $row->Nomor,
-                'Urut' => $row->Urut,
-                'KodeBarang' => $row->KodeBarang,
-                'DiskonPersen' => $row->DiskonPersen,
-                'DiskonTunai' => $row->DiskonTunai,
-                'UserUpdate' => $row->UserUpdate,
-                'LastUpdate' => $row->LastUpdate,
-                'Jumlah' => $row->Jumlah,
-                'Harga' => $row->Harga,
-                'Satuan' => $row->Satuan,
-                'HargaLama' => 0,
-            ]);
-        }
         return response()->json(['message' => 'success']);
     }
 
 
-    public function generateNomor($tanggal)
+    public function generateNomor($tanggal,$trans,$status)
     {
-        $nomor =  DB::connection('mysql2')->table('trmutasihd')->where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $tanggal)->max('Nomor');
+        $nomor =  DB::connection('mysql2')->table('trmutasihd')->where('Transaksi', $trans)->whereDate('Tanggal', $tanggal)->max('Nomor');
 
         if (!is_null($nomor)) {
             $substr = substr($nomor, -5);
             $substr = (int) str_replace('-', '', $substr);
             $nomor = $substr + 1;
             $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "PE-" . $tanggal . "-" . $addzero;
+            $formatNomor = $status."-" . $tanggal . "-" . $addzero;
         } else {
             $nomor = 1;
             $addzero =  str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "PE-" . $tanggal . "-" . $addzero;
+            $formatNomor = $status."-" . $tanggal . "-" . $addzero;
         }
 
         return $formatNomor;
