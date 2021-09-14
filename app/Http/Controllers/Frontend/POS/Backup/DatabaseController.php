@@ -82,7 +82,7 @@ class DatabaseController extends Controller
                 }else{
                     return response()->json([
                         'status' => false,
-                        'message' => "cek koneksi internet anda"
+                        'message' => "cek koneksi internet anda dan login ulang kembali"
                     ]);
                 }
 
