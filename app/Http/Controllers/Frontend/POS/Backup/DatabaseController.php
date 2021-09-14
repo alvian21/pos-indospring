@@ -44,42 +44,52 @@ class DatabaseController extends Controller
         if ($request->ajax()) {
 
             try {
-                Artisan::call('backup:run --only-db');
-                $path = session('path_backup');
-                $token = session('api_token');
-                $client = new Client();
-                $url = config('app.api_url') . 'backup';
-                $response = $client->request('POST', $url, [
-                    'multipart' => [
-                        [
-                            'name'     => 'database',
-                            'contents' => fopen($path, 'r')
+
+                if($this->is_connected()){
+                    Artisan::call('backup:run --only-db');
+                    $path = session('path_backup');
+                    $token = session('api_token');
+                    $client = new Client();
+                    $url = config('app.api_url') . 'backup';
+                    $response = $client->request('POST', $url, [
+                        'multipart' => [
+                            [
+                                'name'     => 'database',
+                                'contents' => fopen($path, 'r')
+                            ],
+                            [
+                                'name'     => 'KodeLokasi',
+                                // 'contents' => auth('web')->user()->KodeLokasi,
+                                'contents' => 'P5',
+                            ]
                         ],
+                        'headers' => [
+                            'Authorization' => "Bearer " . $token
+                        ],
+                    ]);
+
+                    $response = $response->getBody()->getContents();
+
+                    return response()->json(
                         [
-                            'name'     => 'KodeLokasi',
-                            'contents' => auth('web')->user()->KodeLokasi,
+                            'status' => true,
+                            'message' => 'Backup Berhasil di Lakukan',
+                            'code' => Response::HTTP_OK,
+                            'path' => $path,
+                            'response' => $response
                         ]
-                    ],
-                    'headers' => [
-                        'Authorization' => "Bearer " . $token
-                    ],
-                ]);
+                    );
+                }else{
+                    return response()->json([
+                        'status' => false,
+                        'message' => "cek koneksi internet anda"
+                    ]);
+                }
 
-                $response = $response->getBody()->getContents();
-
-                return response()->json(
-                    [
-                        'status' => true,
-                        'message' => 'Backup Berhasil di Lakukan',
-                        'code' => Response::HTTP_OK,
-                        'path' => $path,
-                        'response' => $response
-                    ]
-                );
             } catch (\Throwable $th) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Maaf ada yang error'
+                    'message' => "maaf ada yang error"
                 ]);
             }
         }
@@ -128,5 +138,18 @@ class DatabaseController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public   function is_connected()
+    {
+        $connected = @fsockopen("www.google.com", 80);
+        //website, port  (try 80 or 443)
+        if ($connected) {
+            $is_conn = true; //action when connected
+            fclose($connected);
+        } else {
+            $is_conn = false; //action in connection failure
+        }
+        return $is_conn;
     }
 }

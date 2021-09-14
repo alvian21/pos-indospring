@@ -67,7 +67,7 @@
                     url:"{{route('backup.database.store')}}",
                     method:"POST",
                 }).done(function (response) {
-                    // console.log(response);
+                    console.log(response);
                     if(response.status){
                         swal("Success!", response.message, "success");
                         $('.spinner-border').remove()
@@ -78,6 +78,9 @@
                            setTimeout(function () {  clearTimeout(waktu) },10000)
                         }
                     }else{
+                        $('.spinner-border').remove()
+                        $('.btnsync').prop("disabled", false);
+                        $('.btnsync').text('Backup Now')
                         swal(response.message);
                     }
                 })
