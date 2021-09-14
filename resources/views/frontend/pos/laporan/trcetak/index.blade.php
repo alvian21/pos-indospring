@@ -15,8 +15,12 @@
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Daftar Cetak Label Harga</h4>
-                        <button type="button" class="btn btn-primary addcetak" data-toggle="modal"
+                        <div class="btn-group float-right" role="group">
+                            <button type="button" class="btn btn-primary addcetak" data-toggle="modal"
                             data-target="#modalcetak">Tambah Trcetak</button>
+                            <button type="button" class="btn btn-danger float-right deleteCetak ml-1">Hapus Semua</button>
+                        </div>
+
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -153,6 +157,37 @@ $(document).ready(function () {
             }
             });
      })
+
+
+     $('.deleteCetak').on('click',function () {
+        swal({
+            title: "Apa kamu yakin menghapus semua label ?",
+            text: "ketika dihapus, data tidak bisa dikembalikan lagi!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                ajax()
+                $.ajax({
+                    url:"{{route('poslaporan.cetak.deleteall')}}",
+                    method:"DELETE"
+                }).done(function(response){
+                    console.log(response);
+                        if(response.status){
+                            swal("Data berhasil dihapus!", {
+                                icon: "success",
+                                });
+                            setTimeout(function(){location.reload(true)},1000)
+                        }
+                }).fail(function(response){
+                        console.log(response);
+                })
+
+            }
+            });
+      })
 
     $('.btnSimpan').on('click', function () {
             var form = $('#formLabel').serialize()

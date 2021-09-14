@@ -9,6 +9,7 @@ use App\Msbarang;
 use Illuminate\Http\Response;
 use PDF;
 use Illuminate\Support\Facades\Validator;
+use Svg\Tag\Rect;
 
 class TrcetakController extends Controller
 {
@@ -166,6 +167,15 @@ class TrcetakController extends Controller
         if ($request->ajax()) {
             $cetak = Trcetak::findOrFail($id);
             $cetak->delete();
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+    }
+
+    public function deleteAll(Request $request){
+        if($request->ajax()){
+            Trcetak::query()->delete();
             return response()->json([
                 'status' => true,
             ]);
