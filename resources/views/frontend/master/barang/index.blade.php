@@ -138,7 +138,7 @@
                     </div>
                     <div class="form-group">
                         <label for="nama">Nama</label>
-                        <input type="text" class="form-control" name="nama" id="nama">
+                        <input type="text" class="form-control" name="nama" required id="nama">
                     </div>
                     <div class="form-group">
                         <label for="kode_barcode">Kode barcode</label>
