@@ -213,7 +213,7 @@
             });
             $('#tampildicaffe').select2()
             $('#kode').attr('readonly', true);
-            $('#nama').attr('readonly', true);
+            // $('#nama').attr('readonly', true);
             var table = $("#table-1").DataTable({
                 dom: "<'row'<'col-sm-9'l><'col-sm-3'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
@@ -335,7 +335,7 @@
             $('#ModalBarang').on('hidden.bs.modal', function() {
                 $(this).find('form').trigger('reset');
                 $('#kode').attr('readonly', true);
-                $('#nama').attr('readonly', true);
+                // $('#nama').attr('readonly', true);
             });
 
             $(document).on('click','.addBarang', function(){

@@ -65,6 +65,7 @@ class BarangController extends Controller
             $hargacaffe = str_replace('.','',$hargacaffe);
             if ($request->get("status") == "update") {
                 $msbarang = Msbarang::find($request->get('kode'));
+                $msbarang->Nama = $request->get("nama");
             } elseif ($request->get("status") == "store") {
                 $msbarang = new Msbarang();
                 $msbarang->Kode = $request->get("kode");
