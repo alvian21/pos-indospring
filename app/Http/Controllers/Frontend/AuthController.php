@@ -36,34 +36,39 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator->errors());
         } else {
-            $user = User::where('UserLogin', $request->get('username'))->where('UserPassword', $request->get('password'))->first();
-            if ($user) {
-                $auth = Auth::guard("web")->login($user);
-                $user = Auth::guard('web')->user();
-                $anggota = Msanggota::where("Kode", $user->KodeAnggota)->first();
-                if ($anggota) {
-                    session(['nama_anggota' => $anggota->Nama]);
-                }
+            if($this->is_connected()){
+                $user = User::where('UserLogin', $request->get('username'))->where('UserPassword', $request->get('password'))->first();
+                if ($user) {
+                    $auth = Auth::guard("web")->login($user);
+                    $user = Auth::guard('web')->user();
+                    $anggota = Msanggota::where("Kode", $user->KodeAnggota)->first();
+                    if ($anggota) {
+                        session(['nama_anggota' => $anggota->Nama]);
+                    }
 
-                $client = new Client();
-                $url = config('app.api_url') . 'auth/login';
-                $response = $client->post($url, [
-                    'form_params' => [
-                        'UserLogin' => $user->UserLogin,
-                        'UserPassword' => $user->UserPassword,
-                    ]
-                ]);
+                    $client = new Client();
+                    $url = config('app.api_url') . 'auth/login';
+                    $response = $client->post($url, [
+                        'form_params' => [
+                            'UserLogin' => $user->UserLogin,
+                            'UserPassword' => $user->UserPassword,
+                        ]
+                    ]);
 
-                $response = $response->getBody()->getContents();
-                $response = json_decode($response, true);
-                if ($response['status']) {
-                    session(['api_token' => $response['access_token']]);
+                    $response = $response->getBody()->getContents();
+                    $response = json_decode($response, true);
+                    if ($response['status']) {
+                        session(['api_token' => $response['access_token']]);
+                    }
+                    session()->flash('info', 'Selamat Datang  !');
+                    return redirect()->route('dashboard.index');
+                } else {
+                    return redirect()->back()->withErrors("wrong kode user or password");
                 }
-                session()->flash('info', 'Selamat Datang  !');
-                return redirect()->route('dashboard.index');
-            } else {
-                return redirect()->back()->withErrors("wrong kode user or password");
+            }else{
+                return redirect()->back()->withErrors("silahkan cek koneksi internet anda");
             }
+
         }
     }
 
@@ -74,5 +79,18 @@ class AuthController extends Controller
 
         return redirect('/login')
             ->with('alert-info', 'Anda telah keluar, Sampai ketemu lagi!');
+    }
+
+    public   function is_connected()
+    {
+        $connected = @fsockopen("www.google.com", 80);
+        //website, port  (try 80 or 443)
+        if ($connected) {
+            $is_conn = true; //action when connected
+            fclose($connected);
+        } else {
+            $is_conn = false; //action in connection failure
+        }
+        return $is_conn;
     }
 }

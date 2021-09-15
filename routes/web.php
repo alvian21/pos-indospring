@@ -188,10 +188,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/receipt', 'KasirController@receipt')->name('kasir.receipt');
             Route::get('/getstatus', 'KasirController@getStatus')->name('kasir.status');
 
-            Route::get('/reindex', 'KasirController@reindex');
+            // Route::get('/reindex', 'KasirController@reindex');
             Route::get('/testprint','KasirController@testPrint')->name('print');
 
-            Route::get('/deleteall', 'KasirController@deleteData');
+            // Route::get('/deleteall', 'KasirController@deleteData');
         });
 
         Route::group(['prefix' => 'pembelianbaru'], function () {
