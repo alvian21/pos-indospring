@@ -1173,7 +1173,7 @@ class KasirController extends Controller
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->text("Terimakasih atas kunjungannya\n");
 
-                $printer->feed(3); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
+                $printer->feed(2); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
                 $printer->close();
             } else {
@@ -1205,7 +1205,7 @@ class KasirController extends Controller
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->text("Terimakasih atas kunjungannya\n");
 
-                $printer->feed(3); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
+                $printer->feed(2); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
                 $printer->close();
             }
