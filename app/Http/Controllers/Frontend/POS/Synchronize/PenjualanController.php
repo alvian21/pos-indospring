@@ -81,7 +81,7 @@ class PenjualanController extends Controller
                         $backupdt = Trmutasidt::where('Nomor', $value->Nomor)->get();
 
 
-                        //belanja tunai
+                        // belanja tunai
                         $tunai = $value->PembayaranTunai;
                         $tunai = intval($tunai);
                         if ($tunai > 0 && $tunai != 0) {
