@@ -206,8 +206,8 @@ class DashboardController extends Controller
     public function EmailStatus(Request $request)
     {
         if ($request->ajax()) {
-            $verified = Msanggota::where('verified_email', 1)->count();
-            $unverified = Msanggota::where('verified_email', 0)->count();
+            $verified = Msanggota::where('verified_phone', 1)->count();
+            $unverified = Msanggota::where('verified_phone', 0)->count();
 
             $arr = [
                 'verified' => $verified,
@@ -221,8 +221,8 @@ class DashboardController extends Controller
     public function EmailStatusWithout(Request $request)
     {
         if ($request->ajax()) {
-            $verified = Msanggota::where('verified_email', 1)->count();
-            $without = Msanggota::where('email', null)->count();
+            $verified = Msanggota::where('verified_phone', 1)->count();
+            $without = Msanggota::where('phone', null)->count();
 
             $arr = [
                 'verified' => $verified,

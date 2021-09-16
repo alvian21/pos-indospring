@@ -136,7 +136,7 @@
             <div class="col-md-6">
                 <div class="card ">
                     <div class="card-header d-flex justify-content-center ">
-                        <h4 class="mb-0"><a href="{{route('anggotaemail.index')}}">Email</a></h4>
+                        <h4 class="mb-0"><a href="#">Nomor Hp</a></h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -433,7 +433,7 @@
                         }
                     },
                     series: [{
-                        name: 'Email Status',
+                        name: 'Nomor Hp Status',
                         colorByPoint: true,
                         innerSize: '20%',
                         data: []
@@ -478,7 +478,7 @@
                         }
                     },
                     series: [{
-                        name: 'Email Status',
+                        name: 'Nomor Hp Status',
                         colorByPoint: true,
                         innerSize: '20%',
                         data: []
