@@ -10,6 +10,7 @@ use Image;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Mslokasi;
+use App\Trsaldobarang;
 
 class BarangController extends Controller
 {
@@ -212,5 +213,25 @@ class BarangController extends Controller
                 ]);
             }
         }
+    }
+
+    public function generateSaldo(Request $request){
+        $barang = Msbarang::whereNotNull('Kode')->get();
+        $lokasi = Mslokasi::where('Kode','!=','P2')->get();
+
+
+            foreach($barang as $row){
+                $saldo = new Trsaldobarang();
+                $saldo->Tanggal = date('Y-m-d H:i:s');
+                $saldo->KodeBarang = $row->Kode;
+                $saldo->Saldo = 0;
+                $saldo->KodeLokasi = "P1";
+                $saldo->save();
+            }
+        
+
+        return response()->json([
+            'message' => 'saved'
+        ]);
     }
 }

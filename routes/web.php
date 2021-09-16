@@ -62,6 +62,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get("/kode_barang", "BarangController@CheckKodeBarang")->name("check.kodebarang");
             Route::get("/kode_barcode", "BarangController@CheckKodeBarcode")->name("check.kodebarcode");
             Route::get("/kategori", "BarangController@getKategori")->name("getkategori");
+            Route::get("/generateSaldo", "BarangController@generateSaldo")->name("generateSaldo");
             Route::resource('/', 'BarangController');
         });
     });
