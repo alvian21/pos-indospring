@@ -60,7 +60,7 @@ class DatabaseController extends Controller
                             [
                                 'name'     => 'KodeLokasi',
                                 'contents' => auth('web')->user()->KodeLokasi,
-                                
+
                             ]
                         ],
                         'headers' => [
