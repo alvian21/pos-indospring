@@ -126,9 +126,9 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     });
 
     //pinjaman
-    Route::group(['namespace' => 'Pinjaman', 'prefix' => 'pinjaman', 'as' => 'pinjaman.'], function () {
+    Route::group(['namespace' => 'Pinjaman'], function () {
 
-        Route::resource('/', 'PinjamanController');
+        Route::resource('pinjaman', 'PinjamanController');
     });
 
     //status pesanan

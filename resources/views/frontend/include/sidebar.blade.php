@@ -98,7 +98,7 @@ function customSearch($keyword, $arrayToSearch){
                 @if ($item == 'Koperasi - Transaksi - Cek Saldo')
                 <li><a class="nav-link" href="{{route('koperasi.saldo.index')}}">Cek Saldo</a></li>
                 @elseif ($item == 'Koperasi - Transaksi - Approval Pinjaman')
-                <li><a class="nav-link" href="#">Approval Pinjaman</a></li>
+                <li><a class="nav-link" href="{{route('pinjaman.index')}}">Approval Pinjaman</a></li>
                 @elseif ($item == 'Koperasi - Transaksi - TopUp e-kop')
                 <li><a class="nav-link" href="{{route('koperasi.topup.index')}}">TopUp e-kop</a></li>
                 @elseif ($item == 'Koperasi - Transaksi - Pembayaran')

@@ -1,7 +1,7 @@
 @extends('frontend.master')
 
 @section('title', 'Trpinjaman')
-
+@section('transaksi', 'active')
 @section('content')
 <section class="section">
     <div class="section-header">
@@ -54,7 +54,7 @@
                                         {{-- <th rowspan="2">Kartu Jamsostek</th>
                                         <th rowspan="2">Saldo Jamsostek</th>
                                         <th rowspan="2">Jaminan Tambahan</th> --}}
-                                        {{-- <th rowspan="2">Aksi</th> --}}
+                                        <th rowspan="2">Aksi</th>
                                     </tr>
                                     <tr>
                                         <th>Petugas Nama</th>
@@ -117,12 +117,12 @@
                                                 class="btn btn-primary btntambahan">@if($item->JaminanResmi!=null)
                                                 Jaminan Tambahan @else
                                                 Belum
-                                                di upload @endif</button></td>
+                                                di upload @endif</button></td> --}}
                                         <td><button type="button" data-id="{{ $item->Nomor }}"
                                                 class="btn btn-info btnedit">Edit</button>
-                                            <button type="button" data-id="{{ $item->Nomor }}" class=" btn
-                                            btn-danger btndelete">Delete</button>
-                                        </td> --}}
+                                            {{-- <button type="button" data-id="{{ $item->Nomor }}" class=" btn
+                                            btn-danger btndelete">Delete</button> --}}
+                                        </td>
 
                                     </tr>
                                     @endforeach
@@ -261,7 +261,7 @@
 
     $(".btnedit").on('click', function () {
         var nomor = $(this).data('id');
-        var url = "{{ url('/trpinjaman') }}/" + nomor;
+        var url = "{{ url('/admin/pinjaman/') }}/" + nomor;
         $('#editform').attr("action", url);
         $("#nomor").val(nomor);
         $("#editModal").modal('show');
