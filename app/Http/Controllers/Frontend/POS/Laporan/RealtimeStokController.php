@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend\POS\Laporan;
 
+use App\Exports\RealtimeStok;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Mskategori;
@@ -9,7 +10,7 @@ use App\Mslokasi;
 use Illuminate\Support\Facades\DB;
 use App\Trsaldobarang;
 use PDF;
-
+use Maatwebsite\Excel\Facades\Excel;
 
 class RealtimeStokController extends Controller
 {
@@ -120,8 +121,11 @@ class RealtimeStokController extends Controller
             $res = array_merge($x, (array) $value);
             array_push($arr, $res);
         }
-        // dd($arr);
-
+        $sort = array();
+        foreach ($arr as $k => $v) {
+            $sort['Kategori'][$k] = $v['Kategori'];
+        }
+        array_multisort($sort['Kategori'], SORT_DESC, $arr);
         $no = 1;
         $datares = [];
         foreach ($arr as $key => $value) {
@@ -154,12 +158,34 @@ class RealtimeStokController extends Controller
         array_multisort($sort['Kategori'], SORT_DESC, $sort['NomorGroup'], SORT_ASC, $datares);
 
 
-        $pdf = PDF::loadview(
-            "frontend.pos.laporan.realtimestok.pdf",
-            [
-                'data' => $datares
-            ]
-        )->setPaper('a4', 'potrait');
-        return $pdf->stream('laporan-realtime-pdf', array('Attachment' => 0));
+        $reslast = [];
+        $no = 1;
+        foreach ($datares as $key => $val) {
+            $x['No'] = $no;
+            $x['Kategori'] = $val['Kategori'];
+            $x['NomorGroup'] = $val['NomorGroup'];
+            $x['KodeBarang'] = $val['KodeBarang'];
+            $x['NamaBarang'] = $val['NamaBarang'];
+            $x['P1'] = $val['P1'];
+            $x['P2'] = $val['P2'];
+            array_push($reslast,$x);
+            $no ++;
+        }
+
+        if ($request->get('cetak') == 'pdf') {
+
+            $pdf = PDF::loadview(
+                "frontend.pos.laporan.realtimestok.pdf",
+                [
+                    'data' => $reslast
+                ]
+            )->setPaper('a4', 'potrait');
+            return $pdf->stream('laporan-realtime-pdf', array('Attachment' => 0));
+        } else {
+            $data = collect($reslast);
+            return    Excel::download(new RealtimeStok($data), 'laporan-realtimestok.xlsx');
+        }
+
+
     }
 }

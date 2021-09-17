@@ -34,7 +34,7 @@
                                 <label for="cetak">Cetak</label>
                                 <select class="form-control" id="cetak" name="cetak">
                                     <option value="pdf">Pdf</option>
-                                    {{-- <option value="excel">Excel</option> --}}
+                                    <option value="excel">Excel</option>
                                 </select>
                             </div>
                             <div class="row">
