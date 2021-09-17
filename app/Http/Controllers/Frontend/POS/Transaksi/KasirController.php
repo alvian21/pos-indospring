@@ -346,6 +346,7 @@ class KasirController extends Controller
             $day = date('d');
             $month = date('m');
             $year = date('Y');
+            $today = date('Y-m-d');
             $pembayaran_ekop = $request->get('pembayaran_ekop');
             $pembayaran_ekop = str_replace('.', '', $pembayaran_ekop);
             $pembayaran_tunai = $request->get('pembayaran_tunai');
@@ -363,9 +364,10 @@ class KasirController extends Controller
             DB::beginTransaction();
             try {
 
-                $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
-                if ($trmutasihd) {
-                    $nomor = (int) substr($trmutasihd->Nomor, 14);
+                $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $today)->max('Nomor');
+                if ($trmutasihd != null) {
+                    $nomor = (int) substr($trmutasihd, 14);
+
                     if ($nomor != 0) {
                         if ($nomor >= 9999) {
                             $nomor = $nomor + 1;
@@ -396,7 +398,7 @@ class KasirController extends Controller
 
                 $trmutasihd->DiskonTunai = 0;
                 $trmutasihd->Pajak = 0;
-                $trmutasihd->LokasiAwal = $trkasir["lokasi"];
+                $trmutasihd->LokasiAwal = auth('web')->user()->KodeLokasi;
                 $trmutasihd->TotalHarga = $trkasir["total_harga"];
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
                 $statusbayar = '';
@@ -539,6 +541,7 @@ class KasirController extends Controller
                 return redirect()->route('pos.kasir.index')->with("success", "Detail dan data transaksi kasir berhasil disimpan");
             } catch (\Exception $e) {
                 DB::rollback();
+
                 return redirect()->route('pos.kasir.index')->with("error", "Maaf ada yang error");
             }
         }
@@ -1216,19 +1219,17 @@ class KasirController extends Controller
     {
         $koneksi = 'mysql2';
         $year = date('Y');
-        $trmutasihd = Trmutasihd::whereDate('Tanggal','2021-09-14')->where('Transaksi','PENJUALAN')->get();
+        $trmutasihd = Trmutasihd::where('Transaksi','PENJUALAN')->whereDate('Tanggal','2021-09-16')->get();
 
         foreach ($trmutasihd as $key => $value) {
-            $cekmutasi = Trmutasihd::where('Transaksi', $value->Transaksi)->whereTime('Tanggal', $value->Tanggal)->where('Nomor', $value->Nomor)->first();
 
-            if ($cekmutasi) {
 
-                $tanggal = date('Y-m-d', strtotime($cekmutasi->Tanggal));
-                $nomor = $this->generateNomor($tanggal, $value->Transaksi, substr($value->Nomor, 0, 2));
+                $tanggal = date('Y-m-d', strtotime($value->Tanggal));
+                $nomor = $this->generateNomor($tanggal, $value->Transaksi, "PE");
                 DB::connection($koneksi)->table('trmutasihd')->insert([
                     'Transaksi' => $value->Transaksi,
                     'Nomor' => $nomor,
-                    'NomorLokal' => $value->NomorLokal,
+                    'NomorLokal' => $value->Nomor,
                     'Tanggal' => $value->Tanggal,
                     'KodeSuppCust' => $value->KodeSuppCust,
                     'Keterangan' => $value->Keterangan,
@@ -1250,7 +1251,7 @@ class KasirController extends Controller
                     'TglAkhir' => $value->TglAkhir,
                 ]);
 
-                $backupdt =  Trmutasidt::where('Nomor', $value->Nomor)->whereTime('LastUpdate', $value->Tanggal)->get();
+                $backupdt =  Trmutasidt::where('Nomor', $value->Nomor)->get();
 
                 foreach ($backupdt as $key => $row) {
                     DB::connection($koneksi)->table('trmutasidt')->insert([
@@ -1272,7 +1273,7 @@ class KasirController extends Controller
 
 
                 // }
-            }
+
         }
         // dd($arr);
 

@@ -136,7 +136,7 @@ class DashboardController extends Controller
             ])->groupBy('day')
                 ->where('Transaksi', 'PENJUALAN')
                 ->where('LokasiAwal', auth('web')->user()->KodeLokasi)
-                ->whereBetween('Tanggal', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->whereDate('Tanggal','>=',$from)->whereDate('Tanggal','<=',$to)
                 ->limit(10)->get()->toArray();
 
             $penjualanoffline = $this->sortFunction($penjualanoffline);
