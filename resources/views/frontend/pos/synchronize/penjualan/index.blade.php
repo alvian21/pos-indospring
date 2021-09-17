@@ -91,18 +91,18 @@
                     method:"POST",
                     data:{'tanggal':tanggal,'status':'insert'}
                 }).done(function (response) {
-                    console.log(response);
-                    // if(response.status){
-                    //     swal("Success!", response.message, "success");
-                    //     $('.spinner-border').remove()
-                    //     $('.btnsync').prop("disabled", false);
-                    //     $('.btnsync').text('Sync Now')
-                    // }else{
-
-                    // }
+                    if(response.status){
+                        swal("Success!", response.message, "success");
+                        $('.spinner-border').remove()
+                        $('.btnsync').prop("disabled", false);
+                        $('.btnsync').text('Sync Now')
+                    }else{
+                        $('.spinner-border').remove()
+                        $('.btnsync').prop("disabled", false);
+                        $('.btnsync').text('Sync Now')
+                        swal("Maaf ada yang error");
+                    }
                 })
-
-                // getProgress(tanggal)
             }
 
 
