@@ -259,7 +259,7 @@
             table.draw();
         })
 
-    $(".btnedit").on('click', function () {
+    $(document).on('click',".btnedit", function () {
         var nomor = $(this).data('id');
         var url = "{{ url('/admin/pinjaman/') }}/" + nomor;
         $('#editform').attr("action", url);
