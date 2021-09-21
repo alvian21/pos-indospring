@@ -43,17 +43,17 @@ class PinjamanController extends Controller
         $trpinjaman = Trpinjaman::InfoPinjamanFrontend($trpinjaman);
         $arr = [];
         foreach ($trpinjaman as $key => $value) {
-            $anggota = Msanggota::where('Kode',$value["KodeAnggota"])->first();
-            if($anggota){
-                $anggota = json_decode(json_encode($anggota),true);
-                $arr[] = array_merge($anggota,$value);
-            }else{
+            $anggota = Msanggota::where('Kode', $value["KodeAnggota"])->first();
+            if ($anggota) {
+                $anggota = json_decode(json_encode($anggota), true);
+                $arr[] = array_merge($anggota, $value);
+            } else {
                 $x["Nama"] = "";
-                $arr[] = array_merge($value,$x);
+                $arr[] = array_merge($value, $x);
             }
         }
         $trpinjaman = json_decode(json_encode($arr), FALSE);
-        return view('frontend.dashboard.pinjaman.index', ['trpinjaman' => $trpinjaman]);
+        return view('frontend.dashboard.pinjaman.index', ['trpinjaman' => $trpinjaman, 'level' => $level]);
     }
 
     /**

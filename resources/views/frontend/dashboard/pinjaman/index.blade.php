@@ -34,6 +34,28 @@
                             </tbody>
                         </table>
                         <div class="table-responsive">
+                            @if ($level=1)
+                            <select id="select" class="form-control input-sm selectsearch">
+                                <option>Show All</option>
+                                <option>PENGAJUAN</option>
+                                <option>VERIFIKASI</option>
+                                <option>TDK VERIFIKASI</option>
+                            </select>
+                            @elseif ($level=2)
+                            <select id="select" class="form-control input-sm selectsearch">
+                                <option>Show All</option>
+                                <option>VERIFIKASI</option>
+                                <option>DIPROSES</option>
+                                <option>TDK DIPROSES</option>
+                            </select>
+                            @elseif ($level=3)
+                            <select id="select" class="form-control input-sm selectsearch">
+                                <option>Show All</option>
+                                <option>DIPROSES</option>
+                                <option>DISETUJUI</option>
+                                <option>TDK DISETUJUI</option>
+                            </select>
+                            @endif
                             <table class="table table-striped display nowrap" id="table-1">
                                 <thead>
                                     <tr>
@@ -251,13 +273,52 @@
         $('#max').datepicker('setDate',lastDay);
 
         var table = $("#table-1").DataTable({
-            "scrollX": true,
-         });
-
+                dom: "<'row'<'col-sm-9'l><'col-sm-3'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-9'i><'col-sm-3'p>>",
+                "scrollX": true
+            });
+        $(".dataTables_filter").append(select);
+        $('.dataTables_filter input').unbind().bind('keyup', function() {
+            // var colIndex = document.querySelector('#select').selectedIndex;
+            table.search(this.value).draw();
+        });
          table.draw();
         $('#min, #max').on('change', function () {
             table.draw();
         })
+        function createItem(data) {
+                sessionStorage.setItem("filter", data);
+        }
+
+        if(sessionStorage.getItem("filter")!=null ){
+                var filter = sessionStorage.getItem("filter");
+                $("select option").filter(function() {
+                //may want to use $.trim in here
+                return $(this).text() == filter;
+                }).prop('selected', true);
+                if (filter == "Show All") {
+                    table.columns(10).search("").draw();
+                    table.columns(1).search("").draw();
+
+                }else{
+                    table.columns(1).search("").draw();
+                    table.columns(10).search(filter).draw();
+                }
+            }
+
+        $('.selectsearch').change(function() {
+                if (this.value == "Show All") {
+                    table.columns(10).search("").draw();
+                    table.columns(1).search("").draw();
+                    createItem("Show All");
+                }else{
+                    table.columns(1).search("").draw();
+                    table.columns(10).search(this.value).draw();
+                    createItem(this.value);
+                }
+        });
+
 
     $(document).on('click',".btnedit", function () {
         var nomor = $(this).data('id');
