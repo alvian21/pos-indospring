@@ -32,6 +32,8 @@ class SettingController extends Controller
         $DiskonPersenPenjualanReadOnly = Mssetting::where('Kode', 'DiskonPersenPenjualanReadOnly')->first();
         $cetak = Mssetting::where('Kode', 'Cetak')->first();
         $HitungSimPin = Mssetting::where('Kode', 'HitungSimPin')->first();
+        $FooterPrinter = Mssetting::where('Kode', 'FooterPrinter')->first();
+
         return view(
             "frontend.settings.setting.index",
             [
@@ -49,6 +51,7 @@ class SettingController extends Controller
                 'DiskonPersenPenjualanReadOnly' => $DiskonPersenPenjualanReadOnly,
                 'cetak' => $cetak,
                 'HitungSimPin' => $HitungSimPin,
+                'FooterPrinter' => $FooterPrinter,
             ]
         );
     }
@@ -262,6 +265,13 @@ class SettingController extends Controller
             $retname13->Nilai = $request->get('inputmblHitungSimPinnilai');
             $retname13->Nama = $request->get('inputHitungSimPinnama');
             $retname13->save();
+        }
+
+        $name14 = $request->get('name14');
+        $retname14 = Mssetting::where('Kode', $name14)->first();
+        if ($retname14) {
+            $retname14->Nama = $request->get('inputfooter');
+            $retname14->save();
         }
 
         session()->forget('transaksi_penjualan');
