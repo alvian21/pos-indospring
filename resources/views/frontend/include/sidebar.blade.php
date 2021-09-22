@@ -174,6 +174,10 @@ function customSearch($keyword, $arrayToSearch){
                 <li><a class="nav-link" href="{{route('pos.stockopname.index')}}">Stock Opname</a></li>
                 @elseif ($item == 'POS - Transaksi - Stock Hilang/Rusak')
                 <li><a class="nav-link" href="{{route('pos.stockhilang.index')}}">Stock Hilang / Rusak</a></li>
+                @elseif ($item == 'POS - Transaksi - Retur Pembelian')
+                <li><a class="nav-link" href="{{route('pos.returpembelian.index')}}">Retur Pembelian</a></li>
+                @elseif ($item == 'POS - Transaksi - List Promo')
+                <li><a class="nav-link" href="{{route('pos.listpromo.index')}}">List Promo</a></li>
                 @elseif ($item == 'POS - Transaksi - Kasir')
                 <li><a class="nav-link" href="{{route('pos.kasir.index')}}">Kasir</a></li>
                 @elseif ($item == 'POS - Transaksi - Cek Harga')

@@ -244,8 +244,35 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/update_status', 'PembelianBaruController@updatePost')->name('pembelianbaru.updatestatus');
         });
 
+        Route::group(['prefix' => 'returpembelian'], function () {
+            Route::get('/data_detail', 'ReturPembelianController@getDataDetail')->name('returpembelian.datadetail');
+            Route::get('/data_returpembelian', 'ReturPembelianController@getDataMutasi')->name('returpembelian.transaksi');
+            Route::post('/transaksi_returpembelian', 'ReturPembelianController@store_transaksi')->name('transaksi_returpembelian.store');
+            Route::post('/detail_transaksi_returpembelian', 'ReturPembelianController@store_detail')->name('detail_transaksi_returpembelian.store');
+            Route::get('/data_barang', 'ReturPembelianController@get_data_barang')->name('returpembelian.databarang');
+            Route::get('/save_transaksi_returpembelian', 'ReturPembelianController@save_data_transaksi')->name('returpembelian.save');
+            Route::post('/detail_transaksi_pembelian_update', 'ReturPembelianController@update_detail_barang')->name('detail_transaksi_returpembelian.update');
+            Route::get('/check_session', 'ReturPembelianController@check_session_detail')->name('returpembelian.check');
+            Route::get('/delete_detail/{id}', 'ReturPembelianController@delete_data');
+            Route::get('/update_status', 'ReturPembelianController@updatePost')->name('returpembelian.updatestatus');
+        });
+
+        Route::group(['prefix' => 'listpromo'], function () {
+            Route::get('/data_detail', 'ListPromoController@getDataDetail')->name('listpromo.datadetail');
+            Route::get('/data_listpromo', 'ListPromoController@getDataMutasi')->name('listpromo.transaksi');
+            Route::post('/transaksi_listpromo', 'ListPromoController@store_transaksi')->name('transaksi_listpromo.store');
+            Route::post('/detail_transaksi_listpromo', 'ListPromoController@store_detail')->name('detail_transaksi_listpromo.store');
+            Route::get('/data_barang', 'ListPromoController@get_data_barang')->name('listpromo.databarang');
+            Route::get('/save_transaksi_listpromo', 'ListPromoController@save_data_transaksi')->name('listpromo.save');
+            Route::post('/detail_transaksi_pembelian_update', 'ListPromoController@update_detail_barang')->name('detail_transaksi_listpromo.update');
+            Route::get('/check_session', 'ListPromoController@check_session_detail')->name('listpromo.check');
+            Route::get('/delete_detail/{id}', 'ListPromoController@delete_data');
+            Route::get('/update_status', 'ListPromoController@updatePost')->name('listpromo.updatestatus');
+        });
 
         Route::resource('pembelian', 'PembelianController');
+        Route::resource('returpembelian', 'ReturPembelianController');
+        Route::resource('listpromo', 'ListPromoController');
         Route::resource('pembelianbaru', 'PembelianBaruController');
         Route::resource('penjualan', 'PenjualanController');
         Route::resource('tfantartoko', 'TfAntarTokoController');

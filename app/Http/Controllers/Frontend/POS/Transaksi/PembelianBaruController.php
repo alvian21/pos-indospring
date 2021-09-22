@@ -9,6 +9,7 @@ use App\Trmutasihd;
 use App\Mslokasi;
 use App\Msanggota;
 use App\Mssupplier;
+use App\Trhpp;
 use App\Trmutasidt;
 use App\Trsaldoekop;
 use Illuminate\Support\Facades\Session;
@@ -123,7 +124,7 @@ class PembelianBaruController extends Controller
      */
     public function show($id)
     {
-        $trmutasidt = Trmutasidt::join('msbarang','msbarang.Kode','trmutasidt.KodeBarang')->where('Nomor', $id)->get();
+        $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $id)->get();
         return view("frontend.pos.transaksi.pembelian_baru.show", ['trmutasidt' => $trmutasidt]);
     }
 
@@ -367,66 +368,89 @@ class PembelianBaruController extends Controller
     {
 
         if (session()->has('detail_transaksi_pembelian_baru') && session()->has('transaksi_pembelian_baru')) {
+            DB::beginTransaction();
+            try {
 
-            $day = date('d');
-            $month = date('m');
-            $year = date('Y');
+                $day = date('d');
+                $month = date('m');
+                $year = date('Y');
+                $periode = date('Ym');
+                $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+                if ($trmutasihd) {
+                    $nomor = (int) substr($trmutasihd->Nomor, 14);
+                    if ($nomor != 0) {
+                        if ($nomor >= 9999) {
+                            $nomor = $nomor + 1;
+                            $formatNomor = "BE-" . date('Y-m-d') . "-" . $nomor;
+                        } else {
+                            $nomor = $nomor + 1;
+                            $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                            $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
+                        }
+                    }
+                } else {
+                    $nomor = 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
+                }
+                $trpembelian = session('transaksi_pembelian_baru');
 
-            $trmutasihd = Trmutasihd::where('Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
-            if ($trmutasihd) {
-                $nomor = (int) substr($trmutasihd->Nomor, 14);
-                if ($nomor != 0) {
-                    if ($nomor >= 9999) {
-                        $nomor = $nomor + 1;
-                        $formatNomor = "BE-" . date('Y-m-d') . "-" . $nomor;
-                    } else {
-                        $nomor = $nomor + 1;
-                        $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                        $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
+                $trmutasihd = new Trmutasihd();
+                $trmutasihd->Transaksi = $trpembelian["transaksi"];
+                $trmutasihd->Nomor = $formatNomor;
+                $trmutasihd->Tanggal = date('Y-m-d H:i');
+                $trmutasihd->KodeSuppCust = $trpembelian["kode"];
+                $trmutasihd->DiskonPersen = $trpembelian["diskon_persen"];
+                $trmutasihd->DiskonTunai = $trpembelian["diskon_rp"];
+                $trmutasihd->Pajak = $trpembelian["pajak"];
+                $trmutasihd->LokasiTujuan = $trpembelian["lokasi"];
+                $trmutasihd->TotalHarga = $trpembelian["total_harga"];
+                $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+                $trmutasihd->StatusPesanan = "Dalam Proses";
+                $trmutasihd->TotalHargaSetelahPajak = $trpembelian["total_harga_setelah_pajak"];
+                $trmutasihd->save();
+
+                $datadetail = session('detail_transaksi_pembelian_baru');
+                foreach ($datadetail as $key => $value) {
+                    $trmutasidt = new Trmutasidt();
+                    $trmutasidt->Transaksi = 'PEMBELIAN';
+                    $trmutasidt->Nomor = $formatNomor;
+                    $trmutasidt->Urut = $value["urut"];
+                    $trmutasidt->KodeBarang = $value["barang"];
+                    $trmutasidt->Keterangan = $value["keterangan"];
+                    $trmutasidt->DiskonPersen = $value["diskon_persen"];
+                    $trmutasidt->DiskonTunai = $value["diskon_rp"];
+                    $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
+                    $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                    $trmutasidt->Jumlah = $value['qty'];
+                    $trmutasidt->Harga = $value['harga'];
+                    $trmutasidt->save();
+
+                    //hitung trhpp
+                    $datamutasi = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->select(DB::raw('SUM(Jumlah) as TotalBarang'), DB::raw('SUM(Jumlah * Harga) as TotalHarga'))->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->where('LokasiTujuan', $trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->get();
+                    foreach ($datamutasi as $key => $row) {
+                        $hitung = $row->TotalHarga / $row->TotalBarang;
+                        $trhpp = new Trhpp();
+                        $trhpp->Periode = $periode;
+                        $trhpp->KodeBarang = $value["barang"];
+                        $trhpp->KodeLokasi = $trpembelian["lokasi"];
+                        $trhpp->Hpp = round($hitung,2);
+                        $trhpp->save();
                     }
                 }
-            } else {
-                $nomor = 1;
-                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "BE-" . date('Y-m-d') . "-" . $addzero;
-            }
-            $trpembelian = session('transaksi_pembelian_baru');
-            
-            $trmutasihd = new Trmutasihd();
-            $trmutasihd->Transaksi = $trpembelian["transaksi"];
-            $trmutasihd->Nomor = $formatNomor;
-            $trmutasihd->Tanggal = date('Y-m-d H:i');
-            $trmutasihd->KodeSuppCust = $trpembelian["kode"];
-            $trmutasihd->DiskonPersen = $trpembelian["diskon_persen"];
-            $trmutasihd->DiskonTunai = $trpembelian["diskon_rp"];
-            $trmutasihd->Pajak = $trpembelian["pajak"];
-            $trmutasihd->LokasiTujuan = $trpembelian["lokasi"];
-            $trmutasihd->TotalHarga = $trpembelian["total_harga"];
-            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            $trmutasihd->StatusPesanan = "Dalam Proses";
-            $trmutasihd->TotalHargaSetelahPajak = $trpembelian["total_harga_setelah_pajak"];
-            $trmutasihd->save();
 
-            $datadetail = session('detail_transaksi_pembelian_baru');
-            foreach ($datadetail as $key => $value) {
-                $trmutasidt = new Trmutasidt();
-                $trmutasidt->Transaksi = 'PEMBELIAN';
-                $trmutasidt->Nomor = $formatNomor;
-                $trmutasidt->Urut = $value["urut"];
-                $trmutasidt->KodeBarang = $value["barang"];
-                $trmutasidt->Keterangan = $value["keterangan"];
-                $trmutasidt->DiskonPersen = $value["diskon_persen"];
-                $trmutasidt->DiskonTunai = $value["diskon_rp"];
-                $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
-                $trmutasidt->LastUpdate = date('Y-m-d H:i');
-                $trmutasidt->Jumlah = $value['qty'];
-                $trmutasidt->Harga = $value['harga'];
-                $trmutasidt->save();
+                session()->forget('detail_transaksi_pembelian_baru');
+                session()->forget('transaksi_pembelian_baru');
+                session()->save();
+
+
+                DB::commit();
+                return redirect()->route('pos.pembelianbaru.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
+            } catch (\Exception $th) {
+                //throw $th;
+                DB::rollBack();
+                dd($th);
             }
-            session()->forget('detail_transaksi_pembelian_baru');
-            session()->forget('transaksi_pembelian_baru');
-            session()->save();
-            return redirect()->route('pos.pembelianbaru.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
         } else {
             return redirect()->route('pos.pembelianbaru.index');
         }
@@ -822,7 +846,7 @@ class PembelianBaruController extends Controller
                     $trmutasihd->save();
                 }
 
-                session()->flash('success','Transaksi pembelian berhasil diupdate');
+                session()->flash('success', 'Transaksi pembelian berhasil diupdate');
                 return response()->json([
                     'message' => 'success'
                 ]);

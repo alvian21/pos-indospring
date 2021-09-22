@@ -45,7 +45,7 @@
                                             @endif>Pilih Menu</option>
                                             @forelse ($msmenu as $item)
                                             <option value="{{$item->ItemIndex}}"  @if($datauser['menu']==$item->ItemIndex)
-                                                selected @endif>{{$item->Nama}} | Level {{$item->Lvl}}</option>
+                                                selected @endif>{{$item->Nama}}</option>
                                             @empty
 
                                             @endforelse

@@ -20,7 +20,7 @@ use App\Trsaldototalbelanjatunai;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
-class StockHilangController extends Controller
+class ReturPembelianController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -33,9 +33,9 @@ class StockHilangController extends Controller
         $month = date('m');
         $year = date('Y');
 
-        $trmutasihd = Trmutasihd::where('Transaksi', 'RUSAK HILANG')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
-        $stockhilang = Trmutasihd::where('Transaksi', 'RUSAK HILANG')->get();
-        $mslokasi = Mslokasi::all();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'RETUR PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+        $retur = Trmutasihd::where('Transaksi', 'RETUR PEMBELIAN')->get();
+        $mssupplier = Mssupplier::all();
         $msbarang = Msbarang::all();
 
         $msanggota = DB::table('msanggota')->select('msanggota.Kode', 'traktifasi.NoEkop', 'msanggota.Nama')
@@ -49,24 +49,24 @@ class StockHilangController extends Controller
             if ($nomor != 0) {
                 if ($nomor >= 9999) {
                     $nomor = $nomor + 1;
-                    $formatNomor = "RH-" . date('Y-m-d') . "-" . $nomor;
+                    $formatNomor = "RP-" . date('Y-m-d') . "-" . $nomor;
                 } else {
                     $nomor = $nomor + 1;
                     $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                    $formatNomor = "RH-" . date('Y-m-d') . "-" . $addzero;
+                    $formatNomor = "RP-" . date('Y-m-d') . "-" . $addzero;
                 }
             }
         } else {
             $nomor = 1;
             $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-            $formatNomor = "RH-" . date('Y-m-d') . "-" . $addzero;
+            $formatNomor = "RP-" . date('Y-m-d') . "-" . $addzero;
         }
 
-        if (session()->has('transaksi_stockhilang')) {
-            $trstockhilang = session('transaksi_stockhilang');
+        if (session()->has('transaksi_retur')) {
+            $trretur = session('transaksi_retur');
         } else {
             $data = [
-                'transaksi' => 'RUSAK HILANG',
+                'transaksi' => 'RETUR PEMBELIAN',
                 'nomor' => $formatNomor,
                 'tanggal' => date('d M y H:i'),
                 'diskon_persen' => '0',
@@ -76,16 +76,18 @@ class StockHilangController extends Controller
                 'keterangan' => '',
                 'total_harga_sebelum' => 0,
                 'total_harga' => 0,
-                'total_harga_setelah_pajak' => 0
+                'total_harga_setelah_pajak' => 0,
+                'kode' => ''
             ];
-            $trstockhilang = session(['transaksi_stockhilang' => $data]);
-            $trstockhilang = session('transaksi_stockhilang');
+            $trretur = session(['transaksi_retur' => $data]);
+            $trretur = session('transaksi_retur');
         }
-        return view("frontend.pos.transaksi.stock_hilang.index", [
-            'formatNomor' => $formatNomor, 'stockhilang' => $stockhilang,
-            'mslokasi' => $mslokasi,
+
+        return view("frontend.pos.transaksi.retur_pembelian.index", [
+            'formatNomor' => $formatNomor, 'retur' => $retur,
+            'mssupplier' => $mssupplier,
             'msbarang' => $msbarang,
-            'trstockhilang' => $trstockhilang,
+            'trretur' => $trretur,
             'msanggota' => $msanggota
         ]);
     }
@@ -165,22 +167,22 @@ class StockHilangController extends Controller
                 'tanggal' => 'required',
                 'lokasi' => 'required',
                 'keterangan' => 'nullable',
-
+                'supplier' => 'required'
             ]);
 
             if ($validator->fails()) {
-
                 return response()->json($validator->errors());
             } else {
                 $total = 0;
-                if (session()->has('detail_transaksi_stockhilang')) {
-                    $datadetail = Session::get('detail_transaksi_stockhilang');
+                if (session()->has('detail_transaksi_retur')) {
+                    $datadetail = Session::get('detail_transaksi_retur');
                     foreach ($datadetail as $key => $value) {
                         $total = $total + $value["subtotal"];
                     }
                 }
                 $data = [
                     'transaksi' => $request->get('transaksi'),
+                    'kode' => $request->get('supplier'),
                     'nomor' => $request->get('nomor'),
                     'tanggal' => $request->get('tanggal'),
                     'pajak' => 0,
@@ -191,7 +193,7 @@ class StockHilangController extends Controller
                     'total_harga_setelah_pajak' => $total
                 ];
 
-                session(['transaksi_stockhilang' => $data]);
+                session(['transaksi_retur' => $data]);
                 session()->save();
 
                 return response()->json($data);
@@ -205,7 +207,7 @@ class StockHilangController extends Controller
             $msbarang = Msbarang::where('Kode', $request->kode_barang)->first();
             $trsaldobarang = Trsaldobarang::where('KodeBarang', $request->kode_barang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
             $saldo = 0;
-            if($trsaldobarang){
+            if ($trsaldobarang) {
                 $saldo = $trsaldobarang->Saldo;
             }
 
@@ -236,14 +238,14 @@ class StockHilangController extends Controller
 
             //cek sisa barang
 
-            $trstockhilang = Session::get('transaksi_stockhilang');
+            $trretur = Session::get('transaksi_retur');
             $total = 0;
             $harga = $request->get('harga');
             $harga = str_replace('.', '', $harga);
             $subtotal = $request->get('subtotal');
             $subtotal = str_replace('.', '', $subtotal);
-            if (Session::has('detail_transaksi_stockhilang')) {
-                $datadetail = Session::get('detail_transaksi_stockhilang');
+            if (Session::has('detail_transaksi_retur')) {
+                $datadetail = Session::get('detail_transaksi_retur');
                 $no = 0;
                 foreach ($datadetail as $key => $value) {
                     $total = $total + $value["subtotal"];
@@ -261,8 +263,8 @@ class StockHilangController extends Controller
                 ];
                 $total = $total + $subtotal;
                 array_push($arr, $data);
-                Session::forget('detail_transaksi_stockhilang');
-                Session::put('detail_transaksi_stockhilang', $arr);
+                Session::forget('detail_transaksi_retur');
+                Session::put('detail_transaksi_retur', $arr);
                 Session::save();
             } else {
                 $data = [
@@ -276,24 +278,25 @@ class StockHilangController extends Controller
                 ];
                 $total = $total + $subtotal;
                 array_push($arr, $data);
-                Session::forget('detail_transaksi_stockhilang');
-                Session::put('detail_transaksi_stockhilang', $arr);
+                Session::forget('detail_transaksi_retur');
+                Session::put('detail_transaksi_retur', $arr);
                 Session::save();
             }
 
             $data = [
-                'transaksi' => $trstockhilang['transaksi'],
-                'nomor' => $trstockhilang['nomor'],
-                'tanggal' => $trstockhilang['tanggal'],
-                'pajak' => $trstockhilang['pajak'],
-                'lokasi' => $trstockhilang['lokasi'],
-                'keterangan' => $trstockhilang['keterangan'],
+                'transaksi' => $trretur['transaksi'],
+                'kode' => $trretur['kode'],
+                'nomor' => $trretur['nomor'],
+                'tanggal' => $trretur['tanggal'],
+                'pajak' => $trretur['pajak'],
+                'lokasi' => $trretur['lokasi'],
+                'keterangan' => $trretur['keterangan'],
                 'total_harga_sebelum' => $total,
                 'total_harga' => $total,
                 'total_harga_setelah_pajak' => $total
             ];
-            Session::forget('transaksi_stockhilang');
-            Session::put('transaksi_stockhilang', $data);
+            Session::forget('transaksi_retur');
+            Session::put('transaksi_retur', $data);
             Session::save();
 
 
@@ -309,89 +312,93 @@ class StockHilangController extends Controller
     public function save_data_transaksi(Request $request)
     {
 
-        if (session()->has('detail_transaksi_stockhilang') && session()->has('transaksi_stockhilang')) {
-
-            $day = date('d');
-            $month = date('m');
-            $year = date('Y');
-            $trmutasihd = Trmutasihd::where('Transaksi', 'RUSAK HILANG')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
-            if ($trmutasihd) {
-                $nomor = (int) substr($trmutasihd->Nomor, 14);
-                if ($nomor != 0) {
-                    if ($nomor >= 9999) {
-                        $nomor = $nomor + 1;
-                        $formatNomor = "RH-" . date('Y-m-d') . "-" . $nomor;
-                    } else {
-                        $nomor = $nomor + 1;
-                        $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                        $formatNomor = "RH-" . date('Y-m-d') . "-" . $addzero;
+        if (session()->has('detail_transaksi_retur') && session()->has('transaksi_retur')) {
+            DB::beginTransaction();
+            try {
+                $day = date('d');
+                $month = date('m');
+                $year = date('Y');
+                $trmutasihd = Trmutasihd::where('Transaksi', 'RETUR PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->whereDay('Tanggal', $day)->OrderBy('Tanggal', 'DESC')->first();
+                if ($trmutasihd) {
+                    $nomor = (int) substr($trmutasihd->Nomor, 14);
+                    if ($nomor != 0) {
+                        if ($nomor >= 9999) {
+                            $nomor = $nomor + 1;
+                            $formatNomor = "RP-" . date('Y-m-d') . "-" . $nomor;
+                        } else {
+                            $nomor = $nomor + 1;
+                            $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                            $formatNomor = "RP-" . date('Y-m-d') . "-" . $addzero;
+                        }
                     }
-                }
-            } else {
-                $nomor = 1;
-                $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
-                $formatNomor = "RH-" . date('Y-m-d') . "-" . $addzero;
-            }
-
-            $trstockhilang = session('transaksi_stockhilang');
-            $trmutasihd = new Trmutasihd();
-            $trmutasihd->Transaksi = 'RUSAK HILANG';
-            $trmutasihd->Nomor = $formatNomor;
-            $trmutasihd->Tanggal = date('Y-m-d H:i');
-            $trmutasihd->KodeSuppCust = null;
-            $trmutasihd->Pajak = 0;
-            $trmutasihd->LokasiAwal = $trstockhilang["lokasi"];
-            $trmutasihd->TotalHarga = $trstockhilang["total_harga"];
-            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            $trmutasihd->PembayaranTunai = 0;
-            $trmutasihd->PembayaranEkop = 0;
-            $trmutasihd->StatusPesanan = "";
-            $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
-            $trmutasihd->TotalHargaSetelahPajak = $trstockhilang["total_harga_setelah_pajak"];
-            $trmutasihd->save();
-
-
-
-            $datadetail = session('detail_transaksi_stockhilang');
-            foreach ($datadetail as $key => $value) {
-                $trmutasidt = new Trmutasidt();
-                $trmutasidt->Transaksi = 'RUSAK HILANG';
-                $trmutasidt->Nomor = $formatNomor;
-                $trmutasidt->Urut = $value["urut"];
-                $trmutasidt->KodeBarang = $value["barang"];
-                $trmutasidt->Keterangan = $value["keterangan"];
-                $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
-                $trmutasidt->LastUpdate = date('Y-m-d H:i');
-                $trmutasidt->Jumlah = $value['qty'];
-                $trmutasidt->Harga = $value['harga'];
-                $trmutasidt->save();
-
-                $ceksaldo = Trsaldobarang::where("KodeBarang", $value["barang"])->OrderBy("Tanggal", "DESC")->first();
-
-                $trsaldobarang = new Trsaldobarang();
-                $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-                $trsaldobarang->KodeBarang = $value["barang"];
-                $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
-                if ($ceksaldo) {
-                    $trsaldobarang->Saldo = $ceksaldo->Saldo - $value['qty'];
                 } else {
-                    $trsaldobarang->Saldo = $value['qty'];
+                    $nomor = 1;
+                    $addzero = str_pad($nomor, 4, '0', STR_PAD_LEFT);
+                    $formatNomor = "RP-" . date('Y-m-d') . "-" . $addzero;
                 }
-                $trsaldobarang->save();
+
+                $trretur = session('transaksi_retur');
+                $trmutasihd = new Trmutasihd();
+                $trmutasihd->Transaksi = 'RETUR PEMBELIAN';
+                $trmutasihd->Nomor = $formatNomor;
+                $trmutasihd->Tanggal = date('Y-m-d H:i');
+                $trmutasihd->KodeSuppCust =  $trretur["kode"];
+                $trmutasihd->Pajak = 0;
+                $trmutasihd->LokasiAwal = $trretur["lokasi"];
+                $trmutasihd->TotalHarga = $trretur["total_harga"];
+                $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+                $trmutasihd->PembayaranTunai = 0;
+                $trmutasihd->PembayaranEkop = 0;
+                $trmutasihd->StatusPesanan = "";
+                $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
+                $trmutasihd->TotalHargaSetelahPajak = $trretur["total_harga_setelah_pajak"];
+                $trmutasihd->save();
+
+                $datadetail = session('detail_transaksi_retur');
+                foreach ($datadetail as $key => $value) {
+                    $trmutasidt = new Trmutasidt();
+                    $trmutasidt->Transaksi = 'RETUR PEMBELIAN';
+                    $trmutasidt->Nomor = $formatNomor;
+                    $trmutasidt->Urut = $value["urut"];
+                    $trmutasidt->KodeBarang = $value["barang"];
+                    $trmutasidt->Keterangan = $value["keterangan"];
+                    $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
+                    $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                    $trmutasidt->Jumlah = $value['qty'];
+                    $trmutasidt->Harga = $value['harga'];
+                    $trmutasidt->save();
+
+                    $ceksaldo = Trsaldobarang::where("KodeBarang", $value["barang"])->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy("Tanggal", "DESC")->first();
+
+                    $trsaldobarang = new Trsaldobarang();
+                    $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                    $trsaldobarang->KodeBarang = $value["barang"];
+                    $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                    if ($ceksaldo) {
+                        $trsaldobarang->Saldo = $ceksaldo->Saldo - $value['qty'];
+                    } else {
+                        $trsaldobarang->Saldo = $value['qty'];
+                    }
+                    $trsaldobarang->save();
+                }
+                session()->forget('detail_transaksi_retur');
+                session()->forget('transaksi_retur');
+                session()->save();
+                DB::commit();
+                return redirect()->route('pos.returpembelian.index')->with("success", "Detail dan data transaksi retur pembelian berhasil disimpan");
+            } catch (\Exception $th) {
+                //throw $th;
+                DB::rollBack();
             }
-            session()->forget('detail_transaksi_stockhilang');
-            session()->forget('transaksi_stockhilang');
-            session()->save();
-            return redirect()->route('pos.stockhilang.index')->with("success", "Detail dan data transaksi stockhilang berhasil disimpan");
         } else {
-            return redirect()->route('pos.stockhilang.index');
+            return redirect()->route('pos.returpembelian.index');
         }
     }
 
     public function getDataDetail(Request $request)
     {
         if ($request->ajax()) {
-            $datadetail = session('detail_transaksi_stockhilang');
+            $datadetail = session('detail_transaksi_retur');
             $data2 = array();
             if ($datadetail != null) {
                 $count = count($datadetail);
@@ -422,13 +429,13 @@ class StockHilangController extends Controller
     }
 
 
-    public function getDatastockhilang(Request $request)
+    public function getDatareturpembelian(Request $request)
     {
         if ($request->ajax()) {
             $datapembelian = [];
             $data2 = array();
-            if (session()->has('transaksi_stockhilang')) {
-                $pembelian = session('transaksi_stockhilang');
+            if (session()->has('transaksi_retur')) {
+                $pembelian = session('transaksi_retur');
                 array_push($datapembelian, $pembelian);
                 $count = count($datapembelian);
                 $no = 1;
@@ -478,14 +485,14 @@ class StockHilangController extends Controller
             return response()->json($validator->errors());
         } else {
             $arr = [];
-            $trstockhilang = Session::get('transaksi_stockhilang');
+            $trretur = Session::get('transaksi_retur');
             $total = 0;
             $harga = $request->get('harga');
             $harga = str_replace('.', '', $harga);
             $subtotal = $request->get('subtotal');
             $subtotal = str_replace('.', '', $subtotal);
-            if (Session::has('detail_transaksi_stockhilang')) {
-                $datadetail = Session::get('detail_transaksi_stockhilang');
+            if (Session::has('detail_transaksi_retur')) {
+                $datadetail = Session::get('detail_transaksi_retur');
                 foreach ($datadetail as $key => $value) {
                     if ($value["urut"] == $request->get('id_urut')) {
                         $value["urut"] = $value["urut"];
@@ -502,24 +509,24 @@ class StockHilangController extends Controller
                         array_push($arr, $value);
                     }
                 }
-                Session::forget('detail_transaksi_stockhilang');
-                Session::put('detail_transaksi_stockhilang', $arr);
+                Session::forget('detail_transaksi_retur');
+                Session::put('detail_transaksi_retur', $arr);
                 Session::save();
             }
 
             $data = [
-                'transaksi' => $trstockhilang['transaksi'],
-                'nomor' => $trstockhilang['nomor'],
-                'tanggal' => $trstockhilang['tanggal'],
-                'pajak' => $trstockhilang['pajak'],
-                'lokasi' => $trstockhilang['lokasi'],
-                'keterangan' => $trstockhilang['keterangan'],
+                'transaksi' => $trretur['transaksi'],
+                'nomor' => $trretur['nomor'],
+                'tanggal' => $trretur['tanggal'],
+                'pajak' => $trretur['pajak'],
+                'lokasi' => $trretur['lokasi'],
+                'keterangan' => $trretur['keterangan'],
                 'total_harga_sebelum' => $total,
                 'total_harga' => $total,
                 'total_harga_setelah_pajak' => $total
             ];
-            Session::forget('transaksi_stockhilang');
-            Session::put('transaksi_stockhilang', $data);
+            Session::forget('transaksi_retur');
+            Session::put('transaksi_retur', $data);
             Session::save();
             return response()->json([
                 'message' => 'saved',
@@ -533,7 +540,7 @@ class StockHilangController extends Controller
     {
         if ($request->ajax()) {
             $message = "";
-            if (Session::has('detail_transaksi_stockhilang')) {
+            if (Session::has('detail_transaksi_retur')) {
                 $message = "true";
             } else {
                 $message = "false";
@@ -547,11 +554,11 @@ class StockHilangController extends Controller
 
     public function delete_data($id)
     {
-        if (session()->has('detail_transaksi_stockhilang')) {
-            $datadetail = Session::get('detail_transaksi_stockhilang');
+        if (session()->has('detail_transaksi_retur')) {
+            $datadetail = Session::get('detail_transaksi_retur');
             $arr = [];
             $total  = 0;
-            $trstockhilang = Session::get('transaksi_stockhilang');
+            $trretur = Session::get('transaksi_retur');
             foreach ($datadetail as $key => $value) {
                 if ($value["urut"] != $id) {
                     $total = $total + $value["subtotal"];
@@ -560,27 +567,27 @@ class StockHilangController extends Controller
             }
 
             if ($total == 0) {
-                Session::forget('detail_transaksi_stockhilang');
+                Session::forget('detail_transaksi_retur');
             } else {
-                Session::put('detail_transaksi_stockhilang', $arr);
+                Session::put('detail_transaksi_retur', $arr);
                 Session::save();
             }
 
             $data = [
-                'transaksi' => $trstockhilang['transaksi'],
-                'nomor' => $trstockhilang['nomor'],
-                'tanggal' => $trstockhilang['tanggal'],
-                'pajak' => $trstockhilang['pajak'],
-                'lokasi' => $trstockhilang['lokasi'],
-                'keterangan' => $trstockhilang['keterangan'],
+                'transaksi' => $trretur['transaksi'],
+                'nomor' => $trretur['nomor'],
+                'tanggal' => $trretur['tanggal'],
+                'pajak' => $trretur['pajak'],
+                'lokasi' => $trretur['lokasi'],
+                'keterangan' => $trretur['keterangan'],
                 'total_harga_sebelum' => $total,
                 'total_harga' => $total,
                 'total_harga_setelah_pajak' => $total
             ];
-            Session::forget('transaksi_stockhilang');
-            Session::put('transaksi_stockhilang', $data);
+            Session::forget('transaksi_retur');
+            Session::put('transaksi_retur', $data);
             Session::save();
-            return redirect()->route('pos.stockhilang.index')->with("success", "Detail barang berhasil dihapus");
+            return redirect()->route('pos.returpembelian.index')->with("success", "Detail barang berhasil dihapus");
         }
     }
 
