@@ -33,6 +33,7 @@ class SettingController extends Controller
         $HitungSimPin = Mssetting::where('Kode', 'HitungSimPin')->first();
         $cetak = Mssetting::where('Kode', 'Cetak')->first();
         $printer = Mssetting::where('Kode', 'MasterPrinter')->get();
+        $FooterPrinter = Mssetting::where('Kode', 'FooterPrinter')->first();
         return view(
             "frontend.settings.setting.index",
             [
@@ -51,6 +52,7 @@ class SettingController extends Controller
                 'cetak' => $cetak,
                 'HitungSimPin' => $HitungSimPin,
                 'printer' => $printer,
+                'FooterPrinter' => $FooterPrinter,
             ]
         );
     }
@@ -245,6 +247,13 @@ class SettingController extends Controller
             }
 
             $retname12->save();
+        }
+
+        $name14 = $request->get('name14');
+        $retname14 = Mssetting::where('Kode', $name14)->first();
+        if ($retname14) {
+            $retname14->Nama = $request->get('inputfooter');
+            $retname14->save();
         }
 
         $printer = Mssetting::where('Kode', 'MasterPrinter')->where('id', $request->get('jenis_printer'))->first();

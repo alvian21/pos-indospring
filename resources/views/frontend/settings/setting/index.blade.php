@@ -204,7 +204,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="card text-white bg-dark rounded" style="height: 14rem">
+                                    <div class="card text-white bg-dark rounded" style="height: 18rem">
                                         <div class="card-body">
                                             <div class="row">
                                                 <input type="hidden" name="name13" value="{{$HitungSimPin->Kode}}">
@@ -245,7 +245,7 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group text-center">
                                                         <div class="custom-control custom-switch custom-switch-md">
-                                                            <input type="checkbox" 
+                                                            <input type="checkbox"
                                                                 class="custom-control-input cetak" name="ckcetak"
                                                                 id="cetak" @if($cetak->aktif == 1 ) checked @endif>
                                                             <label class="custom-control-label" for="cetak"></label>
@@ -271,7 +271,15 @@
 
 
                                             </div>
-
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="hidden" name="name14" value="{{$FooterPrinter->Kode}}">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control text-center"
+                                                            value="{{$FooterPrinter->Nama}}"  name="inputfooter">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
