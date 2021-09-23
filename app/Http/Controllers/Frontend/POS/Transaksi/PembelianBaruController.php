@@ -430,12 +430,21 @@ class PembelianBaruController extends Controller
                     $datamutasi = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->select(DB::raw('SUM(Jumlah) as TotalBarang'), DB::raw('SUM(Jumlah * Harga) as TotalHarga'))->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->where('LokasiTujuan', $trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->get();
                     foreach ($datamutasi as $key => $row) {
                         $hitung = $row->TotalHarga / $row->TotalBarang;
-                        $trhpp = new Trhpp();
-                        $trhpp->Periode = $periode;
-                        $trhpp->KodeBarang = $value["barang"];
-                        $trhpp->KodeLokasi = $trpembelian["lokasi"];
-                        $trhpp->Hpp = round($hitung,2);
-                        $trhpp->save();
+                        $trhpp =Trhpp::where('Periode',$periode)->where('KodeLokasi',$trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->first();
+                        if($trhpp){
+                            $trhpp->Periode = $periode;
+                            $trhpp->KodeBarang = $value["barang"];
+                            $trhpp->KodeLokasi = $trpembelian["lokasi"];
+                            $trhpp->Hpp = round($hitung);
+                            $trhpp->save();
+                        }else{
+                            $trhpp = new Trhpp();
+                            $trhpp->Periode = $periode;
+                            $trhpp->KodeBarang = $value["barang"];
+                            $trhpp->KodeLokasi = $trpembelian["lokasi"];
+                            $trhpp->Hpp = round($hitung);
+                            $trhpp->save();
+                        }
                     }
                 }
 

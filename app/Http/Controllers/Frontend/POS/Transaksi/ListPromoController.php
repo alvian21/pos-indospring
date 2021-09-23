@@ -29,6 +29,17 @@ class ListPromoController extends Controller
      */
     public function index()
     {
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PROMO')->get();
+        return view("frontend.pos.transaksi.list_promo.index", ['trmutasihd' => $trmutasihd]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
         $day = date('d');
         $month = date('m');
         $year = date('Y');
@@ -83,23 +94,13 @@ class ListPromoController extends Controller
             $trpromo = session(['transaksi_promo' => $data]);
             $trpromo = session('transaksi_promo');
         }
-        return view("frontend.pos.transaksi.list_promo.index", [
+        return view("frontend.pos.transaksi.list_promo.create", [
             'formatNomor' => $formatNomor, 'promo' => $promo,
             'mslokasi' => $mslokasi,
             'msbarang' => $msbarang,
             'trpromo' => $trpromo,
             'msanggota' => $msanggota
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -121,7 +122,8 @@ class ListPromoController extends Controller
      */
     public function show($id)
     {
-        //
+        $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $id)->get();
+        return view("frontend.pos.transaksi.list_promo.show", ['trmutasidt' => $trmutasidt]);
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Trmutasihd;
 use App\Mslokasi;
 use App\Msanggota;
 use App\Mssupplier;
+use App\Trhpp;
 use App\Trmutasidt;
 use App\Trsaldoekop;
 use Illuminate\Support\Facades\Session;
@@ -28,6 +29,17 @@ class ReturPembelianController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+    {
+        $trmutasihd = Trmutasihd::where('Transaksi', 'RETUR PEMBELIAN')->get();
+        return view("frontend.pos.transaksi.retur_pembelian.index", ['trmutasihd' => $trmutasihd]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
         $day = date('d');
         $month = date('m');
@@ -83,23 +95,13 @@ class ReturPembelianController extends Controller
             $trretur = session('transaksi_retur');
         }
 
-        return view("frontend.pos.transaksi.retur_pembelian.index", [
+        return view("frontend.pos.transaksi.retur_pembelian.create", [
             'formatNomor' => $formatNomor, 'retur' => $retur,
             'mssupplier' => $mssupplier,
             'msbarang' => $msbarang,
             'trretur' => $trretur,
             'msanggota' => $msanggota
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -121,7 +123,8 @@ class ReturPembelianController extends Controller
      */
     public function show($id)
     {
-        //
+        $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $id)->get();
+        return view("frontend.pos.transaksi.retur_pembelian.show", ['trmutasidt' => $trmutasidt]);
     }
 
     /**
@@ -210,10 +213,13 @@ class ReturPembelianController extends Controller
             if ($trsaldobarang) {
                 $saldo = $trsaldobarang->Saldo;
             }
+            $periode = date('Ym');
+            $lokasi = auth()->user()->KodeLokasi;
+            $trhpp = Trhpp::where('Periode', $periode)->where('KodeLokasi', $lokasi)->where('KodeBarang', $request->kode_barang)->first();
 
             $data = [
                 'Nama' => $msbarang->Nama,
-                'HargaJual' => $msbarang->HargaJual,
+                'HargaJual' => $trhpp->Hpp,
                 'Saldo' => $saldo
             ];
             return response()->json($data);
