@@ -25,7 +25,7 @@
                                 </tr>
                                 <tr class=" input-daterange">
                                     <td>Minimum date:</td>
-                                    <td> <input type="text" id="min" class="form-control" data-date-format="d M yyyy" >
+                                    <td> <input type="text" id="min" class="form-control" data-date-format="d M yyyy">
                                     </td>
                                     <td>Maximum date:</td>
                                     <td> <input type="text" id="max" class="form-control" data-date-format="d M yyyy">
@@ -34,21 +34,21 @@
                             </tbody>
                         </table>
                         <div class="table-responsive">
-                            @if ($level=1)
+                            @if ($level==1)
                             <select id="select" class="form-control input-sm selectsearch">
                                 <option>Show All</option>
                                 <option>PENGAJUAN</option>
                                 <option>VERIFIKASI</option>
                                 <option>TDK VERIFIKASI</option>
                             </select>
-                            @elseif ($level=2)
+                            @elseif ($level==2)
                             <select id="select" class="form-control input-sm selectsearch">
                                 <option>Show All</option>
                                 <option>VERIFIKASI</option>
                                 <option>DIPROSES</option>
                                 <option>TDK DIPROSES</option>
                             </select>
-                            @elseif ($level=3)
+                            @elseif ($level==3)
                             <select id="select" class="form-control input-sm selectsearch">
                                 <option>Show All</option>
                                 <option>DIPROSES</option>
@@ -60,6 +60,7 @@
                                 <thead>
                                     <tr>
                                         <th rowspan="2">No</th>
+                                        <th rowspan="2">Aksi</th>
                                         <th rowspan="2">Nomor</th>
                                         <th rowspan="2">Kode Anggota</th>
                                         <th rowspan="2">Nama</th>
@@ -73,10 +74,7 @@
                                         <th colspan="3" class="text-center">Petugas</th>
                                         <th colspan="3" class="text-center">Diketahui</th>
                                         <th colspan="3" class="text-center">Disetujui</th>
-                                        {{-- <th rowspan="2">Kartu Jamsostek</th>
-                                        <th rowspan="2">Saldo Jamsostek</th>
-                                        <th rowspan="2">Jaminan Tambahan</th> --}}
-                                        <th rowspan="2">Aksi</th>
+
                                     </tr>
                                     <tr>
                                         <th>Petugas Nama</th>
@@ -94,13 +92,17 @@
                                     @foreach ($trpinjaman as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td><button type="button" data-id="{{ $item->Nomor }}"
+                                                class="btn btn-info btnedit">Edit</button>
+                                        </td>
                                         <td>{{ $item->Nomor }}</td>
                                         <td>{{ $item->KodeAnggota }}</td>
                                         <td>{{ $item->Nama }}</td>
                                         <td>{{ $item->SubDept }}</td>
-                                        <td>{{ str_replace(',','.', number_format($item->PengajuanPinjaman)) }}</td>
-                                        <td>{{ str_replace(',','.', number_format($item->CicilanTotal)) }}</td>
-                                        <td>{{ $item->BerapaKaliBayar }}</td>
+                                        <td style="text-align:right">
+                                            {{ str_replace(',','.', number_format($item->PengajuanPinjaman)) }}</td>
+                                        <td style="text-align:right">{{ str_replace(',','.', number_format($item->CicilanTotal)) }}</td>
+                                        <td style="text-align:right">{{ $item->BerapaKaliBayar }}</td>
                                         <td>{{ $item->Alasan }}</td>
                                         <td>{{ date('d M y',strtotime( $item->TanggalPengajuan)) }}</td>
                                         <td>{{ $item->ApprovalStatus }}</td>
@@ -115,35 +117,6 @@
                                         <td>{{ $item->ApprovalNama }}</td>
                                         <td>{{ $item->ApprovalNote }}</td>
                                         <td>{{ ($item->ApprovalDate !=null && date('Y',strtotime( $item->ApprovalDate)) != '1970') ? date('d M y',strtotime( $item->ApprovalDate)) : '' }}
-                                        </td>
-                                        {{-- <td> <button data-id="{{$item->Nomor}}"
-                                                data-image="{{asset('storage/images/jaminan1/'.$item->Jaminan1)}}"
-                                                data-cek="@if($item->Jaminan1!=null) {{$item->Jaminan1}} @endif"
-                                                data-level="{{$item->level}}" data-title="Kartu Jamsostek"
-                                                class="btn btn-primary btnkartu">@if($item->Jaminan1!=null) Kartu
-                                                Jamsostek @else Belum
-                                                di upload @endif</button>
-                                        </td>
-                                        <td> <button data-id="{{$item->Nomor}}"
-                                                data-image="{{asset('storage/images/jaminan2/'.$item->Jaminan2)}}"
-                                                data-cek="@if($item->Jaminan2!=null) {{$item->Jaminan2}} @endif"
-                                                data-level="{{$item->level}}" data-title="Saldo Jamsostek"
-                                                class="btn btn-primary btnsaldo">@if($item->Jaminan2!=null) Saldo
-                                                Jamsostek @else Belum
-                                                di upload @endif</button>
-                                        </td>
-                                        <td><button data-id="{{$item->Nomor}}"
-                                                data-image="{{asset('storage/images/jaminan_resmi/'.$item->JaminanResmi)}}"
-                                                data-cek="@if($item->JaminanResmi!=null) {{$item->JaminanResmi}} @endif"
-                                                data-level="{{$item->level}}" data-title="Jaminan Tambahan"
-                                                class="btn btn-primary btntambahan">@if($item->JaminanResmi!=null)
-                                                Jaminan Tambahan @else
-                                                Belum
-                                                di upload @endif</button></td> --}}
-                                        <td><button type="button" data-id="{{ $item->Nomor }}"
-                                                class="btn btn-info btnedit">Edit</button>
-                                            {{-- <button type="button" data-id="{{ $item->Nomor }}" class=" btn
-                                            btn-danger btndelete">Delete</button> --}}
                                         </td>
 
                                     </tr>
@@ -206,23 +179,23 @@
                 </button>
             </div>
             <form enctype="multipart/form-data" method="POST" action="{{route('update_pinjaman')}}">
-                @csrf
-                {{method_field("PUT")}}
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="id">
-                    <img alt="image" class="img-thumbnail" id="previewimage">
-                    <div class="form-group mt-3 formimage">
-                        <label for="image">Upload Image</label>
-                        <input type="file" class="form-control" id="image" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btnupdateimage">Save changes</button>
-                </div>
-            </form>
-        </div>
+@csrf
+{{method_field("PUT")}}
+<div class="modal-body">
+    <input type="hidden" name="id" id="id">
+    <img alt="image" class="img-thumbnail" id="previewimage">
+    <div class="form-group mt-3 formimage">
+        <label for="image">Upload Image</label>
+        <input type="file" class="form-control" id="image" required>
     </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary btnupdateimage">Save changes</button>
+</div>
+</form>
+</div>
+</div>
 </div> --}}
 @endsection
 @section('scripts')
@@ -247,7 +220,7 @@
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
-        var parseDate = moment(data[9]).format('YYYY/MM/DD')
+        var parseDate = moment(data[10]).format('YYYY/MM/DD')
         var date = new Date( parseDate );
         if (
             ( min == "" || max == "" )
