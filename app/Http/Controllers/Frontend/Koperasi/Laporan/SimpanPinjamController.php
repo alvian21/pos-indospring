@@ -63,7 +63,6 @@ class SimpanPinjamController extends Controller
             }else{
                 $data = Trpinjaman::join('msanggota', 'trpinjaman.KodeAnggota', 'msanggota.Kode')->whereMonth('TanggalPengajuan', $bulan)->whereYear('TanggalPengajuan', $tahun)->whereNotNull('Pinjaman')->where('ApprovalStatus',$status)->orderBy('Pinjaman','DESC')->get();
             }
-
             if ($cetak == 'pdf') {
                 // $group = Trtransaksiperiode::select('SubDept')->join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('SubDept')->get();
 
@@ -87,12 +86,14 @@ class SimpanPinjamController extends Controller
                 // return $pdf->stream('laporan-tagihankredit-pdf', array('Attachment' => 0));
             }else{
 
-                if(!empty($data)){
+                if(isset($data[0])){
                     $data = json_decode(json_encode($data),true);
                     $data = collect($data);
                     $lastdate = date("Y-m-t", strtotime($periode));
 
                     return Excel::download(new SimpanPinjam($data, $periode,$lastdate), 'laporan-simpan-pinjam.xlsx');
+                }else{
+                    return redirect()->back()->withErrors(['maaf data pada periode '.$periode.' masih kosong']);
                 }
 
             }

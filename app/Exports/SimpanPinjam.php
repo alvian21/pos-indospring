@@ -47,7 +47,10 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
             $data['CicilanTotal'],
             $data['CicilanBunga'],
             $data['CicilanBunga'] *  $data['BerapaKaliBayar'],
-            $lastdate
+            $lastdate,
+            $data['NoRekening'],
+            $data['NamaBank'],
+            $data['NamaRekening']
         ];
     }
 
@@ -86,11 +89,14 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
                 $event->sheet->setCellValue('G3', 'Jasa per bln');
                 $event->sheet->setCellValue('H3', 'Total Pendapatan');
                 $event->sheet->setCellValue('I3', 'POT');
+                $event->sheet->setCellValue('J3', 'No Rekening');
+                $event->sheet->setCellValue('K3', 'Nama Bank');
+                $event->sheet->setCellValue('L3', 'Nama Rekening');
 
 
                 // assign cell styles
-                $event->sheet->getStyle('A:I')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('A:I')->getAlignment()->setVertical('center');
+                $event->sheet->getStyle('A:L')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:L')->getAlignment()->setVertical('center');
                 $event->sheet->getColumnDimension('A')->setAutoSize(true);
                 $event->sheet->getColumnDimension('B')->setAutoSize(true);
                 $event->sheet->getColumnDimension('C')->setAutoSize(true);
@@ -100,6 +106,9 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
                 $event->sheet->getColumnDimension('G')->setAutoSize(true);
                 $event->sheet->getColumnDimension('H')->setAutoSize(true);
                 $event->sheet->getColumnDimension('I')->setAutoSize(true);
+                $event->sheet->getColumnDimension('J')->setAutoSize(true);
+                $event->sheet->getColumnDimension('K')->setAutoSize(true);
+                $event->sheet->getColumnDimension('L')->setAutoSize(true);
 
                 $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },
