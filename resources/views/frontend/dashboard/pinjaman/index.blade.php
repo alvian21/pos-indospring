@@ -273,7 +273,7 @@
 
                 }else{
                     table.columns(1).search("").draw();
-                    table.columns(10).search(filter).draw();
+                    table.columns(10).search("(^"+filter+"$)",true,false).draw();
                 }
             }
 
@@ -284,7 +284,7 @@
                     createItem("Show All");
                 }else{
                     table.columns(1).search("").draw();
-                    table.columns(10).search(this.value).draw();
+                    table.columns(10).search("(^"+this.value+"$)",true,false).draw();
                     createItem(this.value);
                 }
         });
