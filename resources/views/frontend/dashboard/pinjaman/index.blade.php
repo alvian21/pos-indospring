@@ -59,7 +59,6 @@
                             <table class="table table-striped display nowrap" id="table-1">
                                 <thead>
                                     <tr>
-                                        <th rowspan="2">No</th>
                                         <th rowspan="2">Aksi</th>
                                         <th rowspan="2">Nomor</th>
                                         <th rowspan="2">Kode Anggota</th>
@@ -74,7 +73,6 @@
                                         <th colspan="3" class="text-center">Petugas</th>
                                         <th colspan="3" class="text-center">Diketahui</th>
                                         <th colspan="3" class="text-center">Disetujui</th>
-
                                     </tr>
                                     <tr>
                                         <th>Petugas Nama</th>
@@ -91,7 +89,6 @@
                                 <tbody>
                                     @foreach ($trpinjaman as $item)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
                                         <td><button type="button" data-id="{{ $item->Nomor }}"
                                                 class="btn btn-info btnedit">Edit</button>
                                         </td>
@@ -220,7 +217,7 @@
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
-        var parseDate = moment(data[10]).format('YYYY/MM/DD')
+        var parseDate = moment(data[9]).format('YYYY/MM/DD')
         var date = new Date( parseDate );
         if (
             ( min == "" || max == "" )
