@@ -18,16 +18,24 @@
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
-                        <form method="POST" action="#" target="_blank">
+                        <form method="POST" action="{{route('koperasi.simpan-pinjam.store')}}" target="_blank">
                             @csrf
                             <div class="form-group">
                                 <label for="periode">Periode</label>
                                 <input type="month" class="form-control" id="periode" required name="periode">
                             </div>
                             <div class="form-group">
+                                <label for="status">Status</label>
+                                <select class="form-control" id="status" name="status">
+                                    <option value="Semua Status">Semua Status</option>
+                                    <option value="VERIFIKASI">VERIFIKASI</option>
+                                    <option value="DISETUJUI">DISETUJUI</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="cetak">Cetak</label>
                                 <select class="form-control" id="cetak" name="cetak">
-                                    <option value="pdf">Pdf</option>
+                                    {{-- <option value="pdf">Pdf</option> --}}
                                     <option value="excel">Excel</option>
                                 </select>
                             </div>
