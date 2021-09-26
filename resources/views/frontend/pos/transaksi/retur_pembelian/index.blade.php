@@ -61,6 +61,16 @@
                                         <td>
                                             <a href="{{route('pos.returpembelian.show',[$row->Nomor])}}"
                                                 class="btn btn-success">Detail</a>
+                                            @if ($row->StatusPesanan != 'POST')
+                                            <a href="{{route('pos.returpembelian.edit',[$row->Nomor])}}"
+                                                class="btn btn-info">Edit</a>
+                                            <button type="button" class="btn btn-danger btnDelete"
+                                                data-nomor="{{$row->Nomor}}">Delete</button>
+                                            <button type="button" class="btn btn-danger btnpost"
+                                                data-nomor="{{$row->Nomor}}">POST</button>
+                                            @else
+                                            <button type="button" class="btn btn-danger" disabled>POSTED</button>
+                                            @endif
                                         </td>
                                     </tr>
                                     @empty
@@ -108,7 +118,6 @@
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         $('.input-daterange input').each(function() {
             $(this).datepicker('clearDates');
-
         });
 
         $('#min').datepicker('setDate',firstDay);
@@ -118,12 +127,46 @@
         $('#min, #max').on('change', function () {
             table.draw();
         })
+        function ajax() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
-        $(".btnpost").on('click', function () {
+         }
+        $(document).on('click','.btnDelete', function () {
+        var nomor = $(this).data('nomor')
+
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this imaginary file!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        ajax()
+                        $.ajax({
+                            url:"{{url('/admin/pos/returpembelian/')}}/"+nomor,
+                            method:"DELETE",
+                            success:function(response){
+                                if(response.status){
+                                   window.location.reload(true)
+                                }
+                            }
+                        })
+                    }
+                });
+        })
+
+
+        $(document).on('click',".btnpost", function () {
             var nomor = $(this).data('nomor');
             swal({
                 title: "Apa anda yakin ?",
-                text:"setelah proses ini, data tidak dapat di EDIT",
+                text:"setelah proses ini, data tidak dapat di EDIT dan di HAPUS",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -131,11 +174,11 @@
                 .then((willSave) => {
                 if (willSave) {
                     $.ajax({
-                            url:"{{route('pos.pembelianbaru.updatestatus')}}",
+                            url:"{{route('pos.returpembelian.updatestatus')}}",
                             method:"GET",
                             data:{'nomor':nomor,'update':1},
                             success:function(data){
-                                window.location.href = "{{route('pos.pembelianbaru.index')}}"
+                                location.reload(true)
                         }
                     })
             }

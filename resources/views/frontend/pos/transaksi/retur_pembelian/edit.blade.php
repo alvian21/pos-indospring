@@ -1,20 +1,21 @@
 @extends('frontend.master')
 
-@section('title', 'Transaksi | RETUR PEMBELIAN')
+@section('title', 'Transaksi | Retur Pembelian')
 
 @section('pos', 'active')
 
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Transaksi | Retur Pembelian</h1>
+        <h1>Transaksi Edit | Retur Pembelian</h1>
     </div>
     <div class="section-body">
         <div class="row">
             <div class="col-12">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi | Retur Pembelian</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi Edit | Retur Pembelian</h4>
+
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -31,14 +32,14 @@
                                     <div class="form-group">
                                         <label for="nomor">Nomor</label>
                                         <input type="text" class="form-control" id="nomor" name="nomor"
-                                            value="{{$formatNomor}}" readonly>
+                                            value="{{$trmutasihd->Nomor}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tanggal">Tanggal</label>
                                         <input type="text" class="form-control" id="tanggal" name="tanggal" readonly
-                                            value="{{date('d M y H:i')}}">
+                                            value="{{$trmutasihd->Tanggal}}">
                                     </div>
 
                                 </div>
@@ -46,16 +47,17 @@
                                     <div class="form-group">
                                         <label for="lokasi">Lokasi</label>
                                         <input type="text" class="form-control" id="lokasi" name="lokasi"
-                                            value="{{auth()->user()->KodeLokasi}}" readonly>
+                                            value="{{$trmutasihd->LokasiAwal}}" readonly>
                                     </div>
                                 </div>
+
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="keterangan_header">keterangan</label>
                                         <textarea class="form-control" id="keterangan_header" name="keterangan_header"
-                                            rows="3">{{$trretur["keterangan"]}}</textarea>
+                                            rows="3">{{$trmutasihd->Keterangan}}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -64,7 +66,7 @@
                                         <select class="form-control js-example-basic-single" id="supplier" name="supplier">
                                             <option value="0">Pilih Supplier</option>
                                             @forelse ($mssupplier as $item)
-                                            <option @if($item->Kode == $trretur["kode"]) selected @endif value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
+                                            <option @if($item->Kode == $trmutasihd->KodeSuppCust) selected @endif value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
                                             @empty
                                             <option value="">not found</option>
                                             @endforelse
@@ -75,7 +77,7 @@
                                     <div class="form-group">
                                         <label for="ttl_harga_pajak">Total Harga</label>
                                         <input type="text" class="form-control ttl_harga_pajak" id="ttl_harga_pajak"
-                                            value="{{$trretur["total_harga_setelah_pajak"]}}" name="ttl_harga_pajak"
+                                            value="{{$trmutasihd->TotalHargaSetelahPajak}}" name="ttl_harga_pajak"
                                             readonly>
                                     </div>
                                 </div>
@@ -95,7 +97,7 @@
             <div class="col-12">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Detail Transaksi |  Retur Pembelian</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Detail Transaksi | List Promo</h4>
                         <button type="button" class="btn btn-primary float-right btnDetailBarang mr-2">Input
                             Detail Barang</button>
                     </div>
@@ -110,9 +112,7 @@
                                         <th>Urut</th>
                                         <th>Kode Barang</th>
                                         <th>Barang</th>
-                                        <th>Qty</th>
                                         <th>Harga</th>
-                                        <th>SubTotal</th>
                                         <th>Action</th>
                                     </tr>
 
@@ -122,9 +122,7 @@
                                 </tbody>
 
                             </table>
-                            <div class="float-right mt-3 btnSimpan">
-                                <button type="button" class="btn btn-primary btnsimpan">Simpan</button>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -146,6 +144,8 @@
             </div>
             <form id="formDetail">
                 <input type="hidden" name="id_urut" id="id_urut">
+                <input type="hidden" id="nomor_update" name="nomor_update"
+                value="{{$trmutasihd->Nomor}}" >
                 <div class="modal-body">
                     <div id="alert-detail">
                         <div class="alert alert-danger" role="alert">
@@ -217,6 +217,7 @@
 
                     </div>
 
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -259,6 +260,9 @@
         $('#kembalian').mask('000.000.000.000', {
             reverse: true
         });
+        $('#harga').mask('000.000.000.000', {
+            reverse: true
+        });
     $('#alert-detail').hide();
     var subtotal;
      var qty;
@@ -266,45 +270,65 @@
      var ds_rp;
      var ds_persen;
      var ttl_harga=0;
-
+    var nomor ='{{$trmutasihd->Nomor}}'
 
     var table_detail = $("#table-detail").DataTable({
         "scrollX": true,
         processing: true,
         serverSide: true,
-        ajax: "{{ route('pos.returpembelian.datadetail') }}",
+        ajax:{
+            url: "{{ route('pos.returpembelian.datadetailedit') }}",
+            method:"GET",
+            data:{
+                'id':nomor
+            }
+        },
         columns: [
             {data: 'urut', name: 'urut'},
             {data: 'barang', name: 'barang'},
             {data: 'nama_barang', name: 'nama_barang'},
-            {data: 'qty', name: 'qty'},
             {data: 'harga', name: 'harga'},
-            {data: 'subtotal', name: 'subtotal'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
 
         ],
         fnRowCallback:function(nRow, aData, iDisplayIndex, iDisplayIndexFull){
-            $('td:eq(4)', nRow).html(convertToRupiah(aData["harga"]));
-            $('td:eq(5)', nRow).html(convertToRupiah(aData["subtotal"]));
+            $('td:eq(3)', nRow).html(convertToRupiah(aData["harga"]));
+
         }
     });
 
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
-    $('#supplier').select2();
 
     // transaksi post
-    $(document).on('keyup keydown change','#supplier, #pajak, #lokasi, #keterangan_header', async function(){
-        var form = $('#formTransaksi').serialize();
+    $(document).on('keyup keydown change','#tgl_awal,#tgl_akhir, #keterangan_header', async function(){
+        var tgl_awal = $('#tgl_awal').val()
+        var tgl_akhir = $('#tgl_akhir').val()
+        var date1 = new Date(tgl_awal)
+        var date2 = new Date(tgl_akhir)
+        var today = new Date();
+        if(tgl_awal == '' || tgl_akhir == ''){
+            swal("Tanggal mulai dan tanggal akhir wajib diisi!");
+            return false;
+        }
 
-        csrf_ajax();
-       const result = await  $.ajax({
-            url:"{{route('pos.transaksi_returpembelian.store')}}",
-            method:"post",
-            data:form
-        });
-      $('#ttl_harga').val(convertToRupiah(result['total_harga']));
-      $('#ttl_harga_pajak').val(convertToRupiah(result['total_harga_setelah_pajak']));
+        if(date1.setHours(0,0,0,0) < today.setHours(0,0,0,0)){
+            swal("Tanggal mulai harus minimal hari ini!");
+            return false;
+        }
+
+        if(date1.getTime() > date2.getTime()){
+            swal("Tanggal mulai harus lebih kecil dari tanggal akhir!");
+        }else{
+            var form = $('#formTransaksi').serialize();
+            csrf_ajax();
+            const result = await  $.ajax({
+                    url:"{{route('pos.transaksi_returpembelian.update')}}",
+                    method:"post",
+                    data:form
+            });
+        }
+
     })
 
     $('.addTransaksi').on('click',function () {
@@ -340,6 +364,7 @@
                 subtotal = convertToRupiah(subtotal)
                 $('#subtotal').val(subtotal);
                 $('#harga').val(convertToRupiah(harga));
+                $('#harga_lama').val(convertToRupiah(harga));
             }
         })
         }
@@ -417,17 +442,22 @@
 
         var barang = $('#barang').val();
         var stok = $('#stok').val();
-        var qty = $('#qty').val();
+        var harga = $('#harga').val()
+        var cvharga = convertToAngka(harga);
             if(barang == '0'){
                $('.alert-danger').text('pilih barang terlebih dahulu')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
-            }else if(qty == undefined || qty == 0 || qty == ''){
-                $('.alert-danger').text('qty harus diisi')
+            }else if(harga == ''){
+                $('.alert-danger').text('harga tidak boleh kosong')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
+            }else if(cvharga <= 0){
+                $('.alert-danger').text('harga wajib diatas 0')
+                $('#alert-detail').show();
+                $('.alert-success').hide();
+            }else if(stok <= 0){
+                $('.alert-danger').text('stok 0')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
             }
@@ -435,7 +465,7 @@
 
                 csrf_ajax();
                             $.ajax({
-                                url:"{{route('pos.detail_transaksi_returpembelian.store')}}",
+                                url:"{{route('pos.transaksi_returpembelian.store_detail_update')}}",
                                 method: "POST",
                                 data: $('#formDetail').serialize(),
                                 success:function(data){
@@ -452,7 +482,7 @@
                                     var ttl_harga = convertToRupiah(String(data['total_harga']));
                                     var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
                                     $("#ttl_harga").val(ttl_harga);
-                                        $("#ttl_harga_pajak").val(ttl_harga_pajak);
+                                    $("#ttl_harga_pajak").val(ttl_harga_pajak);
                                 }
                             })
             }
@@ -493,10 +523,6 @@
                     setTimeout(function(){ $('#alert-detail').hide()
                     $('#barangModal').modal('hide')
                     },3000);
-                    var ttl_harga = convertToRupiah(String(data['total_harga']));
-                       var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
-                       $("#ttl_harga").val(ttl_harga);
-                       $("#ttl_harga_pajak").val(ttl_harga_pajak);
                 }
             })
             }
@@ -531,13 +557,10 @@
              }
           })
           var harga = convertToRupiah(data['harga']);
-          var subtotal = convertToRupiah(data['subtotal']);
           setTimeout(function(){ $('#barang').select2('open');},500)
           $('#harga').val(harga);
           $('.btnBarangModal').text('update');
           $('.keterangan').val(data['keterangan']);
-          $('#subtotal').val(subtotal);
-          $('#qty').val(data['qty']);
           $('[id=barang]').val(dataselect).trigger('change');
           $('#barangModalLabel').text('Edit detail barang')
           $('.btnBarangModal').removeClass('btnDetailInsert').addClass('btnDetailUpdate')
@@ -547,46 +570,61 @@
 
     $('.btnsimpan').on('click', function(){
         var ttl_belanja = $("#ttl_harga_pajak").val();
-        var supplier = $('#supplier').val()
-        if(supplier == '0'){
-            swal("Supplier wajib dipilih!");
+        $("#total_belanja").val(ttl_belanja);
+        var tgl_awal = $('#tgl_awal').val()
+        var tgl_akhir = $('#tgl_akhir').val()
+        var date1 = new Date(tgl_awal)
+        var date2 = new Date(tgl_akhir)
+        var today = new Date();
+        if(tgl_awal == '' || tgl_akhir == ''){
+            swal("Tanggal mulai dan tanggal akhir wajib diisi!");
             return false;
         }
-        $("#total_belanja").val(ttl_belanja);
-        var cek = "";
-        $.ajax({
-            url:"{{route('pos.returpembelian.check')}}",
-            async:false,
-            method:"GET",
-            success:function(data){
-                if(data['message']=='true'){
-                    cek = true;
-                }else{
-                    cek = false;
-                }
-            }
-        })
-        if(cek){
-            swal({
-                text: "Apa kamu yakin menyimpan data ini ?",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                })
-                .then((willInsert) => {
-                if (willInsert) {
-                    window.location.href = "{{route('pos.returpembelian.save')}}"
-                }
-            });
-        }else{
-            swal("Detail Belum Diisi!");
+
+        if(date1.setHours(0,0,0,0) < today.setHours(0,0,0,0)){
+            swal("Tanggal mulai harus minimal hari ini!");
+            return false;
         }
+
+        if(date1.getTime() > date2.getTime()){
+            swal("Tanggal mulai harus lebih kecil dari tanggal akhir!");
+        }else{
+            var cek = "";
+            $.ajax({
+                url:"{{route('pos.returpembelian.check')}}",
+                async:false,
+                method:"GET",
+                success:function(data){
+                    if(data['message']=='true'){
+                        cek = true;
+                    }else{
+                        cek = false;
+                    }
+                }
+            })
+            if(cek){
+                swal({
+                    text: "Apa kamu yakin menyimpan data ini ?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    })
+                    .then((willInsert) => {
+                    if (willInsert) {
+                        window.location.href = "{{route('pos.returpembelian.save')}}"
+                    }
+                });
+            }else{
+                swal("Detail Belum Diisi!");
+            }
+        }
+
+
 
     })
 
     $(document).on('click','.btnDelete', function () {
-       var urut = $(this).data('urut')
-
+       var barang = $(this).data('barang')
         swal({
             title: "Are you sure?",
             text: "Once deleted, you will not be able to recover this imaginary file!",
@@ -596,14 +634,28 @@
             })
             .then((willDelete) => {
             if (willDelete) {
-               window.location.href="{{url('/admin/pos/returpembelian/delete_detail/')}}/"+urut;
-            } else {
-                swal("Your imaginary file is safe!");
+                csrf_ajax()
+                $.ajax({
+                    url:"{{route('pos.transaksi_returpembelian.delete_detail')}}",
+                    method:"DELETE",
+                    data:{
+                        'nomor':nomor,
+                        'barang':barang
+                    },
+                    success:function(response){
+                        if(response.status){
+                            window.location.reload(true)
+                        }
+                    }
+                })
             }
             });
      })
 
-
+     function convertToAngka(rupiah)
+    {
+        return parseInt(rupiah.replace(/,.*|[^0-9]/g, ''), 10);
+    }
 
      function replace_titik(cek){
          if(cek!=undefined){

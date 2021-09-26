@@ -138,7 +138,6 @@
 
         $(document).on('click','.btnDelete', function () {
         var nomor = $(this).data('nomor')
-
             swal({
                 title: "Are you sure?",
                 text: "Once deleted, you will not be able to recover this imaginary file!",

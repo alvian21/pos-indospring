@@ -255,6 +255,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/check_session', 'ReturPembelianController@check_session_detail')->name('returpembelian.check');
             Route::get('/delete_detail/{id}', 'ReturPembelianController@delete_data');
             Route::get('/update_status', 'ReturPembelianController@updatePost')->name('returpembelian.updatestatus');
+            Route::get('/data_detail/edit', 'ReturPembelianController@getDataDetailEdit')->name('returpembelian.datadetailedit');
+            Route::post('/transaksi_returpembelian/edit', 'ReturPembelianController@store_transaksi_edit')->name('transaksi_returpembelian.update');
+            Route::delete('/transaksi_returpembelian/edit/delete', 'ReturPembelianController@delete_detail')->name('transaksi_returpembelian.delete_detail');
+            Route::post('/transaksi_returpembelian/edit/store', 'ReturPembelianController@store_detail_update')->name('transaksi_returpembelian.store_detail_update');
         });
 
         Route::group(['prefix' => 'listpromo'], function () {
@@ -310,6 +314,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('paretopenjualan', 'ParetoPenjualan');
         Route::resource('tracestok', 'TraceStokController');
         Route::resource('trcetak', 'TrcetakController');
+        Route::resource('mutasibulanan', 'MutasiBulananController');
     });
 
 

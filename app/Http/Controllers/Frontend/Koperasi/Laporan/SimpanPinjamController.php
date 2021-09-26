@@ -59,9 +59,9 @@ class SimpanPinjamController extends Controller
             $periode = date(" F  Y", strtotime($periode));
             $status = $request->get('status');
             if($status == 'Semua Status'){
-                $data = Trpinjaman::join('msanggota', 'trpinjaman.KodeAnggota', 'msanggota.Kode')->whereMonth('TanggalPengajuan', $bulan)->whereYear('TanggalPengajuan', $tahun)->whereNotNull('Pinjaman')->orderBy('Pinjaman','DESC')->get();
+                $data = Trpinjaman::join('msanggota', 'trpinjaman.KodeAnggota', 'msanggota.Kode')->whereMonth('TanggalPotongan', $bulan)->whereYear('TanggalPotongan', $tahun)->whereNotNull('Pinjaman')->orderBy('Pinjaman','DESC')->get();
             }else{
-                $data = Trpinjaman::join('msanggota', 'trpinjaman.KodeAnggota', 'msanggota.Kode')->whereMonth('TanggalPengajuan', $bulan)->whereYear('TanggalPengajuan', $tahun)->whereNotNull('Pinjaman')->where('ApprovalStatus',$status)->orderBy('Pinjaman','DESC')->get();
+                $data = Trpinjaman::join('msanggota', 'trpinjaman.KodeAnggota', 'msanggota.Kode')->whereMonth('TanggalPotongan', $bulan)->whereYear('TanggalPotongan', $tahun)->whereNotNull('Pinjaman')->where('ApprovalStatus',$status)->orderBy('Pinjaman','DESC')->get();
             }
             if ($cetak == 'pdf') {
                 // $group = Trtransaksiperiode::select('SubDept')->join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('SubDept')->get();

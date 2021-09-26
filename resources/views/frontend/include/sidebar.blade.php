@@ -210,6 +210,8 @@ function customSearch($keyword, $arrayToSearch){
                 <li><a class="nav-link" href="{{route('poslaporan.tracestok.index')}}">Trace Stok</a></li>
                 @elseif ($item == 'POS - Laporan - Cetak Label Harga')
                 <li><a class="nav-link" href="{{route('poslaporan.trcetak.index')}}">Cetak Label Harga</a></li>
+                @elseif ($item == 'POS - Laporan - Mutasi Bulanan')
+                <li><a class="nav-link" href="{{route('poslaporan.mutasibulanan.index')}}">Mutasi Bulanan</a></li>
                 @endif
                 @empty
                 @endforelse
