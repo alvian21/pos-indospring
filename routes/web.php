@@ -268,6 +268,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/check_session', 'ListPromoController@check_session_detail')->name('listpromo.check');
             Route::get('/delete_detail/{id}', 'ListPromoController@delete_data');
             Route::get('/update_status', 'ListPromoController@updatePost')->name('listpromo.updatestatus');
+            Route::get('/data_detail/edit', 'ListPromoController@getDataDetailEdit')->name('listpromo.datadetailedit');
+            Route::post('/transaksi_listpromo/edit', 'ListPromoController@store_transaksi_edit')->name('transaksi_listpromo.update');
+            Route::delete('/transaksi_listpromo/edit/delete', 'ListPromoController@delete_detail')->name('transaksi_listpromo.delete_detail');
+            Route::post('/transaksi_listpromo/edit/store', 'ListPromoController@store_detail_update')->name('transaksi_listpromo.store_detail_update');
         });
 
         Route::resource('pembelian', 'PembelianController');

@@ -7,14 +7,14 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Transaksi | List Promo</h1>
+        <h1>Transaksi Edit | List Promo</h1>
     </div>
     <div class="section-body">
         <div class="row">
             <div class="col-12">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi | List Promo</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi Edit | List Promo</h4>
 
                     </div>
                     <div class="card-body">
@@ -32,14 +32,14 @@
                                     <div class="form-group">
                                         <label for="nomor">Nomor</label>
                                         <input type="text" class="form-control" id="nomor" name="nomor"
-                                            value="{{$formatNomor}}" readonly>
+                                            value="{{$trmutasihd->Nomor}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tanggal">Tanggal</label>
                                         <input type="text" class="form-control" id="tanggal" name="tanggal" readonly
-                                            value="{{date('d M y H:i')}}">
+                                            value="{{$trmutasihd->Tanggal}}">
                                     </div>
 
                                 </div>
@@ -47,7 +47,7 @@
                                     <div class="form-group">
                                         <label for="lokasi">Lokasi</label>
                                         <input type="text" class="form-control" id="lokasi" name="lokasi"
-                                            value="{{auth()->user()->KodeLokasi}}" readonly>
+                                            value="{{$trmutasihd->LokasiAwal}}" readonly>
                                     </div>
                                 </div>
 
@@ -57,21 +57,21 @@
                                     <div class="form-group">
                                         <label for="keterangan">keterangan</label>
                                         <textarea class="form-control" id="keterangan_header" name="keterangan_header"
-                                            rows="3">{{$trpromo["keterangan"]}}</textarea>
+                                            rows="3">{{$trmutasihd->Keterangan}}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="tgl_awal">Tanggal Mulai</label>
                                         <input type="date" class="form-control tgl_awal" id="tgl_awal"
-                                            value="{{$trpromo["tgl_awal"]}}" name="tgl_awal">
+                                            value="{{$trmutasihd->TglAwal}}" name="tgl_awal">
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="tgl_akhir">Tanggal Akhir</label>
                                         <input type="date" class="form-control tgl_akhir" id="tgl_akhir"
-                                            value="{{$trpromo["tgl_akhir"]}}" name="tgl_akhir">
+                                            value="{{$trmutasihd->TglAkhir}}" name="tgl_akhir">
                                     </div>
                                 </div>
                             </div>
@@ -115,9 +115,7 @@
                                 </tbody>
 
                             </table>
-                            <div class="float-right mt-3 btnSimpan">
-                                <button type="button" class="btn btn-primary btnsimpan">Simpan</button>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -139,6 +137,8 @@
             </div>
             <form id="formDetail">
                 <input type="hidden" name="id_urut" id="id_urut">
+                <input type="hidden" id="nomor_update" name="nomor_update"
+                value="{{$trmutasihd->Nomor}}" >
                 <div class="modal-body">
                     <div id="alert-detail">
                         <div class="alert alert-danger" role="alert">
@@ -251,13 +251,19 @@
      var ds_rp;
      var ds_persen;
      var ttl_harga=0;
-
+    var nomor ='{{$trmutasihd->Nomor}}'
 
     var table_detail = $("#table-detail").DataTable({
         "scrollX": true,
         processing: true,
         serverSide: true,
-        ajax: "{{ route('pos.listpromo.datadetail') }}",
+        ajax:{
+            url: "{{ route('pos.listpromo.datadetailedit') }}",
+            method:"GET",
+            data:{
+                'id':nomor
+            }
+        },
         columns: [
             {data: 'urut', name: 'urut'},
             {data: 'barang', name: 'barang'},
@@ -277,16 +283,33 @@
 
     // transaksi post
     $(document).on('keyup keydown change','#tgl_awal,#tgl_akhir, #keterangan_header', async function(){
-        var form = $('#formTransaksi').serialize();
+        var tgl_awal = $('#tgl_awal').val()
+        var tgl_akhir = $('#tgl_akhir').val()
+        var date1 = new Date(tgl_awal)
+        var date2 = new Date(tgl_akhir)
+        var today = new Date();
+        if(tgl_awal == '' || tgl_akhir == ''){
+            swal("Tanggal mulai dan tanggal akhir wajib diisi!");
+            return false;
+        }
 
-        csrf_ajax();
-       const result = await  $.ajax({
-            url:"{{route('pos.transaksi_listpromo.store')}}",
-            method:"post",
-            data:form
-        });
-      $('#ttl_harga').val(convertToRupiah(result['total_harga']));
-      $('#ttl_harga_pajak').val(convertToRupiah(result['total_harga_setelah_pajak']));
+        if(date1.setHours(0,0,0,0) < today.setHours(0,0,0,0)){
+            swal("Tanggal mulai harus minimal hari ini!");
+            return false;
+        }
+
+        if(date1.getTime() > date2.getTime()){
+            swal("Tanggal mulai harus lebih kecil dari tanggal akhir!");
+        }else{
+            var form = $('#formTransaksi').serialize();
+            csrf_ajax();
+            const result = await  $.ajax({
+                    url:"{{route('pos.transaksi_listpromo.update')}}",
+                    method:"post",
+                    data:form
+            });
+        }
+
     })
 
     $('.addTransaksi').on('click',function () {
@@ -419,7 +442,7 @@
 
                 csrf_ajax();
                             $.ajax({
-                                url:"{{route('pos.detail_transaksi_listpromo.store')}}",
+                                url:"{{route('pos.transaksi_listpromo.store_detail_update')}}",
                                 method: "POST",
                                 data: $('#formDetail').serialize(),
                                 success:function(data){
@@ -574,8 +597,7 @@
     })
 
     $(document).on('click','.btnDelete', function () {
-       var urut = $(this).data('urut')
-
+       var barang = $(this).data('barang')
         swal({
             title: "Are you sure?",
             text: "Once deleted, you will not be able to recover this imaginary file!",
@@ -585,9 +607,20 @@
             })
             .then((willDelete) => {
             if (willDelete) {
-               window.location.href="{{url('/admin/pos/listpromo/delete_detail/')}}/"+urut;
-            } else {
-                swal("Your imaginary file is safe!");
+                csrf_ajax()
+                $.ajax({
+                    url:"{{route('pos.transaksi_listpromo.delete_detail')}}",
+                    method:"DELETE",
+                    data:{
+                        'nomor':nomor,
+                        'barang':barang
+                    },
+                    success:function(response){
+                        if(response.status){
+                            window.location.reload(true)
+                        }
+                    }
+                })
             }
             });
      })

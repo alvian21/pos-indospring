@@ -8,6 +8,8 @@ class Trmutasidt extends Model
 {
     protected $table = "trmutasidt";
     public $timestamps = false;
+    protected $primaryKey = null;
+    public $incrementing = false;
 
     public function trmutasihd()
     {

@@ -134,7 +134,10 @@ class ListPromoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $trmutasihd = Trmutasihd::where('Nomor', $id)->firstOrFail();
+        $msbarang = Msbarang::all();
+        $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $id)->get();
+        return view("frontend.pos.transaksi.list_promo.edit", ['trmutasidt' => $trmutasidt, 'trmutasihd' => $trmutasihd, 'msbarang' => $msbarang]);
     }
 
     /**
@@ -155,9 +158,15 @@ class ListPromoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        if ($request->ajax()) {
+            $detail = Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $id)->delete();
+            $utama = Trmutasihd::where('Transaksi', 'PROMO')->where('Nomor', $id)->delete();
+            $request->session()->flash("success", "Data List Promo berhasil dihapus");
+
+            return response()->json(['status' => true]);
+        }
     }
 
     public function store_transaksi(Request $request)
@@ -168,7 +177,7 @@ class ListPromoController extends Controller
                 'nomor' => 'required',
                 'tanggal' => 'required',
                 'lokasi' => 'required',
-                'keterangan' => 'nullable',
+                'keterangan_header' => 'nullable',
 
             ]);
 
@@ -183,7 +192,7 @@ class ListPromoController extends Controller
                     'tanggal' => $request->get('tanggal'),
                     'pajak' => 0,
                     'lokasi' => $request->get('lokasi'),
-                    'keterangan' => $request->get('keterangan'),
+                    'keterangan' => $request->get('keterangan_header'),
                     'tgl_awal' => $request->get('tgl_awal'),
                     'tgl_akhir' => $request->get('tgl_akhir'),
                 ];
@@ -235,6 +244,8 @@ class ListPromoController extends Controller
             $total = 0;
             $harga = $request->get('harga');
             $harga = str_replace('.', '', $harga);
+            $harga_lama = $request->get('harga_lama');
+            $harga_lama = str_replace('.', '', $harga_lama);
             if (Session::has('detail_transaksi_promo')) {
                 $datadetail = Session::get('detail_transaksi_promo');
                 $no = 0;
@@ -253,6 +264,8 @@ class ListPromoController extends Controller
                         'nama_barang' => $request->get('nama_barang'),
                         'harga' => $harga,
                         'keterangan' => $request->get('keterangan'),
+                        'harga_lama' => $harga_lama,
+
                     ];
                     array_push($arr, $data);
                 }
@@ -267,6 +280,7 @@ class ListPromoController extends Controller
                     'nama_barang' => $request->get('nama_barang'),
                     'harga' => $harga,
                     'keterangan' => $request->get('keterangan'),
+                    'harga_lama' => $harga_lama,
                 ];
 
                 array_push($arr, $data);
@@ -346,6 +360,7 @@ class ListPromoController extends Controller
                     $trmutasidt->LastUpdate = date('Y-m-d H:i');
                     $trmutasidt->Jumlah = 0;
                     $trmutasidt->Harga = $value['harga'];
+                    $trmutasidt->HargaLama = $value['harga_lama'];
                     $trmutasidt->save();
                 }
                 session()->forget('detail_transaksi_promo');
@@ -552,6 +567,147 @@ class ListPromoController extends Controller
         } else {
             return response()->json([
                 'Saldo' => 0
+            ]);
+        }
+    }
+
+    public function updatePost(Request $request)
+    {
+        if ($request->ajax()) {
+            if ($request->get('update') == 1) {
+                $nomor = $request->get('nomor');
+                $trmutasihd = Trmutasihd::where('Nomor', $nomor)->first();
+                if ($trmutasihd->StatusPesanan != 'POST') {
+                    $trmutasihd->StatusPesanan = 'POST';
+                    $trmutasihd->save();
+                }
+
+                session()->flash('success', 'Transaksi list promo berhasil diupdate');
+                return response()->json([
+                    'message' => 'success',
+                    'status' => true
+                ]);
+            }
+        }
+    }
+
+
+    public function getDataDetailEdit(Request $request)
+    {
+        if ($request->ajax()) {
+            $datadetail = Trmutasidt::where('Nomor', $request->get('id'))->get();;
+            $data2 = array();
+            if ($datadetail != null) {
+                $count = count($datadetail);
+                $no = 1;
+                foreach ($datadetail as $row) {
+                    $barang = Msbarang::where('Kode', $row->KodeBarang)->first();
+                    $sub = array();
+                    $sub["urut"] = $row->Urut;
+                    $sub["barang"] = $row->KodeBarang;
+                    $sub["nama_barang"] = $barang->Nama;
+                    $sub["harga"] = $row->Harga;
+                    $sub["keterangan"] = $row->Keterangan;
+                    $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button data-barang="' .  $row->KodeBarang . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
+                    $data2[] = $sub;
+                }
+            } else {
+                $count = 0;
+            }
+            $output = [
+                "draw" => $request->get('draw'),
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => $data2
+            ];
+            return response()->json($output);
+        }
+    }
+
+    public function store_transaksi_edit(Request $request)
+    {
+        if ($request->ajax()) {
+            $validator = Validator::make($request->all(), [
+                'transaksi' => 'required',
+                'nomor' => 'required',
+                'tanggal' => 'required',
+                'lokasi' => 'required',
+                'keterangan_header' => 'nullable',
+            ]);
+
+            if ($validator->fails()) {
+
+                return response()->json($validator->errors());
+            } else {
+                $total = 0;
+                $data = Trmutasihd::where('Nomor', $request->get('nomor'))->first();
+                if ($request->has('keterangan_header')) {
+                    $data->Keterangan = $request->get('keterangan_header');
+                }
+                $data->TglAwal = $request->get('tgl_awal');
+                $data->TglAkhir = $request->get('tgl_akhir');
+                $data->save();
+
+                return response()->json(['status' => true]);
+            }
+        }
+    }
+
+    public function delete_detail(Request $request)
+    {
+        if ($request->ajax()) {
+            Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $request->get('nomor'))->where('KodeBarang', $request->get('barang'))->delete();
+            session()->flash('success', 'Detail transaksi berhasil dihapus');
+            return response()->json([
+                'message' => 'success',
+                'status' => true
+            ]);
+        }
+    }
+
+    public function store_detail_update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nomor_update' => 'required',
+            'barang' => 'required',
+            'nama_barang' => 'required',
+            'harga' => 'required',
+            'keterangan' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator->errors());
+        } else {
+            $harga = $request->get('harga');
+            $harga = str_replace('.', '', $harga);
+            $harga_lama = $request->get('harga_lama');
+            $harga_lama = str_replace('.', '', $harga_lama);
+            $max = Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $request->get('nomor_update'))->max('Urut');
+            $cek = Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $request->get('nomor_update'))->where('KodeBarang',$request->get('barang'))->first();
+            if ($cek) {
+                $cek->UserUpdate = auth('web')->user()->UserLogin;
+                $cek->LastUpdate = date('Y-m-d H:i');
+                $cek->Harga = $harga;
+                $cek->HargaLama = $harga_lama;
+                $cek->Keterangan = $request->get('keterangan');
+                $cek->save();
+            } else {
+                $trmutasidt = new Trmutasidt();
+                $trmutasidt->Transaksi = 'PROMO';
+                $trmutasidt->Nomor = $request->get('nomor_update');
+                $trmutasidt->Urut = $max + 1;
+                $trmutasidt->KodeBarang = $request->get('barang');
+                $trmutasidt->Keterangan = $request->get('keterangan');
+                $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
+                $trmutasidt->LastUpdate = date('Y-m-d H:i');
+                $trmutasidt->Jumlah = 0;
+                $trmutasidt->Harga = $harga;
+                $trmutasidt->HargaLama = $harga_lama;
+                $trmutasidt->save();
+            }
+            return response()->json([
+                'message' => 'saved',
+                'status' => true
             ]);
         }
     }

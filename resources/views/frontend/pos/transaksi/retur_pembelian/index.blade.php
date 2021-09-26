@@ -15,7 +15,8 @@
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Retur Pembelian</h4>
-                        <a href="{{route('pos.returpembelian.create')}}"  class="btn btn-primary float-right addBarang"> Tambah Pembelian</a>
+                        <a href="{{route('pos.returpembelian.create')}}" class="btn btn-primary float-right addBarang">
+                            Tambah Retur Pembelian</a>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -26,7 +27,7 @@
                                 </tr>
                                 <tr class=" input-daterange">
                                     <td>Minimum date:</td>
-                                    <td> <input type="text" id="min" class="form-control" data-date-format="d M yyyy" >
+                                    <td> <input type="text" id="min" class="form-control" data-date-format="d M yyyy">
                                     </td>
                                     <td>Maximum date:</td>
                                     <td> <input type="text" id="max" class="form-control" data-date-format="d M yyyy">
@@ -50,17 +51,18 @@
                                 </thead>
                                 <tbody>
                                     @forelse ($trmutasihd as $row)
-                                       <tr>
-                                           <td>{{$row->Transaksi}}</td>
-                                           <td>{{$row->Nomor}}</td>
-                                           <td>{{$row->Tanggal}}</td>
-                                           <td>{{$row->KodeSuppCust}}</td>
-                                           <td>{{$row->LokasiAwal}}</td>
-                                           <td>@rupiah($row->TotalHarga)</td>
-                                           <td>
-                                            <a href="{{route('pos.returpembelian.show',[$row->Nomor])}}" class="btn btn-success">Detail</a>
+                                    <tr>
+                                        <td>{{$row->Transaksi}}</td>
+                                        <td>{{$row->Nomor}}</td>
+                                        <td>{{$row->Tanggal}}</td>
+                                        <td>{{$row->KodeSuppCust}}</td>
+                                        <td>{{$row->LokasiAwal}}</td>
+                                        <td>@rupiah($row->TotalHarga)</td>
+                                        <td>
+                                            <a href="{{route('pos.returpembelian.show',[$row->Nomor])}}"
+                                                class="btn btn-success">Detail</a>
                                         </td>
-                                       </tr>
+                                    </tr>
                                     @empty
 
                                     @endforelse
@@ -84,7 +86,7 @@
     integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
     crossorigin="anonymous"></script>
 <script type="text/javascript">
-     $.fn.dataTable.ext.search.push(
+    $.fn.dataTable.ext.search.push(
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
@@ -143,4 +145,3 @@
      })
 </script>
 @endsection
-

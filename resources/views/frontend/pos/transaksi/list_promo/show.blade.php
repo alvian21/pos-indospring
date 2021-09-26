@@ -26,6 +26,7 @@
                                         <th>Kode Barang</th>
                                         <th>Nama Barang</th>
                                         <th>Harga</th>
+                                        <th>Harga Lama</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,6 +35,7 @@
                                         <td>{{$row->KodeBarang}}</td>
                                         <td>{{$row->Nama}}</td>
                                         <td>@rupiah($row->Harga)</td>
+                                        <td>@rupiah($row->HargaLama)</td>
                                     </tr>
                                     @empty
 
