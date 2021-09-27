@@ -14,5 +14,7 @@ class Trmutasihd extends Model
 
     protected $casts = [
         'Tanggal' => 'datetime:Y-m-d H:00',
+        'TglAwal' => 'datetime:Y-m-d',
+        'TglAkhir' => 'datetime:Y-m-d',
     ];
 }
