@@ -59,6 +59,10 @@
 
         $('#barang').select2()
         $('#cetak').select2()
+
+        $('#periode').on('change', function () {
+            $('.alert-danger').hide()
+         })
      })
 </script>
 @endsection

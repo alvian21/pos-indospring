@@ -34,7 +34,7 @@ class ReturPembelianController extends Controller
         $today = strtotime($today);
         $next = date('Y-m-d',strtotime('+1 month',$today));
         $lastdate = date("Y-m-t", strtotime($next));
-        $trmutasihd = Trmutasihd::where('Transaksi', 'RETUR PEMBELIAN')->get();
+        $trmutasihd = Trmutasihd::join('mssupplier','trmutasihd.KodeSuppCust','mssupplier.Kode')->where('Transaksi', 'RETUR PEMBELIAN')->get();
         return view("frontend.pos.transaksi.retur_pembelian.index", ['trmutasihd' => $trmutasihd]);
     }
 
@@ -229,11 +229,16 @@ class ReturPembelianController extends Controller
             }
             $periode = date('Ym');
             $lokasi = auth()->user()->KodeLokasi;
-            $trhpp = Trhpp::where('Periode', $periode)->where('KodeLokasi', $lokasi)->where('KodeBarang', $request->kode_barang)->first();
-
+            $trmutasidt = Trmutasihd::join('trmutasidt','trmutasihd.Nomor','trmutasidt.Nomor')->where('trmutasihd.Transaksi','PEMBELIAN')->where('KodeBarang',$request->kode_barang)->where('LokasiTujuan',auth()->user()->KodeLokasi)->orderBy('Tanggal','DESC')->first();
+            if($trmutasidt){
+                $harga = $trmutasidt->Harga;
+            }else{
+                $trhpp = Trhpp::where('Periode', $periode)->where('KodeLokasi', $lokasi)->where('KodeBarang', $request->kode_barang)->first();
+                $harga = $trhpp->Hpp;
+            }
             $data = [
                 'Nama' => $msbarang->Nama,
-                'HargaJual' => $trhpp->Hpp,
+                'HargaJual' => $harga,
                 'Saldo' => $saldo
             ];
             return response()->json($data);
@@ -365,6 +370,7 @@ class ReturPembelianController extends Controller
                 $trmutasihd->KodeSuppCust =  $trretur["kode"];
                 $trmutasihd->Pajak = 0;
                 $trmutasihd->LokasiAwal = $trretur["lokasi"];
+                $trmutasihd->Keterangan = $trretur["keterangan"];
                 $trmutasihd->TotalHarga = $trretur["total_harga"];
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
                 $trmutasihd->PembayaranTunai = 0;
@@ -525,6 +531,7 @@ class ReturPembelianController extends Controller
                 'transaksi' => $trretur['transaksi'],
                 'nomor' => $trretur['nomor'],
                 'tanggal' => $trretur['tanggal'],
+                'kode' => $trretur['kode'],
                 'pajak' => $trretur['pajak'],
                 'lokasi' => $trretur['lokasi'],
                 'keterangan' => $trretur['keterangan'],
@@ -755,8 +762,6 @@ class ReturPembelianController extends Controller
             $max = Trmutasidt::where('Transaksi', 'RETUR PEMBELIAN')->where('Nomor', $request->get('nomor_update'))->max('Urut');
             $cek = Trmutasidt::where('Transaksi', 'RETUR PEMBELIAN')->where('Nomor', $request->get('nomor_update'))->where('KodeBarang', $request->get('barang'))->first();
             if ($cek) {
-                $cek->UserUpdate = auth('web')->user()->UserLogin;
-                $cek->LastUpdate = date('Y-m-d H:i');
                 $cek->Harga = $harga;
                 $cek->Jumlah =  $request->get('qty');
                 $cek->Keterangan = $request->get('keterangan');

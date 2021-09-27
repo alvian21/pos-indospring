@@ -55,7 +55,7 @@
                                         <td>{{$row->Transaksi}}</td>
                                         <td>{{$row->Nomor}}</td>
                                         <td>{{$row->Tanggal}}</td>
-                                        <td>{{$row->KodeSuppCust}}</td>
+                                        <td>{{$row->KodeSuppCust}} | {{$row->Nama}}</td>
                                         <td>{{$row->LokasiAwal}}</td>
                                         <td>@rupiah($row->TotalHarga)</td>
                                         <td>

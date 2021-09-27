@@ -41,6 +41,7 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
         return [
             $data['TanggalPengajuan'],
             $data['Nama'],
+            $data['KodeAnggota'],
             $data['SubDept'],
             $data['Pinjaman'],
             $data['BerapaKaliBayar'],
@@ -72,8 +73,8 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
                 // at row 1, insert 2 rows
                 $event->sheet->insertNewRowBefore(1, 2);
 
-                $event->sheet->mergeCells('A1:I1');
-                $event->sheet->mergeCells('A2:I2');
+                $event->sheet->mergeCells('A1:M1');
+                $event->sheet->mergeCells('A2:M2');
 
                 $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
 
@@ -82,21 +83,22 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
                 $event->sheet->setCellValue('A2', 'Periode ' . $this->periode);
                 $event->sheet->setCellValue('A3', 'Tanggal');
                 $event->sheet->setCellValue('B3', 'Nama Anggota');
-                $event->sheet->setCellValue('C3', 'Sub Dept');
-                $event->sheet->setCellValue('D3', 'Jumlah');
-                $event->sheet->setCellValue('E3', 'Angsuran');
-                $event->sheet->setCellValue('F3', 'Angsuran per bln');
-                $event->sheet->setCellValue('G3', 'Jasa per bln');
-                $event->sheet->setCellValue('H3', 'Total Pendapatan');
-                $event->sheet->setCellValue('I3', 'POT');
-                $event->sheet->setCellValue('J3', 'Nama Bank');
-                $event->sheet->setCellValue('K3', 'No Rekening');
-                $event->sheet->setCellValue('L3', 'Nama Rekening');
+                $event->sheet->setCellValue('C3', 'Kode Anggota');
+                $event->sheet->setCellValue('D3', 'Sub Dept');
+                $event->sheet->setCellValue('E3', 'Jumlah');
+                $event->sheet->setCellValue('F3', 'Angsuran');
+                $event->sheet->setCellValue('G3', 'Angsuran per bln');
+                $event->sheet->setCellValue('H3', 'Jasa per bln');
+                $event->sheet->setCellValue('I3', 'Total Pendapatan');
+                $event->sheet->setCellValue('J3', 'POT');
+                $event->sheet->setCellValue('K3', 'Nama Bank');
+                $event->sheet->setCellValue('L3', 'No Rekening');
+                $event->sheet->setCellValue('M3', 'Nama Rekening');
 
 
                 // assign cell styles
-                $event->sheet->getStyle('A:L')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('A:L')->getAlignment()->setVertical('center');
+                $event->sheet->getStyle('A:M')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:M')->getAlignment()->setVertical('center');
                 $event->sheet->getColumnDimension('A')->setAutoSize(true);
                 $event->sheet->getColumnDimension('B')->setAutoSize(true);
                 $event->sheet->getColumnDimension('C')->setAutoSize(true);
@@ -109,6 +111,7 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
                 $event->sheet->getColumnDimension('J')->setAutoSize(true);
                 $event->sheet->getColumnDimension('K')->setAutoSize(true);
                 $event->sheet->getColumnDimension('L')->setAutoSize(true);
+                $event->sheet->getColumnDimension('M')->setAutoSize(true);
 
                 $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },

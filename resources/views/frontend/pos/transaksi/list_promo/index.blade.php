@@ -100,12 +100,12 @@
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
-        var parseDate = moment(data[2]).format('YYYY/MM/DD')
-        var date = new Date( parseDate );
+        var parseDate1 = moment(data[4]).format('YYYY/MM/DD')
+        var parseDate2 = moment(data[5]).format('YYYY/MM/DD')
         if (
             ( min == "" || max == "" )
                 ||
-                ( moment(parseDate).isSameOrAfter(min) && moment(parseDate).isSameOrBefore(max) )
+                ( moment(parseDate1).isSameOrAfter(min) && moment(parseDate2).isSameOrBefore(max) )
         ) {
             return true;
         }

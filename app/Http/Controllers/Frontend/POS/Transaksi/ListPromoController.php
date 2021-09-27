@@ -338,6 +338,7 @@ class ListPromoController extends Controller
                 $trmutasihd->KodeSuppCust = null;
                 $trmutasihd->Pajak = 0;
                 $trmutasihd->LokasiAwal = $trpromo["lokasi"];
+                $trmutasihd->Keterangan = $trpromo["keterangan"];
                 $trmutasihd->TotalHarga = 0;
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
                 $trmutasihd->PembayaranTunai = 0;
@@ -381,17 +382,22 @@ class ListPromoController extends Controller
     {
         if ($request->ajax()) {
             $datadetail = session('detail_transaksi_promo');
+
             $data2 = array();
             if ($datadetail != null) {
                 $count = count($datadetail);
                 $no = 1;
                 foreach ($datadetail as $row) {
+                    $saldobarang = Trsaldobarang::where('KodeBarang',$row['barang'])->where('KodeLokasi',auth()->user()->KodeLokasi)->orderBy('Tanggal','DESC')->first();
+                    $barang = Msbarang::find($row['barang']);
                     $sub = array();
                     $sub["urut"] = $row['urut'];
                     $sub["barang"] = $row['barang'];
                     $sub["nama_barang"] = $row['nama_barang'];
                     $sub["harga"] = $row['harga'];
                     $sub["keterangan"] = $row['keterangan'];
+                    $sub["stok"] = $saldobarang->Saldo;
+                    $sub["harga_lama"] = $barang->HargaJual;
                     $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button data-urut="' . $row['urut'] . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
                     $data2[] = $sub;
                 }
@@ -453,7 +459,7 @@ class ListPromoController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_urut' => 'required',
-            'barang' => 'required',
+            'barang_edit' => 'required',
             'nama_barang' => 'required',
             'harga' => 'required',
             'keterangan' => 'nullable',
@@ -472,7 +478,7 @@ class ListPromoController extends Controller
                 foreach ($datadetail as $key => $value) {
                     if ($value["urut"] == $request->get('id_urut')) {
                         $value["urut"] = $value["urut"];
-                        $value["barang"] = $request->get("barang");
+                        $value["barang"] = $request->get("barang_edit");
                         $value["nama_barang"] = $request->get("nama_barang");
                         $value["harga"] = $harga;
                         $value["keterangan"] = $request->get("keterangan");
@@ -601,13 +607,16 @@ class ListPromoController extends Controller
                 $count = count($datadetail);
                 $no = 1;
                 foreach ($datadetail as $row) {
-                    $barang = Msbarang::where('Kode', $row->KodeBarang)->first();
+                    $barang = Msbarang::find($row->KodeBarang);
+                    $saldobarang = Trsaldobarang::where('KodeBarang',$row->KodeBarang)->where('KodeLokasi',auth()->user()->KodeLokasi)->orderBy('Tanggal','DESC')->first();
                     $sub = array();
                     $sub["urut"] = $row->Urut;
                     $sub["barang"] = $row->KodeBarang;
                     $sub["nama_barang"] = $barang->Nama;
                     $sub["harga"] = $row->Harga;
                     $sub["keterangan"] = $row->Keterangan;
+                    $sub["stok"] = $saldobarang->Saldo;
+                    $sub["harga_lama"] = $barang->HargaJual;
                     $sub["action"] = '<button class="edit btn btn-warning btnDetailBarangEdit">Edit</button><button data-barang="' .  $row->KodeBarang . '" class="edit btn btn-danger ml-2 btnDelete">Delete</button>';
                     $data2[] = $sub;
                 }
@@ -678,25 +687,29 @@ class ListPromoController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator->errors());
         } else {
+            if($request->has('barang_edit')){
+                $kodebarang = $request->get('barang_edit');
+            }else{
+                $kodebarang = $request->get('barang');
+            }
             $harga = $request->get('harga');
             $harga = str_replace('.', '', $harga);
             $harga_lama = $request->get('harga_lama');
             $harga_lama = str_replace('.', '', $harga_lama);
             $max = Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $request->get('nomor_update'))->max('Urut');
-            $cek = Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $request->get('nomor_update'))->where('KodeBarang',$request->get('barang'))->first();
-            if ($cek) {
-                $cek->UserUpdate = auth('web')->user()->UserLogin;
-                $cek->LastUpdate = date('Y-m-d H:i');
-                $cek->Harga = $harga;
-                $cek->HargaLama = $harga_lama;
-                $cek->Keterangan = $request->get('keterangan');
-                $cek->save();
+            $cekdetail = Trmutasidt::where('Transaksi', 'PROMO')->where('Nomor', $request->get('nomor_update'))->where('KodeBarang',$kodebarang)->first();
+
+            if ($cekdetail) {
+                $cekdetail->Harga = $harga;
+                $cekdetail->HargaLama = $harga_lama;
+                $cekdetail->Keterangan = $request->get('keterangan');
+                $cekdetail->save();
             } else {
                 $trmutasidt = new Trmutasidt();
                 $trmutasidt->Transaksi = 'PROMO';
                 $trmutasidt->Nomor = $request->get('nomor_update');
                 $trmutasidt->Urut = $max + 1;
-                $trmutasidt->KodeBarang = $request->get('barang');
+                $trmutasidt->KodeBarang = $kodebarang;
                 $trmutasidt->Keterangan = $request->get('keterangan');
                 $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
                 $trmutasidt->LastUpdate = date('Y-m-d H:i');

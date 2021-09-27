@@ -151,15 +151,20 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="barang">Barang</label>
-                                <select class="form-control js-example-basic-single" name="barang" id="barang">
-                                    <option value="0">Pilih Barang</option>
-                                    @forelse ($msbarang as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null)
-                                        {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
-                                    @empty
+                                <div id="combobarang">
+                                    <select class="form-control js-example-basic-single" name="barang" id="barang">
+                                        <option value="0">Pilih Barang</option>
+                                        @forelse ($msbarang as $item)
+                                        <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null)
+                                            {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
+                                        @empty
 
-                                    @endforelse
-                                </select>
+                                        @endforelse
+                                    </select>
+                                </div>
+                                <div id="inputbarang">
+                                    <input type="text" class="form-control" name="barang_edit" readonly id="barang_edit">
+                                </div>
                             </div>
 
                         </div>
@@ -280,7 +285,7 @@
 
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
-
+    $('#inputbarang').hide()
     // transaksi post
     $(document).on('keyup keydown change','#tgl_awal,#tgl_akhir, #keterangan_header', async function(){
         var tgl_awal = $('#tgl_awal').val()
@@ -399,25 +404,30 @@
         return rupiah.split('',rupiah.length-1).reverse().join('');
         }
 
-     $(document).on('keyup','#harga, #qty',function(){
+        $(document).on('keyup','#harga, #qty',function(){
          var barang = $('#barang').val();
-         if(barang != 0){
-            qty = $("#qty").val();
-            harga = $('#harga').val();
-            harga = harga.replace('.','');
-            subtotal = qty * harga;
-            if(subtotal <=0){
-                subtotal = 0;
+         var modalbtn = $(".btnBarangModal").text()
+         if(modalbtn != 'update'){
+            if(barang != 0){
+                qty = $("#qty").val();
+                harga = $('#harga').val();
+                harga = harga.replace('.','');
+                subtotal = qty * harga;
+                if(subtotal <=0){
+                    subtotal = 0;
+                }
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
+            }else{
+                $('.alert-danger').text('pilih barang terlebih dahulu')
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
             }
-            subtotal = convertToRupiah(subtotal)
-            $('#subtotal').val(subtotal);
-         }else{
-            $('.alert-danger').text('pilih barang terlebih dahulu')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
+
          }
 
      })
+
 
      $(document).on('click','.btnDetailInsert',function () {
 
@@ -462,40 +472,30 @@
       });
 
       $(document).on('click','.btnDetailUpdate',function () {
-        var barang = $('#barang').val();
-        var stok = $('#stok').val();
-        var qty = $('#qty').val();
-            if(barang == '0'){
-            $('.alert-danger').text('pilih barang terlebih dahulu')
+        var harga = $('#harga').val();
+        harga = convertToAngka(harga)
+        if(harga <= 0){
+            $('.alert-danger').text('harga wajib diisi')
             $('.alert-success').hide();
-                $('#alert-detail').show();
+            $('#alert-detail').show();
 
-            }else if(qty == undefined || qty == 0 || qty == ''){
-                $('.alert-danger').text('qty harus diisi')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else if(parseInt(qty) > parseInt(stok)){
-                $('.alert-danger').text('maksimal qty adalah '+stok)
-                $('#alert-detail').show();
-                $('.alert-success').hide();
             }else{
                 csrf_ajax();
             $.ajax({
-                url:"{{route('pos.detail_transaksi_listpromo.update')}}",
+                url:"{{route('pos.transaksi_listpromo.store_detail_update')}}",
                 method: "POST",
                 data: $('#formDetail').serialize(),
                 success:function(data){
                     $('#formDetail').trigger("reset");
                     table_detail.ajax.reload();
                     // setTimeout(function(){ $('#barang').select2('open');},500)
-                    $('[id=barang]').val('0').trigger('change');
                     $('.btnSimpan').show();
                     $('.alert-success').text('Data berhasil di update')
                     $('.alert-danger').hide()
                     $('#alert-detail').show();
                     setTimeout(function(){ $('#alert-detail').hide()
                     $('#barangModal').modal('hide')
-                    },3000);
+                    },2000);
                 }
             })
             }
@@ -505,6 +505,8 @@
                 $(this).find('form').trigger('reset');
                 $('[id=barang]').val('0').trigger('change');
                 $('.btnBarangModal').text('insert');
+                $('#combobarang').show()
+                $('#inputbarang').hide()
                 $('#barangModalLabel').text('Input detail barang')
                 $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
             });
@@ -522,7 +524,11 @@
         var row = $(this).closest("tr");
           var data =  $('#table-detail').DataTable().row(row).data()
           $('#id_urut').val(data['urut']);
+          $('#combobarang').hide()
+          $('#inputbarang').show()
           $('#nama_barang').val(data['nama_barang']);
+          $('#barang_edit').val(data['barang']);
+          $('#stok').val(data['stok']);
           var dataselect = "";
           $('#barang option').each(function(){
              if($(this).val()==data['barang'].trim()){
@@ -530,11 +536,11 @@
              }
           })
           var harga = convertToRupiah(data['harga']);
-          setTimeout(function(){ $('#barang').select2('open');},500)
+          var harga_lama = convertToRupiah(data['harga_lama']);
+          $('#harga_lama').val(harga_lama);
           $('#harga').val(harga);
           $('.btnBarangModal').text('update');
           $('.keterangan').val(data['keterangan']);
-          $('[id=barang]').val(dataselect).trigger('change');
           $('#barangModalLabel').text('Edit detail barang')
           $('.btnBarangModal').removeClass('btnDetailInsert').addClass('btnDetailUpdate')
           $('#barangModal').modal('show')
