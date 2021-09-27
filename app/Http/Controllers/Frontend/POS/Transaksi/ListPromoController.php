@@ -29,7 +29,7 @@ class ListPromoController extends Controller
      */
     public function index()
     {
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PROMO')->get();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PROMO')->where('LokasiAwal',auth()->user()->KodeLokasi)->get();
         return view("frontend.pos.transaksi.list_promo.index", ['trmutasihd' => $trmutasihd]);
     }
 
@@ -554,7 +554,7 @@ class ListPromoController extends Controller
             Session::forget('transaksi_promo');
             Session::put('transaksi_promo', $data);
             Session::save();
-            return redirect()->route('pos.listpromo.index')->with("success", "Detail barang berhasil dihapus");
+            return redirect()->route('pos.listpromo.create')->with("success", "Detail barang berhasil dihapus");
         }
     }
 
