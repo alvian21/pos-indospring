@@ -158,15 +158,20 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="barang">Barang</label>
-                                <select class="form-control js-example-basic-single" name="barang" id="barang">
-                                    <option value="0">Pilih Barang</option>
-                                    @forelse ($msbarang as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null)
-                                        {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
-                                    @empty
+                                <div id="combobarang">
+                                    <select class="form-control js-example-basic-single" name="barang" id="barang">
+                                        <option value="0">Pilih Barang</option>
+                                        @forelse ($msbarang as $item)
+                                        <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null)
+                                            {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
+                                        @empty
 
-                                    @endforelse
-                                </select>
+                                        @endforelse
+                                    </select>
+                                </div>
+                                <div id="inputbarang">
+                                    <input type="text" class="form-control" name="barang_edit" readonly id="barang_edit">
+                                </div>
                             </div>
 
                         </div>
@@ -179,7 +184,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="harga">Harga</label>
-                                <input type="number" class="form-control" name="harga" readonly id="harga">
+                                <input type="number" class="form-control" name="harga"  id="harga">
                             </div>
                         </div>
 
@@ -299,7 +304,7 @@
 
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
-
+    $('#inputbarang').hide()
     // transaksi post
     $(document).on('keyup keydown change','#tgl_awal,#tgl_akhir, #keterangan_header', async function(){
         var tgl_awal = $('#tgl_awal').val()
@@ -419,21 +424,34 @@
         }
 
      $(document).on('keyup','#harga, #qty',function(){
-         var barang = $('#barang').val();
-         if(barang != 0){
+        var barang = $('#barang').val();
+         var modalbtn = $(".btnBarangModal").text()
+         if(modalbtn != 'update'){
+            if(barang != 0){
             qty = $("#qty").val();
             harga = $('#harga').val();
             harga = harga.replace('.','');
             subtotal = qty * harga;
-            if(subtotal <=0){
-                subtotal = 0;
+                if(subtotal <=0){
+                    subtotal = 0;
+                }
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
+            }else{
+                $('.alert-danger').text('pilih barang terlebih dahulu')
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
             }
-            subtotal = convertToRupiah(subtotal)
-            $('#subtotal').val(subtotal);
          }else{
-            $('.alert-danger').text('pilih barang terlebih dahulu')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
+                qty = $("#qty").val();
+                harga = $('#harga').val();
+                harga = harga.replace('.','');
+                subtotal = qty * harga;
+                if(subtotal <=0){
+                    subtotal = 0;
+                }
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
          }
 
      })
@@ -492,12 +510,7 @@
         var barang = $('#barang').val();
         var stok = $('#stok').val();
         var qty = $('#qty').val();
-            if(barang == '0'){
-            $('.alert-danger').text('pilih barang terlebih dahulu')
-            $('.alert-success').hide();
-                $('#alert-detail').show();
-
-            }else if(qty == undefined || qty == 0 || qty == ''){
+            if(qty == undefined || qty == 0 || qty == ''){
                 $('.alert-danger').text('qty harus diisi')
                 $('#alert-detail').show();
                 $('.alert-success').hide();
@@ -508,7 +521,7 @@
             }else{
                 csrf_ajax();
             $.ajax({
-                url:"{{route('pos.detail_transaksi_returpembelian.update')}}",
+                url:"{{route('pos.transaksi_returpembelian.store_detail_update')}}",
                 method: "POST",
                 data: $('#formDetail').serialize(),
                 success:function(data){
@@ -522,7 +535,11 @@
                     $('#alert-detail').show();
                     setTimeout(function(){ $('#alert-detail').hide()
                     $('#barangModal').modal('hide')
-                    },3000);
+                    },2000);
+                    var ttl_harga = convertToRupiah(String(data['total_harga']));
+                    var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
+                    $("#ttl_harga").val(ttl_harga);
+                    $("#ttl_harga_pajak").val(ttl_harga_pajak);
                 }
             })
             }
@@ -532,6 +549,8 @@
                 $(this).find('form').trigger('reset');
                 $('[id=barang]').val('0').trigger('change');
                 $('.btnBarangModal').text('insert');
+                $('#combobarang').show()
+                $('#inputbarang').hide()
                 $('#barangModalLabel').text('Input detail barang')
                 $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
             });
@@ -550,6 +569,9 @@
           var data =  $('#table-detail').DataTable().row(row).data()
           $('#id_urut').val(data['urut']);
           $('#nama_barang').val(data['nama_barang']);
+          $('#barang_edit').val(data['barang']);
+          $('#combobarang').hide()
+          $('#inputbarang').show()
           var dataselect = "";
           $('#barang option').each(function(){
              if($(this).val()==data['barang'].trim()){
@@ -557,7 +579,6 @@
              }
           })
           var harga = convertToRupiah(data['harga']);
-          setTimeout(function(){ $('#barang').select2('open');},500)
           $('#harga').val(harga);
           $('.btnBarangModal').text('update');
           $('.keterangan').val(data['keterangan']);

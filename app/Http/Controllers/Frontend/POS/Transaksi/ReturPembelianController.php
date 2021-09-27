@@ -759,19 +759,24 @@ class ReturPembelianController extends Controller
         } else {
             $harga = $request->get('harga');
             $harga = str_replace('.', '', $harga);
+            if($request->has('barang_edit')){
+                $kodebarang = $request->get('barang_edit');
+            }else{
+                $kodebarang = $request->get('barang');
+            }
             $max = Trmutasidt::where('Transaksi', 'RETUR PEMBELIAN')->where('Nomor', $request->get('nomor_update'))->max('Urut');
-            $cek = Trmutasidt::where('Transaksi', 'RETUR PEMBELIAN')->where('Nomor', $request->get('nomor_update'))->where('KodeBarang', $request->get('barang'))->first();
-            if ($cek) {
-                $cek->Harga = $harga;
-                $cek->Jumlah =  $request->get('qty');
-                $cek->Keterangan = $request->get('keterangan');
-                $cek->save();
+            $cekdetail = Trmutasidt::where('Transaksi', 'RETUR PEMBELIAN')->where('Nomor', $request->get('nomor_update'))->where('KodeBarang', $kodebarang)->first();
+            if ($cekdetail) {
+                $cekdetail->Harga = $harga;
+                $cekdetail->Jumlah =  $request->get('qty');
+                $cekdetail->Keterangan = $request->get('keterangan');
+                $cekdetail->save();
             } else {
                 $trmutasidt = new Trmutasidt();
                 $trmutasidt->Transaksi = 'RETUR PEMBELIAN';
                 $trmutasidt->Nomor = $request->get('nomor_update');
                 $trmutasidt->Urut = $max + 1;
-                $trmutasidt->KodeBarang = $request->get('barang');
+                $trmutasidt->KodeBarang = $kodebarang;
                 $trmutasidt->Keterangan = $request->get('keterangan');
                 $trmutasidt->UserUpdate = auth('web')->user()->UserLogin;
                 $trmutasidt->LastUpdate = date('Y-m-d H:i');
