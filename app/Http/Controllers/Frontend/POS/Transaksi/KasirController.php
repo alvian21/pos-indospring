@@ -224,15 +224,26 @@ class KasirController extends Controller
     {
         if ($request->ajax()) {
             $msbarang = Msbarang::where('Kode', $request->kode_barang)->first();
+            $today = date('Y-m-d');
             $trsaldobarang = Trsaldobarang::where('KodeBarang', $request->kode_barang)->where('KodeLokasi', auth()->user()->KodeLokasi)->OrderBy('Tanggal', 'DESC')->first();
             $saldo = 0;
             if ($trsaldobarang) {
                 $saldo = $trsaldobarang->Saldo;
             }
-            $res =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $msbarang->HargaJual);
+            $cekharga = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('trmutasihd.Transaksi', 'PROMO')
+                ->where('LokasiAwal', auth()->user()->KodeLokasi)->whereDate('TglAwal', '>=', $today)->where('TglAkhir', '<=', $today)
+                ->where('StatusPesanan', 'POST')->where('KodeBarang', $request->kode_barang)->orderBy('Tanggal', 'DESC')->first();
+
+            if ($cekharga) {
+                $harga = $cekharga->Harga;
+            } else {
+                $harga = $msbarang->HargaJual;
+            }
+
+            $res =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $harga);
             $data = [
                 'Nama' => $msbarang->Nama,
-                'HargaJual' => $msbarang->HargaJual,
+                'HargaJual' => $harga,
                 'Saldo' => $saldo,
                 'Hasil' => $res['hasil'],
                 'TotalQty' => $res['totalqty']
@@ -1219,60 +1230,60 @@ class KasirController extends Controller
     {
         $koneksi = 'mysql2';
         $year = date('Y');
-        $trmutasihd = Trmutasihd::where('Transaksi','PENJUALAN')->whereDate('Tanggal','2021-09-16')->get();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', '2021-09-16')->get();
 
         foreach ($trmutasihd as $key => $value) {
 
 
-                $tanggal = date('Y-m-d', strtotime($value->Tanggal));
-                $nomor = $this->generateNomor($tanggal, $value->Transaksi, "PE");
-                DB::connection($koneksi)->table('trmutasihd')->insert([
+            $tanggal = date('Y-m-d', strtotime($value->Tanggal));
+            $nomor = $this->generateNomor($tanggal, $value->Transaksi, "PE");
+            DB::connection($koneksi)->table('trmutasihd')->insert([
+                'Transaksi' => $value->Transaksi,
+                'Nomor' => $nomor,
+                'NomorLokal' => $value->Nomor,
+                'Tanggal' => $value->Tanggal,
+                'KodeSuppCust' => $value->KodeSuppCust,
+                'Keterangan' => $value->Keterangan,
+                'DiskonPersen' => $value->DiskonPersen,
+                'DiskonTunai' => $value->DiskonTunai,
+                'Pajak' => $value->Pajak,
+                'LokasiAwal' => $value->LokasiAwal,
+                'LokasiTujuan' => $value->LokasiTujuan,
+                'PembayaranTunai' => $value->PembayaranTunai,
+                'PembayaranKredit' => $value->PembayaranKredit,
+                'PembayaranEkop' => $value->PembayaranEkop,
+                'TotalHarga' => $value->TotalHarga,
+                'StatusPesanan' =>  $value->StatusPesanan,
+                'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
+                'UserUpdateSP' => $value->UserUpdateSP,
+                'LastUpdateSP' => $value->LastUpdateSP,
+                'DueDate' => $value->DueDate,
+                'TglAwal' => $value->TglAwal,
+                'TglAkhir' => $value->TglAkhir,
+            ]);
+
+            $backupdt =  Trmutasidt::where('Nomor', $value->Nomor)->get();
+
+            foreach ($backupdt as $key => $row) {
+                DB::connection($koneksi)->table('trmutasidt')->insert([
                     'Transaksi' => $value->Transaksi,
-                    'Nomor' => $nomor,
-                    'NomorLokal' => $value->Nomor,
-                    'Tanggal' => $value->Tanggal,
-                    'KodeSuppCust' => $value->KodeSuppCust,
-                    'Keterangan' => $value->Keterangan,
-                    'DiskonPersen' => $value->DiskonPersen,
-                    'DiskonTunai' => $value->DiskonTunai,
-                    'Pajak' => $value->Pajak,
-                    'LokasiAwal' => $value->LokasiAwal,
-                    'LokasiTujuan' => $value->LokasiTujuan,
-                    'PembayaranTunai' => $value->PembayaranTunai,
-                    'PembayaranKredit' => $value->PembayaranKredit,
-                    'PembayaranEkop' => $value->PembayaranEkop,
-                    'TotalHarga' => $value->TotalHarga,
-                    'StatusPesanan' =>  $value->StatusPesanan,
-                    'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
-                    'UserUpdateSP' => $value->UserUpdateSP,
-                    'LastUpdateSP' => $value->LastUpdateSP,
-                    'DueDate' => $value->DueDate,
-                    'TglAwal' => $value->TglAwal,
-                    'TglAkhir' => $value->TglAkhir,
+                    'Nomor' =>  $nomor,
+                    'Urut' => $row->Urut,
+                    'KodeBarang' => $row->KodeBarang,
+                    'DiskonPersen' => $row->DiskonPersen,
+                    'DiskonTunai' => $row->DiskonTunai,
+                    'UserUpdate' => $row->UserUpdate,
+                    'LastUpdate' => $row->LastUpdate,
+                    'Jumlah' => $row->Jumlah,
+                    'Harga' => $row->Harga,
+                    'Satuan' => $row->Satuan,
+                    'HargaLama' => 0,
                 ]);
-
-                $backupdt =  Trmutasidt::where('Nomor', $value->Nomor)->get();
-
-                foreach ($backupdt as $key => $row) {
-                    DB::connection($koneksi)->table('trmutasidt')->insert([
-                        'Transaksi' => $value->Transaksi,
-                        'Nomor' =>  $nomor,
-                        'Urut' => $row->Urut,
-                        'KodeBarang' => $row->KodeBarang,
-                        'DiskonPersen' => $row->DiskonPersen,
-                        'DiskonTunai' => $row->DiskonTunai,
-                        'UserUpdate' => $row->UserUpdate,
-                        'LastUpdate' => $row->LastUpdate,
-                        'Jumlah' => $row->Jumlah,
-                        'Harga' => $row->Harga,
-                        'Satuan' => $row->Satuan,
-                        'HargaLama' => 0,
-                    ]);
-                }
-                // if ($cekmutasi->isNotEmpty()) {
+            }
+            // if ($cekmutasi->isNotEmpty()) {
 
 
-                // }
+            // }
 
         }
         // dd($arr);

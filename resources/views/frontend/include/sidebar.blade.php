@@ -52,6 +52,8 @@
                 </li>
                 <li><a class="nav-link" href="{{route('synchronize.saldobarang.index')}}">Saldo Barang</a>
                 </li>
+                <li><a class="nav-link" href="{{route('synchronize.listpromo.index')}}">Saldo List Promo</a>
+                </li>
             </ul>
         </li>
         <li class="nav-item dropdown @yield('backup')">
