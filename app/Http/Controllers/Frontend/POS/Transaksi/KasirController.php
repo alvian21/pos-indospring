@@ -1054,6 +1054,7 @@ class KasirController extends Controller
         $connector = new WindowsPrintConnector(config('app.printer'));
         $printer = new Printer($connector, $profile);
         $tipe = Mssetting::where('Kode', 'MasterPrinter')->where('aktif', 1)->first();
+        $footer = Mssetting::where('Kode', 'FooterPrinter')->first();
         function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4)
         {
             // Mengatur lebar setiap kolom (dalam satuan karakter)
@@ -1185,7 +1186,7 @@ class KasirController extends Controller
                 // Pesan penutup
                 $printer->initialize();
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
-                $printer->text("Terimakasih atas kunjungannya\n");
+                $printer->text($footer . "\n");
 
                 $printer->feed(2); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
@@ -1217,7 +1218,7 @@ class KasirController extends Controller
                 // Pesan penutup
                 $printer->initialize();
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
-                $printer->text("Terimakasih atas kunjungannya\n");
+                $printer->text($footer . "\n");
 
                 $printer->feed(2); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
