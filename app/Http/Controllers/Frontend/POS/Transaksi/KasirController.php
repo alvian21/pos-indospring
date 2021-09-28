@@ -1323,4 +1323,9 @@ class KasirController extends Controller
 
         return $formatNomor;
     }
+
+    public function indexpromo()
+    {
+        
+    }
 }
