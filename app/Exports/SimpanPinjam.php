@@ -28,8 +28,7 @@ class SimpanPinjam implements FromCollection, WithEvents, WithMapping
         $this->periode = $periode;
         $this->lastdate = $lastdate;
     }
-
-
+   
     public function collection()
     {
         return $this->data;
