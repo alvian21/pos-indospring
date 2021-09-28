@@ -188,7 +188,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/saldo_ekop', 'KasirController@CekSaldoEkop')->name('kasir.ceksaldo');
             Route::get('/receipt', 'KasirController@receipt')->name('kasir.receipt');
             Route::get('/getstatus', 'KasirController@getStatus')->name('kasir.status');
-
+            Route::get('/listpromo','KasirController@indexpromo')->name('kasir.promo');
+            Route::get('/listpromo/{id}','KasirController@showpromo')->name('kasir.promo.show');
             // Route::get('/reindex', 'KasirController@reindex');
             Route::get('/testprint','KasirController@testPrint')->name('print');
 

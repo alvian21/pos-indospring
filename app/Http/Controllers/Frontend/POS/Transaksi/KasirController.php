@@ -1326,6 +1326,12 @@ class KasirController extends Controller
 
     public function indexpromo()
     {
-        
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PROMO')->where('LokasiAwal',auth()->user()->KodeLokasi)->get();
+        return view("frontend.pos.transaksi.kasir.promo.index", ['trmutasihd' => $trmutasihd]);
+    }
+
+    public function showpromo($id){
+        $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $id)->get();
+        return view("frontend.pos.transaksi.kasir.promo.show", ['trmutasidt' => $trmutasidt]);
     }
 }

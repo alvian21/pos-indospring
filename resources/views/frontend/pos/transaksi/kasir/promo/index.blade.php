@@ -57,18 +57,8 @@
                                         <td>{{$row->TglAwal}}</td>
                                         <td>{{$row->TglAkhir}}</td>
                                         <td>
-                                            <a href="{{route('pos.listpromo.show',[$row->Nomor])}}"
+                                            <a href="{{route('pos.kasir.promo.show',[$row->Nomor])}}"
                                                 class="btn btn-success">Detail</a>
-                                            @if ($row->StatusPesanan != 'POST')
-                                            <a href="{{route('pos.listpromo.edit',[$row->Nomor])}}"
-                                                class="btn btn-info">Edit</a>
-                                            <button type="button" class="btn btn-danger btnDelete"
-                                                data-nomor="{{$row->Nomor}}">Delete</button>
-                                            <button type="button" class="btn btn-danger btnpost"
-                                                data-nomor="{{$row->Nomor}}">POST</button>
-                                            @else
-                                            <button type="button" class="btn btn-danger" disabled>POSTED</button>
-                                            @endif
                                         </td>
                                     </tr>
                                     @empty
@@ -139,4 +129,4 @@
 </script>
 @endsection
 
-@endsection
+
