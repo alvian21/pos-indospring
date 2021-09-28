@@ -226,10 +226,20 @@ class KasirController extends Controller
             if ($trsaldobarang) {
                 $saldo = $trsaldobarang->Saldo;
             }
-            $res =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $msbarang->HargaJual);
+            $today = date('Y-m-d');
+            $cekharga = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('trmutasihd.Transaksi', 'PROMO')
+                ->where('LokasiAwal', auth()->user()->KodeLokasi)->whereDate('TglAwal', '<=', $today)->whereDate('TglAkhir', '>=', $today)
+                ->where('StatusPesanan', 'POST')->where('KodeBarang', $request->kode_barang)->orderBy('Tanggal', 'DESC')->first();
+
+            if ($cekharga) {
+                $harga = $cekharga->Harga;
+            } else {
+                $harga = $msbarang->HargaJual;
+            }
+            $res =   $this->store_detail($msbarang->Kode, $msbarang->Nama, $harga);
             $data = [
                 'Nama' => $msbarang->Nama,
-                'HargaJual' => $msbarang->HargaJual,
+                'HargaJual' => $harga,
                 'Saldo' => $saldo,
                 'Hasil' => $res['hasil'],
                 'TotalQty' => $res['totalqty']
