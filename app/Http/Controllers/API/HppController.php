@@ -6,6 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\HppImport;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use Spatie\Backup\BackupDestination\BackupDestination;
+use Spatie\Backup\Events\BackupZipWasCreated;
+use Spatie\Backup\Events\BackupWasSuccessful;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Backup\BackupDestination\Backup;
 
 class HppController extends Controller
 {
@@ -85,5 +93,22 @@ class HppController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function handle()
+    {
+        // $event = new BackupDestination(null,"/storage/app/Laravel","local");
+        $date = date('Y-m-d');
+        $path = Storage::path("Laravel");
+        $file = File::allFiles($path);
+        // Artisan::call("backup:clean");
+        arsort($file);
+        foreach ($file as $key => $value) {
+            if (Str::contains($value->getFilename(), $date)) {
+                dd($value);
+            }
+        }
+        // dd($file[0]->getPathname());
+        // session(['path_backup' => $path]);
     }
 }

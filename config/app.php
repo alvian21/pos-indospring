@@ -121,6 +121,7 @@ return [
 
     'key' => env('APP_KEY'),
     'API_KEY' => env('API_KEY'),
+    'api_url' => env('API_URL'),
     'cipher' => 'AES-256-CBC',
 
     /*
