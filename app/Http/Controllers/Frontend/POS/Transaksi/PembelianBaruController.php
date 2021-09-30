@@ -400,8 +400,17 @@ class PembelianBaruController extends Controller
                 $trmutasihd->Nomor = $formatNomor;
                 $trmutasihd->Tanggal = date('Y-m-d H:i');
                 $trmutasihd->KodeSuppCust = $trpembelian["kode"];
-                $trmutasihd->DiskonPersen = $trpembelian["diskon_persen"];
-                $trmutasihd->DiskonTunai = $trpembelian["diskon_rp"];
+                if(empty($trpembelian["diskon_persen"])){
+                    $trmutasihd->DiskonPersen = 0;
+                }else{
+                    $trmutasihd->DiskonPersen = $trpembelian["diskon_persen"];
+                }
+                if(empty($trpembelian["diskon_rp"])){
+                    $trmutasihd->DiskonTunai = 0;
+                }else{
+                    $trmutasihd->DiskonTunai = $trpembelian["diskon_rp"];
+                }
+
                 $trmutasihd->Pajak = $trpembelian["pajak"];
                 $trmutasihd->LokasiTujuan = $trpembelian["lokasi"];
                 $trmutasihd->TotalHarga = $trpembelian["total_harga"];
