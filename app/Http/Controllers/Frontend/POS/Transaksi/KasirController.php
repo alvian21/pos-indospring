@@ -1231,65 +1231,85 @@ class KasirController extends Controller
     {
         $koneksi = 'mysql2';
         $year = date('Y');
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', '2021-09-16')->get();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', '>=', '2021-09-18')->whereDate('Tanggal', '<', '2021-09-30')->get()->toArray();
+        $trmutasidt = Trmutasidt::where('Transaksi', 'OPNAME')->whereDate('LastUpdate', '2021-09-30')->get();
+        // DB::connection($koneksi)->table('trmutasihd')->insert($trmutasihd);
+        // DB::connection($koneksi)->table('trmutasidt')->insert($trmutasidt);
+        $barang = Msbarang::all();
+        $arr = [];
 
-        foreach ($trmutasihd as $key => $value) {
+        foreach ($barang as $key => $value) {
+            $trmutasidt = Trmutasidt::where('Transaksi', 'OPNAME')->where('KodeBarang',$value->Kode)->whereDate('LastUpdate', '2021-09-30')->first();
 
-
-            $tanggal = date('Y-m-d', strtotime($value->Tanggal));
-            $nomor = $this->generateNomor($tanggal, $value->Transaksi, "PE");
-            DB::connection($koneksi)->table('trmutasihd')->insert([
-                'Transaksi' => $value->Transaksi,
-                'Nomor' => $nomor,
-                'NomorLokal' => $value->Nomor,
-                'Tanggal' => $value->Tanggal,
-                'KodeSuppCust' => $value->KodeSuppCust,
-                'Keterangan' => $value->Keterangan,
-                'DiskonPersen' => $value->DiskonPersen,
-                'DiskonTunai' => $value->DiskonTunai,
-                'Pajak' => $value->Pajak,
-                'LokasiAwal' => $value->LokasiAwal,
-                'LokasiTujuan' => $value->LokasiTujuan,
-                'PembayaranTunai' => $value->PembayaranTunai,
-                'PembayaranKredit' => $value->PembayaranKredit,
-                'PembayaranEkop' => $value->PembayaranEkop,
-                'TotalHarga' => $value->TotalHarga,
-                'StatusPesanan' =>  $value->StatusPesanan,
-                'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
-                'UserUpdateSP' => $value->UserUpdateSP,
-                'LastUpdateSP' => $value->LastUpdateSP,
-                'DueDate' => $value->DueDate,
-                'TglAwal' => $value->TglAwal,
-                'TglAkhir' => $value->TglAkhir,
-            ]);
-
-            $backupdt =  Trmutasidt::where('Nomor', $value->Nomor)->get();
-
-            foreach ($backupdt as $key => $row) {
-                DB::connection($koneksi)->table('trmutasidt')->insert([
-                    'Transaksi' => $value->Transaksi,
-                    'Nomor' =>  $nomor,
-                    'Urut' => $row->Urut,
-                    'KodeBarang' => $row->KodeBarang,
-                    'DiskonPersen' => $row->DiskonPersen,
-                    'DiskonTunai' => $row->DiskonTunai,
-                    'UserUpdate' => $row->UserUpdate,
-                    'LastUpdate' => $row->LastUpdate,
-                    'Jumlah' => $row->Jumlah,
-                    'Harga' => $row->Harga,
-                    'Satuan' => $row->Satuan,
-                    'HargaLama' => 0,
-                ]);
+            if(!$trmutasidt){
+                array_push($arr, $value->Kode);
             }
-            // if ($cekmutasi->isNotEmpty()) {
-
-
-            // }
-
         }
+        $arr = array_unique($arr);
+        foreach ($arr as $key => $value) {
+           $saldo = new Trsaldobarang();
+           $saldo->KodeBarang = $value;
+           $saldo->Saldo = 0;
+           $saldo->Tanggal = date('Y-m-d H:i:s');
+           $saldo->KodeLokasi = "P2";
+           $saldo->save();
+        }
+            
+        //     $tanggal = date('Y-m-d', strtotime($value->Tanggal));
+        //     $nomor = $this->generateNomor($tanggal, $value->Transaksi, "PE");
+        //     DB::connection($koneksi)->table('trmutasihd')->insert([
+        //         'Transaksi' => $value->Transaksi,
+        //         'Nomor' => $nomor,
+        //         'NomorLokal' => $value->Nomor,
+        //         'Tanggal' => $value->Tanggal,
+        //         'KodeSuppCust' => $value->KodeSuppCust,
+        //         'Keterangan' => $value->Keterangan,
+        //         'DiskonPersen' => $value->DiskonPersen,
+        //         'DiskonTunai' => $value->DiskonTunai,
+        //         'Pajak' => $value->Pajak,
+        //         'LokasiAwal' => $value->LokasiAwal,
+        //         'LokasiTujuan' => $value->LokasiTujuan,
+        //         'PembayaranTunai' => $value->PembayaranTunai,
+        //         'PembayaranKredit' => $value->PembayaranKredit,
+        //         'PembayaranEkop' => $value->PembayaranEkop,
+        //         'TotalHarga' => $value->TotalHarga,
+        //         'StatusPesanan' =>  $value->StatusPesanan,
+        //         'TotalHargaSetelahPajak' => $value->TotalHargaSetelahPajak,
+        //         'UserUpdateSP' => $value->UserUpdateSP,
+        //         'LastUpdateSP' => $value->LastUpdateSP,
+        //         'DueDate' => $value->DueDate,
+        //         'TglAwal' => $value->TglAwal,
+        //         'TglAkhir' => $value->TglAkhir,
+        //     ]);
+
+        //     $backupdt =  Trmutasidt::where('Nomor', $value->Nomor)->get();
+
+        //     foreach ($backupdt as $key => $row) {
+        //         DB::connection($koneksi)->table('trmutasidt')->insert([
+        //             'Transaksi' => $value->Transaksi,
+        //             'Nomor' =>  $nomor,
+        //             'Urut' => $row->Urut,
+        //             'KodeBarang' => $row->KodeBarang,
+        //             'DiskonPersen' => $row->DiskonPersen,
+        //             'DiskonTunai' => $row->DiskonTunai,
+        //             'UserUpdate' => $row->UserUpdate,
+        //             'LastUpdate' => $row->LastUpdate,
+        //             'Jumlah' => $row->Jumlah,
+        //             'Harga' => $row->Harga,
+        //             'Satuan' => $row->Satuan,
+        //             'HargaLama' => 0,
+        //         ]);
+        //     }
+        //     // if ($cekmutasi->isNotEmpty()) {
+
+
+        //     // }
+
+        // }
         // dd($arr);
 
-        return response()->json(['message' => 'success']);
+        // return response()->json($trmutasihd);
+        return response()->json($arr);
     }
 
     public function deleteData()
@@ -1326,11 +1346,12 @@ class KasirController extends Controller
 
     public function indexpromo()
     {
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PROMO')->where('LokasiAwal',auth()->user()->KodeLokasi)->get();
+        $trmutasihd = Trmutasihd::where('Transaksi', 'PROMO')->where('LokasiAwal', auth()->user()->KodeLokasi)->get();
         return view("frontend.pos.transaksi.kasir.promo.index", ['trmutasihd' => $trmutasihd]);
     }
 
-    public function showpromo($id){
+    public function showpromo($id)
+    {
         $trmutasidt = Trmutasidt::join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->where('Nomor', $id)->get();
         return view("frontend.pos.transaksi.kasir.promo.show", ['trmutasidt' => $trmutasidt]);
     }
