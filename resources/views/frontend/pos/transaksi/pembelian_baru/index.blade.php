@@ -121,7 +121,7 @@
             table.draw();
         })
 
-        $(".btnpost").on('click', function () {
+        $(document).on('click',".btnpost", function () {
             var nomor = $(this).data('nomor');
             swal({
                 title: "Apa anda yakin ?",
