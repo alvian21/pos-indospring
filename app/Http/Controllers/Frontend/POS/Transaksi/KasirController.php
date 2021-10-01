@@ -1231,30 +1231,14 @@ class KasirController extends Controller
     {
         $koneksi = 'mysql2';
         $year = date('Y');
-        $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', '>=', '2021-09-18')->whereDate('Tanggal', '<', '2021-09-30')->get()->toArray();
-        $trmutasidt = Trmutasidt::where('Transaksi', 'OPNAME')->whereDate('LastUpdate', '2021-09-30')->get();
+        // $trmutasihd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', '2021-09-17')->get()->toArray();
+        $trmutasidt = Trmutasidt::where('Transaksi', 'PENJUALAN')->whereDate('LastUpdate', '2021-09-17')->get();
+        $trmutasidt->makeHidden(['id']);
+        $trmutasidt = $trmutasidt->toArray();
         // DB::connection($koneksi)->table('trmutasihd')->insert($trmutasihd);
-        // DB::connection($koneksi)->table('trmutasidt')->insert($trmutasidt);
-        $barang = Msbarang::all();
-        $arr = [];
+        DB::connection($koneksi)->table('trmutasidt')->insert($trmutasidt);
 
-        foreach ($barang as $key => $value) {
-            $trmutasidt = Trmutasidt::where('Transaksi', 'OPNAME')->where('KodeBarang',$value->Kode)->whereDate('LastUpdate', '2021-09-30')->first();
 
-            if(!$trmutasidt){
-                array_push($arr, $value->Kode);
-            }
-        }
-        $arr = array_unique($arr);
-        foreach ($arr as $key => $value) {
-           $saldo = new Trsaldobarang();
-           $saldo->KodeBarang = $value;
-           $saldo->Saldo = 0;
-           $saldo->Tanggal = date('Y-m-d H:i:s');
-           $saldo->KodeLokasi = "P2";
-           $saldo->save();
-        }
-            
         //     $tanggal = date('Y-m-d', strtotime($value->Tanggal));
         //     $nomor = $this->generateNomor($tanggal, $value->Transaksi, "PE");
         //     DB::connection($koneksi)->table('trmutasihd')->insert([
@@ -1309,7 +1293,7 @@ class KasirController extends Controller
         // dd($arr);
 
         // return response()->json($trmutasihd);
-        return response()->json($arr);
+        return response()->json(['status' => true]);
     }
 
     public function deleteData()

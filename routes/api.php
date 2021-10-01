@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('penjualan','Frontend\POS\Transaksi\KasirController@reindex');
+// Route::get('penjualan','Frontend\POS\Transaksi\KasirController@reindex');
