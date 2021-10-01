@@ -61,7 +61,7 @@ class BackupDatabase extends Command
     {
         $client = new Client();
         $date = date('Y-m-d');
-        $path = Storage::path("Laravel");
+        $path = Storage::path(env('APP_NAME'));
         $file = File::allFiles($path);
         arsort($file);
         $respath = "";
