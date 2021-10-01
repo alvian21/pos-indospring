@@ -94,7 +94,7 @@ class BackupDatabase extends Command
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             if ($response['status']) {
-                File::deleteDirectory(storage_path("app/Laravel/"));
+                File::deleteDirectory(storage_path("app/" . env('APP_NAME') . "/"));
             }
         }
     }
