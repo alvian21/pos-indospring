@@ -61,7 +61,7 @@ class BackupDatabase extends Command
     {
         $client = new Client();
         $date = date('Y-m-d');
-        $path = Storage::path(env('APP_NAME'));
+        $path = Storage::path("Backup");
         $file = File::allFiles($path);
         arsort($file);
         $respath = "";
@@ -94,7 +94,7 @@ class BackupDatabase extends Command
             $response = $response->getBody()->getContents();
             $response = json_decode($response, true);
             if ($response['status']) {
-                File::deleteDirectory(storage_path("app/" . env('APP_NAME') . "/"));
+                File::deleteDirectory(storage_path("app/Backup/"));
             }
         }
     }
