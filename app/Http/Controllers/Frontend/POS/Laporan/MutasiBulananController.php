@@ -61,7 +61,11 @@ class MutasiBulananController extends Controller
             $tahun = date('Y', strtotime($periode));
             $periode = date(" F  Y", strtotime($periode));
             $lokasi = $request->get('lokasi');
+            $previous = strtotime("first day of last month");
+            $bulan = date('m', strtotime($previous));
+            $tahun = date('Y', strtotime($previous));
 
+            dd($bulan);
             if ($lokasi == 'Semua') {
                 $data = Trmutasihd::select('KodeBarang', 'Nama')->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('KodeBarang', 'Nama')->get();
             } else {
