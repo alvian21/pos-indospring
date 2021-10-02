@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('backup:run --only-db --disable-notifications')->daily()->at('00:01');
         $schedule->command('send:database')->daily()->at('00:02');
-        $schedule->command('hpp:create')->daily()->at('21:35');
+        $schedule->command('hpp:create')->monthlyOn(1, '00:03');
     }
 
     /**
