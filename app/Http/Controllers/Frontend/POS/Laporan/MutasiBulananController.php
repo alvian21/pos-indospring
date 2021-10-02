@@ -60,9 +60,9 @@ class MutasiBulananController extends Controller
             $bulan = date('m', strtotime($periode));
             $tahun = date('Y', strtotime($periode));
             $periode = date(" F  Y", strtotime($periode));
-            $status = $request->get('lokasi');
+            $lokasi = $request->get('lokasi');
 
-            if ($status == 'Semua') {
+            if ($lokasi == 'Semua') {
                 $data = Trmutasihd::select('KodeBarang', 'Nama')->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('KodeBarang', 'Nama')->get();
             } else {
                 $data = Trmutasihd::select('KodeBarang', 'Nama')->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $request->get('lokasi'))->groupBy('KodeBarang', 'Nama')->get();
@@ -80,23 +80,30 @@ class MutasiBulananController extends Controller
                     $saldo = 0;
                 }
                 $x['SaldoAwal'] = $saldo;
-                $pembelian = Trmutasidt::whereMonth('LastUpdate', $bulan)->whereYear('LastUpdate', $tahun)->where('Transaksi', 'PEMBELIAN')->where('KodeBarang', $value->KodeBarang)->sum('Jumlah');
+                $pembelian = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');
                 $x['Pembelian'] = $pembelian;
                 $x['IN'] = 0;
-                $x['Retur'] = Trmutasidt::whereMonth('LastUpdate', $bulan)->whereYear('LastUpdate', $tahun)->where('Transaksi', 'RETUR PEMBELIAN')->where('KodeBarang', $value->KodeBarang)->sum('Jumlah');
+                $x['Retur'] = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'RETUR PEMBELIAN')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');
                 $x['OUT'] = 0;
-                $x['Rusak'] = Trmutasidt::whereMonth('LastUpdate', $bulan)->whereYear('LastUpdate', $tahun)->where('Transaksi', 'RUSAK HILANG')->where('KodeBarang', $value->KodeBarang)->sum('Jumlah');
-                $x['Penjualan'] = Trmutasidt::whereMonth('LastUpdate', $bulan)->whereYear('LastUpdate', $tahun)->where('Transaksi', 'PENJUALAN')->where('KodeBarang', $value->KodeBarang)->sum('Jumlah');
-                $x['Akhir'] = ($saldo + $x['Pembelian'] + $x['IN']) - ($x['Retur'] + $x['OUT'] + $x['Rusak'] + $x['Penjualan']);
-                $trhpp = Trhpp::where('Periode',$dataperiode)->where('KodeBarang',$value->KodeBarang)->first();
-                if($trhpp){
+                $x['Rusak'] = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'RUSAK HILANG')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');
+                $x['Penjualan'] = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'PENJUALAN')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');
+                $x['Opname'] = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'OPNAME')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');
+                $x['Saldo'] = ($saldo + $x['Pembelian'] + $x['IN']) - ($x['Retur'] + $x['OUT'] + $x['Rusak'] + $x['Penjualan']);
+                if ($x['Opname'] > 0) {
+                    $akhir = $x['Opname'];
+                } else {
+                    $akhir = $x['Saldo'];
+                }
+                $x['Akhir'] = $akhir;
+                $trhpp = Trhpp::where('Periode', $dataperiode)->where('KodeBarang', $value->KodeBarang)->where('KodeLokasi', $lokasi)->first();
+                if ($trhpp) {
                     $x['HPP'] = $trhpp->Hpp;
-                }else{
+                } else {
                     $x['HPP'] = 0;
                 }
                 $barang = Msbarang::find($value->KodeBarang);
                 $x['HargaJual'] = $barang->HargaJual;
-                $x['Laba'] = ($x['HargaJual']-$x['HPP']) * $x['Penjualan'];
+                $x['Laba'] = ($x['HargaJual'] - $x['HPP']) * $x['Penjualan'];
                 array_push($arr, $x);
             }
             if ($cetak == 'pdf') {

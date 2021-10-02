@@ -47,6 +47,8 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
             $data['OUT'],
             $data['Rusak'],
             $data['Penjualan'],
+            $data['Opname'],
+            $data['Saldo'],
             $data['Akhir'],
             $data['HPP'],
             $data['HargaJual'],
@@ -72,8 +74,8 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 // at row 1, insert 2 rows
                 $event->sheet->insertNewRowBefore(1, 2);
 
-                $event->sheet->mergeCells('A1:M1');
-                $event->sheet->mergeCells('A2:M2');
+                $event->sheet->mergeCells('A1:O1');
+                $event->sheet->mergeCells('A2:O2');
 
                 $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
 
@@ -89,10 +91,12 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->setCellValue('G3', 'Transfer OUT');
                 $event->sheet->setCellValue('H3', 'Hilang / Rusak');
                 $event->sheet->setCellValue('I3', 'Penjualan');
-                $event->sheet->setCellValue('J3', 'Saldo Akhir');
-                $event->sheet->setCellValue('K3', 'HPP');
-                $event->sheet->setCellValue('L3', 'Harga Jual');
-                $event->sheet->setCellValue('M3', 'Laba');
+                $event->sheet->setCellValue('J3', 'Opname');
+                $event->sheet->setCellValue('K3', 'Saldo');
+                $event->sheet->setCellValue('L3', 'Saldo Akhir');
+                $event->sheet->setCellValue('M3', 'HPP');
+                $event->sheet->setCellValue('N3', 'Harga Jual');
+                $event->sheet->setCellValue('O3', 'Laba');
 
 
                 // assign cell styles
@@ -111,6 +115,8 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->getColumnDimension('K')->setAutoSize(true);
                 $event->sheet->getColumnDimension('L')->setAutoSize(true);
                 $event->sheet->getColumnDimension('M')->setAutoSize(true);
+                $event->sheet->getColumnDimension('N')->setAutoSize(true);
+                $event->sheet->getColumnDimension('O')->setAutoSize(true);
 
                 $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },
