@@ -100,8 +100,8 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
 
 
                 // assign cell styles
-                $event->sheet->getStyle('A:M')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('A:M')->getAlignment()->setVertical('center');
+                $event->sheet->getStyle('A:O')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:O')->getAlignment()->setVertical('center');
                 $event->sheet->getColumnDimension('A')->setAutoSize(true);
                 $event->sheet->getColumnDimension('B')->setAutoSize(true);
                 $event->sheet->getColumnDimension('C')->setAutoSize(true);
