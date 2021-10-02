@@ -57,11 +57,12 @@ class MutasiBulananController extends Controller
         } else {
             $periode = $request->get('periode');
             $cetak = $request->get('cetak');
+            $tanggal = date("Y-m-d", strtotime($periode));
             $bulan = date('m', strtotime($periode));
             $tahun = date('Y', strtotime($periode));
             $periode = date(" F  Y", strtotime($periode));
             $lokasi = $request->get('lokasi');
-            $previous =  date("Y-m-d", strtotime('-1 month', strtotime(date('Y-m-d'))));
+            $previous =  date("Y-m-d", strtotime('-1 month', strtotime($tanggal)));
             $bulanlalu = date('m', strtotime($previous));
             $tahunlalu = date('Y', strtotime($previous));
 

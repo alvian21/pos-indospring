@@ -15,7 +15,8 @@
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
                         <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Pembelian Baru</h4>
-                        <a href="{{route('pos.pembelianbaru.create')}}"  class="btn btn-primary float-right addBarang"> Tambah Pembelian</a>
+                        <a href="{{route('pos.pembelianbaru.create')}}" class="btn btn-primary float-right addBarang">
+                            Tambah Pembelian</a>
                     </div>
                     <div class="card-body">
                         @include('frontend.include.alert')
@@ -26,7 +27,7 @@
                                 </tr>
                                 <tr class=" input-daterange">
                                     <td>Minimum date:</td>
-                                    <td> <input type="text" id="min" class="form-control" data-date-format="d M yyyy" >
+                                    <td> <input type="text" id="min" class="form-control" data-date-format="d M yyyy">
                                     </td>
                                     <td>Maximum date:</td>
                                     <td> <input type="text" id="max" class="form-control" data-date-format="d M yyyy">
@@ -46,25 +47,34 @@
                                         <th>Lokasi Tujuan</th>
                                         <th>Total Harga</th>
                                         <th>Total Harga Setelah Pajak</th>
-
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($trmutasihd as $row)
-                                       <tr>
-                                           <td>{{$row->Transaksi}}</td>
-                                           <td>{{$row->Nomor}}</td>
-                                           <td>{{$row->Tanggal}}</td>
-                                           <td>{{$row->KodeSuppCust}}</td>
-                                           <td>{{$row->LokasiTujuan}}</td>
-                                           <td>@rupiah($row->TotalHarga)</td>
-                                           <td>@rupiah($row->TotalHargaSetelahPajak)</td>
-                                           <td>
-                                            <a href="{{route('pos.pembelianbaru.show',[$row->Nomor])}}" class="btn btn-success">Detail</a>
-                                            <button type="button" data-nomor="{{$row->Nomor}}" class="btn btn-danger btnpost" @if($row->StatusPesanan == 'POST' ) disabled @endif>@if($row->StatusPesanan == 'POST' ) POSTED @else POST @endif</button>
+                                    <tr>
+                                        <td>{{$row->Transaksi}}</td>
+                                        <td>{{$row->Nomor}}</td>
+                                        <td>{{$row->Tanggal}}</td>
+                                        <td>{{$row->KodeSuppCust}}</td>
+                                        <td>{{$row->LokasiTujuan}}</td>
+                                        <td>@rupiah($row->TotalHarga)</td>
+                                        <td>@rupiah($row->TotalHargaSetelahPajak)</td>
+                                        <td>
+                                            <a href="{{route('pos.pembelianbaru.show',[$row->Nomor])}}"
+                                                class="btn btn-success">Detail</a>
+                                            @if ($row->StatusPesanan != 'POST')
+                                            <a href="{{route('pos.pembelianbaru.edit',[$row->Nomor])}}"
+                                                class="btn btn-info">Edit</a>
+                                            <button type="button" class="btn btn-danger btnDelete"
+                                                data-nomor="{{$row->Nomor}}">Delete</button>
+                                            <button type="button" class="btn btn-danger btnpost"
+                                                data-nomor="{{$row->Nomor}}">POST</button>
+                                            @else
+                                            <button type="button" class="btn btn-danger" disabled>POSTED</button>
+                                            @endif
                                         </td>
-                                       </tr>
+                                    </tr>
                                     @empty
 
                                     @endforelse
@@ -88,7 +98,7 @@
     integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
     crossorigin="anonymous"></script>
 <script type="text/javascript">
-     $.fn.dataTable.ext.search.push(
+    $.fn.dataTable.ext.search.push(
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
@@ -115,11 +125,49 @@
 
         $('#min').datepicker('setDate',firstDay);
         $('#max').datepicker('setDate',lastDay);
-            var table =  $('#trmutasihd').DataTable();
+            var table =  $('#trmutasihd').DataTable({
+                "sScrollX": "100%",
+                "sScrollXInner": "110%",
+            });
         table.draw();
         $('#min, #max').on('change', function () {
             table.draw();
         })
+
+        function ajax() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+         }
+        $(document).on('click','.btnDelete', function () {
+        var nomor = $(this).data('nomor')
+
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this imaginary file!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        ajax()
+                        $.ajax({
+                            url:"{{url('/admin/pos/pembelianbaru/')}}/"+nomor,
+                            method:"DELETE",
+                            success:function(response){
+                                if(response.status){
+                                   window.location.reload(true)
+                                }
+                            }
+                        })
+                    }
+                });
+        })
+
 
         $(document).on('click',".btnpost", function () {
             var nomor = $(this).data('nomor');

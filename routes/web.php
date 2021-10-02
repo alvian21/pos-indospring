@@ -242,6 +242,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get('/check_session', 'PembelianBaruController@check_session_detail')->name('pembelianbaru.check');
             Route::get('/delete_detail/{id}', 'PembelianBaruController@delete_data');
             Route::get('/update_status', 'PembelianBaruController@updatePost')->name('pembelianbaru.updatestatus');
+            Route::post('/transaksi_pembelianbaru/edit', 'PembelianBaruController@store_transaksi_edit')->name('transaksi_pembelianbaru.update');
+            Route::post('/transaksi_pembelianbaru/edit/store', 'PembelianBaruController@store_detail_update')->name('transaksi_pembelianbaru.store_detail_update');
+            Route::delete('/transaksi_pembelianbaru/edit/delete', 'PembelianBaruController@delete_detail')->name('transaksi_pembelianbaru.delete_detail');
+            Route::get('/data_detail/edit', 'PembelianBaruController@getDataDetailEdit')->name('pembelianbaru.datadetailedit');
         });
 
         Route::group(['prefix' => 'returpembelian'], function () {

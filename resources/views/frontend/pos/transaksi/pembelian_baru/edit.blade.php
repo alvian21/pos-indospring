@@ -7,14 +7,14 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Transaksi | Pembelian</h1>
+        <h1>Transaksi Edit | Pembelian</h1>
     </div>
     <div class="section-body">
         <div class="row">
             <div class="col-12">
                 <div class="card card-dark">
                     <div class="card-header container-fluid d-flex justify-content-between">
-                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi | Pembelian</h4>
+                        <h4 class="text-dark"><i class="fas fa-list pr-2"></i> Transaksi Edit | Pembelian</h4>
 
                     </div>
                     <div class="card-body">
@@ -32,14 +32,14 @@
                                     <div class="form-group">
                                         <label for="nomor">Nomor</label>
                                         <input type="text" class="form-control" id="nomor" name="nomor"
-                                            value="{{$formatNomor}}" readonly>
+                                            value="{{$trmutasihd->Nomor}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tanggal">Tanggal</label>
                                         <input type="text" class="form-control" id="tanggal" name="tanggal" readonly
-                                            value="{{date('d M y H:i')}}">
+                                            value="{{$trmutasihd->Tanggal}}">
                                     </div>
 
                                 </div>
@@ -59,7 +59,7 @@
                                     <div class="form-group">
                                         <label for="diskon_persen">Diskon (%)</label>
                                         <input type="number" class="form-control" id="diskon_persen" min="0"
-                                            value="{{$trpembelianbaru["diskon_persen"]}}" name="diskon_persen" required>
+                                            value="{{$trmutasihd->DiskonPersen}}" name="diskon_persen" required>
                                     </div>
 
                                 </div>
@@ -67,7 +67,7 @@
                                     <div class="form-group">
                                         <label for="diskon_rp">Diskon (Rp)</label>
                                         <input type="text" class="form-control" id="diskon_rp" min="0"
-                                            value="{{$trpembelianbaru["diskon_rp"]}}" name="diskon_rp" required>
+                                            value="{{$trmutasihd->DiskonTunai}}" name="diskon_rp" required>
                                     </div>
 
                                 </div>
@@ -75,21 +75,21 @@
                                     <div class="form-group">
                                         <label for="pajak">Pajak</label>
                                         <input type="number" class="form-control" id="pajak" name="pajak" min="10"
-                                            value="{{$trpembelianbaru["pajak"]}}" required>
+                                            value="{{$trmutasihd->Pajak}}" required>
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="ttl_harga">Total Harga</label>
                                         <input type="text" class="form-control" id="ttl_harga"
-                                            value="{{$trpembelianbaru["total_harga"]}}" name="ttl_harga" readonly>
+                                            value="{{$trmutasihd->TotalHarga}}" name="ttl_harga" readonly>
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="ttl_harga_pajak">Total Harga + Pajak</label>
                                         <input type="text" class="form-control ttl_harga_pajak" id="ttl_harga_pajak"
-                                            value="{{$trpembelianbaru["total_harga_setelah_pajak"]}}" name="ttl_harga_pajak"
+                                            value="{{$trmutasihd->TotalHargaSetelahPajak}}" name="ttl_harga_pajak"
                                             readonly>
                                     </div>
                                 </div>
@@ -100,10 +100,12 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="supplier">Supplier</label>
-                                        <select class="form-control js-example-basic-single" id="supplier" name="supplier">
+                                        <select class="form-control js-example-basic-single" id="supplier"
+                                            name="supplier">
                                             <option value="0">Pilih Supplier</option>
                                             @forelse ($mssupplier as $item)
-                                            <option @if($item->Kode == $trpembelianbaru["kode"]) selected @endif value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
+                                            <option @if($item->Kode == $trmutasihd->KodeSuppCust) selected @endif
+                                                value="{{$item->Kode}}">{{$item->Kode}} | {{$item->Nama}}</option>
                                             @empty
                                             <option value="">not found</option>
                                             @endforelse
@@ -112,9 +114,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="keterangan">keterangan</label>
-                                        <textarea class="form-control" id="keterangan" name="keterangan"
-                                            rows="3">{{$trpembelianbaru["keterangan"]}}</textarea>
+                                        <label for="keterangan_header">keterangan</label>
+                                        <textarea class="form-control" id="keterangan_header" name="keterangan_header"
+                                            rows="3">{{$trmutasihd->Keterangan}}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +154,6 @@
                                         <th>Harga</th>
                                         <th>Diskon Persen</th>
                                         <th>Diskon Tunai</th>
-
                                         <th>SubTotal</th>
                                         <th>Action</th>
                                     </tr>
@@ -163,9 +164,7 @@
                                 </tbody>
 
                             </table>
-                            <div class="float-right mt-3 btnSimpan">
-                                <button type="button" class="btn btn-primary btnsimpan">Simpan</button>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -187,6 +186,7 @@
             </div>
             <form id="formDetail">
                 <input type="hidden" name="id_urut" id="id_urut">
+                <input type="hidden" id="nomor_update" name="nomor_update" value="{{$trmutasihd->Nomor}}">
                 <div class="modal-body">
                     <div id="alert-detail">
                         <div class="alert alert-danger" role="alert">
@@ -199,15 +199,21 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="barang">Barang</label>
-                                <select class="form-control js-example-basic-single" name="barang" id="barang">
-                                    <option value="0">Pilih Barang</option>
-                                    @forelse ($msbarang as $item)
-                                    <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null)
-                                        {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
-                                    @empty
+                                <div id="combobarang">
+                                    <select class="form-control js-example-basic-single" name="barang" id="barang">
+                                        <option value="0">Pilih Barang</option>
+                                        @forelse ($msbarang as $item)
+                                        <option value="{{$item->Kode}}">{{$item->Kode}} | @if($item->KodeBarcode!=null)
+                                            {{$item->KodeBarcode}} | @endif {{$item->Nama}}</option>
+                                        @empty
 
-                                    @endforelse
-                                </select>
+                                        @endforelse
+                                    </select>
+                                </div>
+                                <div id="inputbarang">
+                                    <input type="text" class="form-control" name="barang_edit" readonly
+                                        id="barang_edit">
+                                </div>
                             </div>
 
                         </div>
@@ -285,7 +291,6 @@
     </div>
 </div>
 
-
 @endsection
 @section('scripts')
 <script type="text/javascript">
@@ -315,6 +320,9 @@
         $('#kembalian').mask('000.000.000.000', {
             reverse: true
         });
+        $('#harga').mask('000.000.000.000', {
+            reverse: true
+        });
     $('#alert-detail').hide();
     var subtotal;
      var qty;
@@ -322,13 +330,19 @@
      var ds_rp;
      var ds_persen;
      var ttl_harga=0;
-
+    var nomor ='{{$trmutasihd->Nomor}}'
 
     var table_detail = $("#table-detail").DataTable({
         "scrollX": true,
         processing: true,
         serverSide: true,
-        ajax: "{{ route('pos.pembelianbaru.datadetail') }}",
+        ajax:{
+            url: "{{ route('pos.pembelianbaru.datadetailedit') }}",
+            method:"GET",
+            data:{
+                'id':nomor
+            }
+        },
         columns: [
             {data: 'urut', name: 'urut'},
             {data: 'barang', name: 'barang'},
@@ -348,23 +362,24 @@
         }
     });
 
+
     // $('.js-example-basic-single').select2();
     $('#barcode_cust').select2();
     $('#supplier').select2();
-
+    $('#inputbarang').hide()
     // transaksi post
-    $(document).on('keyup keydown change','#supplier, #diskon_persen, #diskon_rp, #pajak, #lokasi, #keterangan', async function(){
+    $(document).on('keyup keydown change','#supplier, #diskon_persen, #diskon_rp, #pajak, #lokasi, #keterangan_header', async function(){
         var form = $('#formTransaksi').serialize();
 
-        csrf_ajax();
+       csrf_ajax();
        const result = await  $.ajax({
-            url:"{{route('pos.transaksi_pembelianbaru.store')}}",
+            url:"{{route('pos.transaksi_pembelianbaru.update')}}",
             method:"post",
             data:form
         });
-        // console.log(result);
-      $('#ttl_harga').val(convertToRupiah(result['total_harga']));
-      $('#ttl_harga_pajak').val(convertToRupiah(result['total_harga_setelah_pajak']));
+
+        $('#ttl_harga').val(convertToRupiah(result['total_harga']));
+        $('#ttl_harga_pajak').val(convertToRupiah(result['total_harga_setelah_pajak']));
     })
 
     $('.addTransaksi').on('click',function () {
@@ -375,8 +390,6 @@
     $('.btnDetailBarang').on('click',function () {
         $('#barangModal').modal('show');
         setTimeout(function(){ $('#barang').select2('open');},500)
-        ds_persen = $('.diskon_persen').val();
-        ds_rp = $('.diskon_rp').val();
         $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
     });
 
@@ -384,11 +397,9 @@
         var kode_barang = $(this).val();
         $('#alert-detail').hide();
         var qty = $('#qty').val();
-        ds_persen = $('.diskon_persen').val();
-        ds_rp = $('.diskon_rp').val();
         if(kode_barang != 0){
             $.ajax({
-            url:"{{route('pos.pembelianbaru.databarang')}}",
+            url:"{{route('pos.returpembelian.databarang')}}",
             method:"GET",
             data:{
                 'kode_barang':kode_barang
@@ -397,16 +408,14 @@
                 $('#nama_barang').val(data["Nama"])
                 $('#stok').val(data["Saldo"]);
                 harga = data["HargaJual"];
-                ds_rp = replace_titik(ds_rp);
                 subtotal = parseInt(qty) * parseInt(harga);
-                subtotal = diskon_persen(subtotal, ds_persen);
-                subtotal = diskon_rp(subtotal, ds_rp);
                 if(subtotal <=0){
                     subtotal = 0;
                 }
-                // subtotal = convertToRupiah(subtotal)
-                // $('#subtotal').val(subtotal);
-                // $('#harga').val(convertToRupiah(harga));
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
+                $('#harga').val(convertToRupiah(harga));
+                $('#harga_lama').val(convertToRupiah(harga));
             }
         })
         }
@@ -460,116 +469,85 @@
         return rupiah.split('',rupiah.length-1).reverse().join('');
         }
 
-     $(document).on('keyup','#harga, #qty, .diskon_rp, .diskon_persen',function(){
-         var barang = $('#barang').val();
-         if(barang != 0){
+     $(document).on('keyup','#harga, #qty',function(){
+        var barang = $('#barang').val();
+         var modalbtn = $(".btnBarangModal").text()
+         if(modalbtn != 'update'){
+            if(barang != 0){
             qty = $("#qty").val();
             harga = $('#harga').val();
-            ds_persen = $('.diskon_persen').val();
-            ds_rp = $('.diskon_rp').val();
-            ds_rp = ds_rp.replace('.','');
             harga = harga.replace('.','');
             subtotal = qty * harga;
-
-            subtotal = diskon_persen(subtotal, ds_persen);
-            subtotal = diskon_rp(subtotal, ds_rp);
-            if(subtotal <=0){
-                subtotal = 0;
+                if(subtotal <=0){
+                    subtotal = 0;
+                }
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
+            }else{
+                $('.alert-danger').text('pilih barang terlebih dahulu')
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
             }
-            subtotal = convertToRupiah(subtotal)
-            $('#subtotal').val(subtotal);
          }else{
-            $('.alert-danger').text('pilih barang terlebih dahulu')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
+                qty = $("#qty").val();
+                harga = $('#harga').val();
+                harga = harga.replace('.','');
+                subtotal = qty * harga;
+                if(subtotal <=0){
+                    subtotal = 0;
+                }
+                subtotal = convertToRupiah(subtotal)
+                $('#subtotal').val(subtotal);
          }
 
      })
 
      $(document).on('click','.btnDetailInsert',function () {
 
-        var barang = $('#barang').val();
-        var stok = $('#stok').val();
-        var qty = $('#qty').val();
-            if(barang == '0'){
-               $('.alert-danger').text('pilih barang terlebih dahulu')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else if(qty == undefined || qty == 0 || qty == ''){
-                $('.alert-danger').text('qty harus diisi')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }
-            else{
-                csrf_ajax();
-               $.ajax({
-                   url:"{{route('pos.detail_transaksi_pembelianbaru.store')}}",
-                   method: "POST",
-                   data: $('#formDetail').serialize(),
-                   success:function(data){
-                       $('.alert-success').text('Data berhasil di tambahkan')
-                       $('.alert-danger').hide()
-                       $('[id=barang]').val('0').trigger('change');
-                       $('#alert-detail').show();
-                       setTimeout(function(){ $('#alert-detail').hide()},3000);
-                       $('#formDetail').trigger("reset");
-                       table_detail.ajax.reload();
-                       setTimeout(function(){ $('#barang').select2('open');},500)
-                       $('.btnSimpan').show();
-                       $('#barang').val('0');
-                       var ttl_harga = convertToRupiah(String(data['total_harga']));
-                       var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
-                       $("#ttl_harga").val(ttl_harga);
-                        $("#ttl_harga_pajak").val(ttl_harga_pajak);
-                   }
-               })
-            }
-      });
-
-      $(document).on('click','.btnDetailUpdate',function () {
-        var barang = $('#barang').val();
-        var stok = $('#stok').val();
-        var qty = $('#qty').val();
-            if(barang == '0'){
-            $('.alert-danger').text('pilih barang terlebih dahulu')
-            $('.alert-success').hide();
-                $('#alert-detail').show();
-
-            }else if(qty == undefined || qty == 0 || qty == ''){
-                $('.alert-danger').text('qty harus diisi')
-                $('#alert-detail').show();
-                $('.alert-success').hide();
-            }else{
-                csrf_ajax();
-            $.ajax({
-                url:"{{route('pos.detail_transaksi_pembelianbaru.update')}}",
-                method: "POST",
-                data: $('#formDetail').serialize(),
-                success:function(data){
-                    $('#formDetail').trigger("reset");
-                    table_detail.ajax.reload();
-                    // setTimeout(function(){ $('#barang').select2('open');},500)
-                    $('[id=barang]').val('0').trigger('change');
-                    $('.btnSimpan').show();
-                    $('.alert-success').text('Data berhasil di update')
-                    $('.alert-danger').hide()
+            var barang = $('#barang').val();
+            var stok = $('#stok').val();
+            var qty = $('#qty').val();
+                if(barang == '0'){
+                $('.alert-danger').text('pilih barang terlebih dahulu')
                     $('#alert-detail').show();
-                    setTimeout(function(){ $('#alert-detail').hide()
-                    $('#barangModal').modal('hide')
-                    },3000);
-                    var ttl_harga = convertToRupiah(String(data['total_harga']));
-                       var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
-                       $("#ttl_harga").val(ttl_harga);
-                       $("#ttl_harga_pajak").val(ttl_harga_pajak);
+                    $('.alert-success').hide();
+                }else if(qty == undefined || qty == 0 || qty == ''){
+                    $('.alert-danger').text('qty harus diisi')
+                    $('#alert-detail').show();
+                    $('.alert-success').hide();
                 }
-            })
-            }
-        });
+                else{
+                    csrf_ajax();
+                $.ajax({
+                    url:"{{route('pos.transaksi_pembelianbaru.store_detail_update')}}",
+                    method: "POST",
+                    data: $('#formDetail').serialize(),
+                    success:function(data){
+                        $('.alert-success').text('Data berhasil di tambahkan')
+                        $('.alert-danger').hide()
+                        $('[id=barang]').val('0').trigger('change');
+                        $('#alert-detail').show();
+                        setTimeout(function(){ $('#alert-detail').hide()},3000);
+                        $('#formDetail').trigger("reset");
+                        table_detail.ajax.reload();
+                        setTimeout(function(){ $('#barang').select2('open');},500)
+                        $('.btnSimpan').show();
+                        $('#barang').val('0');
+                        var ttl_harga = convertToRupiah(String(data['total_harga']));
+                        var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
+                        $("#ttl_harga").val(ttl_harga);
+                            $("#ttl_harga_pajak").val(ttl_harga_pajak);
+                    }
+                })
+                }
+            });
 
       $('#barangModal').on('hidden.bs.modal', function() {
                 $(this).find('form').trigger('reset');
                 $('[id=barang]').val('0').trigger('change');
                 $('.btnBarangModal').text('insert');
+                $('#combobarang').show()
+                $('#inputbarang').hide()
                 $('#barangModalLabel').text('Input detail barang')
                 $('.btnBarangModal').removeClass('btnDetailUpdate').addClass('btnDetailInsert')
             });
@@ -580,23 +558,14 @@
     });
 
 
-
-      $(document).on('keyup','#diskon_persen_edit, #diskon_rp_edit, #pajak_edit', function(){
-          var ds_persen_edit = $('#diskon_persen_edit').val();
-          var ds_rp_edit = $('#diskon_rp_edit').val();
-          var ds_persen = diskon_persen(ttl_harga, ds_persen_edit);
-          var ds_rp = diskon_rp(ds_persen, ds_rp_edit);
-          var get_pajak = $('#pajak_edit').val();
-          var ht_pajak = pajak(ds_rp, get_pajak);
-          $('#ttl_harga').val(ds_rp);
-          $('#ttl_harga_pajak').val(ht_pajak);
-      })
-
       $(document).on('click', '.btnDetailBarangEdit', function(){
-        var row = $(this).closest("tr");
+          $('#combobarang').hide()
+          $('#inputbarang').show()
+          var row = $(this).closest("tr");
           var data =  $('#table-detail').DataTable().row(row).data()
           $('#id_urut').val(data['urut']);
           $('#nama_barang').val(data['nama_barang']);
+          $('#barang_edit').val(data['barang']);
           var dataselect = "";
           $('#barang option').each(function(){
              if($(this).val()==data['barang'].trim()){
@@ -620,12 +589,103 @@
           $('#barangModal').modal('show')
       })
 
+      $(document).on('click','.btnDetailUpdate',function () {
+        var stok = $('#stok').val();
+        var qty = $('#qty').val();
+        var harga = convertToAngka($('#harga').val());
+
+            if(qty == undefined || qty == 0 || qty == ''){
+                $('.alert-danger').text('qty harus diisi')
+                $('#alert-detail').show();
+                $('.alert-success').hide();
+            }else if(harga == undefined || harga <= 0 || harga == ''){
+                $('.alert-danger').text('harga harus diisi')
+                $('#alert-detail').show();
+                $('.alert-success').hide();
+            }else{
+                csrf_ajax();
+            $.ajax({
+                url:"{{route('pos.transaksi_pembelianbaru.store_detail_update')}}",
+                method: "POST",
+                data: $('#formDetail').serialize(),
+                success:function(data){
+                    $('#formDetail').trigger("reset");
+                    table_detail.ajax.reload();
+                    // setTimeout(function(){ $('#barang').select2('open');},500)
+
+                    $('.btnSimpan').show();
+                    $('.alert-success').text('Data berhasil di update')
+                    $('.alert-danger').hide()
+                    $('#alert-detail').show();
+                    setTimeout(function(){ $('#alert-detail').hide()
+                    $('#barangModal').modal('hide')
+                    },2000);
+                    var ttl_harga = convertToRupiah(String(data['total_harga']));
+                       var ttl_harga_pajak = convertToRupiah(String(data['total_harga_setelah_pajak']));
+                       $("#ttl_harga").val(ttl_harga);
+                       $("#ttl_harga_pajak").val(ttl_harga_pajak);
+                }
+            })
+            }
+        });
+
+    $('.btnsimpan').on('click', function(){
+        var ttl_belanja = $("#ttl_harga_pajak").val();
+        $("#total_belanja").val(ttl_belanja);
+        var tgl_awal = $('#tgl_awal').val()
+        var tgl_akhir = $('#tgl_akhir').val()
+        var date1 = new Date(tgl_awal)
+        var date2 = new Date(tgl_akhir)
+        var today = new Date();
+        if(tgl_awal == '' || tgl_akhir == ''){
+            swal("Tanggal mulai dan tanggal akhir wajib diisi!");
+            return false;
+        }
+
+        if(date1.setHours(0,0,0,0) < today.setHours(0,0,0,0)){
+            swal("Tanggal mulai harus minimal hari ini!");
+            return false;
+        }
+
+        if(date1.getTime() > date2.getTime()){
+            swal("Tanggal mulai harus lebih kecil dari tanggal akhir!");
+        }else{
+            var cek = "";
+            $.ajax({
+                url:"{{route('pos.returpembelian.check')}}",
+                async:false,
+                method:"GET",
+                success:function(data){
+                    if(data['message']=='true'){
+                        cek = true;
+                    }else{
+                        cek = false;
+                    }
+                }
+            })
+            if(cek){
+                swal({
+                    text: "Apa kamu yakin menyimpan data ini ?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    })
+                    .then((willInsert) => {
+                    if (willInsert) {
+                        window.location.href = "{{route('pos.returpembelian.save')}}"
+                    }
+                });
+            }else{
+                swal("Detail Belum Diisi!");
+            }
+        }
 
 
+
+    })
 
     $(document).on('click','.btnDelete', function () {
-       var urut = $(this).data('urut')
-
+       var barang = $(this).data('barang')
         swal({
             title: "Are you sure?",
             text: "Once deleted, you will not be able to recover this imaginary file!",
@@ -635,13 +695,28 @@
             })
             .then((willDelete) => {
             if (willDelete) {
-               window.location.href="{{url('/admin/pos/pembelianbaru/delete_detail/')}}/"+urut;
-            } else {
-                swal("Your imaginary file is safe!");
+                csrf_ajax()
+                $.ajax({
+                    url:"{{route('pos.transaksi_pembelianbaru.delete_detail')}}",
+                    method:"DELETE",
+                    data:{
+                        'nomor':nomor,
+                        'barang':barang
+                    },
+                    success:function(response){
+                        if(response.status){
+                            window.location.reload(true)
+                        }
+                    }
+                })
             }
             });
      })
 
+     function convertToAngka(rupiah)
+    {
+        return parseInt(rupiah.replace(/,.*|[^0-9]/g, ''), 10);
+    }
 
      function replace_titik(cek){
          if(cek!=undefined){
@@ -653,39 +728,6 @@
      }
 
 
-     $('.btnsimpan').on('click', function(){
-
-      var supp = $('#supplier').val()
-
-      if(supp == '0'){
-        swal("Pilih supplier !");
-        return false
-      }
-
-        $.ajax({
-            url:"{{route('pos.pembelianbaru.check')}}",
-            method:"GET",
-            success:function(data){
-                if(data['message']=='true'){
-                    swal({
-                        title: "Apa anda yakin menyimpan data transaksi ini?",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                        })
-                        .then((willSave) => {
-                        if (willSave) {
-                            window.location.href = "{{route('pos.pembelianbaru.save')}}"
-                        }
-                        });
-                }else{
-                    swal("Detail Belum Diisi!");
-                }
-            }
-        })
-
-
-})
 
 })
 </script>
