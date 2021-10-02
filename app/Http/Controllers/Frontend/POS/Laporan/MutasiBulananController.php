@@ -61,11 +61,10 @@ class MutasiBulananController extends Controller
             $tahun = date('Y', strtotime($periode));
             $periode = date(" F  Y", strtotime($periode));
             $lokasi = $request->get('lokasi');
-            $previous = strtotime("first day of last month");
-            $bulan = date('m', strtotime($previous));
-            $tahun = date('Y', strtotime($previous));
+            $previous =  date("Y-m-d", strtotime('-1 month', strtotime(date('Y-m-d'))));
+            $bulanlalu = date('m', strtotime($previous));
+            $tahunlalu = date('Y', strtotime($previous));
 
-            dd($bulan);
             if ($lokasi == 'Semua') {
                 $data = Trmutasihd::select('KodeBarang', 'Nama')->join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->join('msbarang', 'msbarang.Kode', 'trmutasidt.KodeBarang')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('KodeBarang', 'Nama')->get();
             } else {
@@ -77,7 +76,7 @@ class MutasiBulananController extends Controller
             foreach ($data as $key => $value) {
                 $x['KodeBarang'] = $value->KodeBarang;
                 $x['Nama'] = $value->Nama;
-                $saldobarang = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('KodeLokasi', $request->get('lokasi'))->orderBy('Tanggal', 'DESC')->first();
+                $saldobarang = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->whereMonth('Tanggal', $bulanlalu)->whereYear('Tanggal', $tahunlalu)->where('KodeLokasi', $request->get('lokasi'))->orderBy('Tanggal', 'DESC')->first();
                 if ($saldobarang) {
                     $saldo = $saldobarang->Saldo;
                 } else {
