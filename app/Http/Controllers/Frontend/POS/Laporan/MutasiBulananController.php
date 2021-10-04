@@ -98,7 +98,7 @@ class MutasiBulananController extends Controller
                 } else {
                     $akhir = $x['Saldo'];
                 }
-                $x['Adjust'] = $akhir;
+
                 $trhpp = Trhpp::where('Periode', $dataperiode)->where('KodeBarang', $value->KodeBarang)->where('KodeLokasi', $lokasi)->first();
                 if ($trhpp) {
                     $x['HPP'] = $trhpp->Hpp;
@@ -115,10 +115,10 @@ class MutasiBulananController extends Controller
                     $resakhir = 0;
                 }
                 $x['SaldoAkhir'] = $resakhir;
+                $x['Adjust'] =  $x['SaldoAkhir'] -  $x['Saldo'];
                 array_push($arr, $x);
             }
             if ($cetak == 'pdf') {
-
             } else {
 
                 if (isset($arr[0])) {
