@@ -84,7 +84,7 @@ class MutasiBulananController extends Controller
                     $saldo = 0;
                 }
                 $x['SaldoAwal'] = $saldo;
-                $pembelian = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');
+                $pembelian = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiTujuan', $lokasi)->sum('Jumlah');
                 $x['Pembelian'] = $pembelian;
                 $x['IN'] = 0;
                 $x['Retur'] = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->where('KodeBarang', $value->KodeBarang)->where('trmutasihd.Transaksi', 'RETUR PEMBELIAN')->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('LokasiAwal', $lokasi)->sum('Jumlah');

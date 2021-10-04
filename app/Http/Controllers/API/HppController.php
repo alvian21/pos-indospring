@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -14,6 +15,8 @@ use Spatie\Backup\Events\BackupZipWasCreated;
 use Spatie\Backup\Events\BackupWasSuccessful;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Backup\BackupDestination\Backup;
+use App\Trhpp;
+use App\Mshpp;
 
 class HppController extends Controller
 {
@@ -24,7 +27,35 @@ class HppController extends Controller
      */
     public function index()
     {
-        //
+        $periode = ['202109', '202110'];
+        $lokasi = ['P1', 'P2'];
+        $mshpp = Mshpp::all();
+        DB::beginTransaction();
+        try {
+
+            foreach ($mshpp as $keydata => $value) {
+                foreach ($periode as $key => $pe) {
+                    foreach ($lokasi as $keylok => $lok) {
+                        $cek = Trhpp::where('KodeLokasi', $lok)->where('KodeBarang', $value->KodeBarang)->where('Periode', $pe)->first();
+
+                        if (!$cek) {
+                            $hpp = new Trhpp();
+                            $hpp->Periode = $pe;
+                            $hpp->KodeBarang = $value->KodeBarang;
+                            $hpp->KodeLokasi = $lok;
+                            $hpp->Hpp = $value->Hpp;
+                            $hpp->save();
+                        }
+                    }
+                }
+            }
+
+
+            DB::commit();
+            return response()->json(['status' => true]);
+        } catch (\Exception $th) {
+            DB::rollBack();
+        }
     }
 
     /**
