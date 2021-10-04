@@ -77,7 +77,7 @@ class MutasiBulananController extends Controller
             foreach ($data as $key => $value) {
                 $x['KodeBarang'] = $value->KodeBarang;
                 $x['Nama'] = $value->Nama;
-                $saldobarang = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->whereMonth('Tanggal', $bulanlalu)->whereYear('Tanggal', $tahunlalu)->where('KodeLokasi', $request->get('lokasi'))->orderBy('Tanggal', 'DESC')->first();
+                $saldobarang = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->whereMonth('Tanggal', $bulanlalu)->whereYear('Tanggal', $tahunlalu)->where('KodeLokasi', $lokasi)->orderBy('Tanggal', 'DESC')->first();
                 if ($saldobarang) {
                     $saldo = $saldobarang->Saldo;
                 } else {
@@ -98,7 +98,7 @@ class MutasiBulananController extends Controller
                 } else {
                     $akhir = $x['Saldo'];
                 }
-                $x['SaldoAkhir'] = $akhir;
+                $x['Adjust'] = $akhir;
                 $trhpp = Trhpp::where('Periode', $dataperiode)->where('KodeBarang', $value->KodeBarang)->where('KodeLokasi', $lokasi)->first();
                 if ($trhpp) {
                     $x['HPP'] = $trhpp->Hpp;
@@ -114,7 +114,7 @@ class MutasiBulananController extends Controller
                 } else {
                     $resakhir = 0;
                 }
-                $x['Akhir'] = $resakhir;
+                $x['SaldoAkhir'] = $resakhir;
                 array_push($arr, $x);
             }
             if ($cetak == 'pdf') {

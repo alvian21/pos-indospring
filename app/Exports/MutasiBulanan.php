@@ -49,11 +49,11 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
             $data['Penjualan'],
             $data['Opname'],
             $data['Saldo'],
+            $data['Adjust'],
             $data['SaldoAkhir'],
             $data['HPP'],
             $data['HargaJual'],
             $data['Laba'],
-            $data['Akhir'],
         ];
     }
 
@@ -94,11 +94,12 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->setCellValue('I3', 'Penjualan');
                 $event->sheet->setCellValue('J3', 'Opname');
                 $event->sheet->setCellValue('K3', 'Saldo');
-                $event->sheet->setCellValue('L3', 'Saldo Akhir');
-                $event->sheet->setCellValue('M3', 'HPP');
-                $event->sheet->setCellValue('N3', 'Harga Jual');
-                $event->sheet->setCellValue('O3', 'Laba');
-                $event->sheet->setCellValue('P3', 'Akhir');
+                $event->sheet->setCellValue('L3', 'Adjust');
+                $event->sheet->setCellValue('M3', 'Saldo Akhir');
+                $event->sheet->setCellValue('N3', 'HPP');
+                $event->sheet->setCellValue('O3', 'Harga Jual');
+                $event->sheet->setCellValue('P3', 'Laba');
+
 
 
                 // assign cell styles
