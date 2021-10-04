@@ -118,26 +118,7 @@ class MutasiBulananController extends Controller
                 array_push($arr, $x);
             }
             if ($cetak == 'pdf') {
-                // $group = Trtransaksiperiode::select('SubDept')->join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('SubDept')->get();
 
-                // $arr = [];
-
-                // foreach ($group as $key => $value) {
-                //     $x['SubDept'] = $value->SubDept;
-                //     $saldoreset = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('SubDept', $value->SubDept)->orderBy('SubDept')->orderBy('Kode')->get();
-                //     $total = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('SubDept', $value->SubDept)->groupBy('SubDept')->sum('SaldoBelanjaKredit');
-                //     $x['data'] = $saldoreset;
-                //     $x['total'] = $total;
-                //     array_push($arr, $x);
-                // }
-
-                // $pdf = PDF::loadview(
-                //     "frontend.koperasi.laporan.tagihankredit.pdf",
-                //     [
-                //         'data' => $arr, 'periode' => $periode
-                //     ]
-                // )->setPaper('a4', 'potrait');
-                // return $pdf->stream('laporan-tagihankredit-pdf', array('Attachment' => 0));
             } else {
 
                 if (isset($arr[0])) {

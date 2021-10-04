@@ -47,7 +47,6 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
             $data['OUT'],
             $data['Rusak'],
             $data['Penjualan'],
-            $data['Opname'],
             $data['Saldo'],
             $data['Adjust'],
             $data['SaldoAkhir'],
@@ -92,19 +91,18 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->setCellValue('G3', 'Transfer OUT');
                 $event->sheet->setCellValue('H3', 'Hilang / Rusak');
                 $event->sheet->setCellValue('I3', 'Penjualan');
-                $event->sheet->setCellValue('J3', 'Opname');
-                $event->sheet->setCellValue('K3', 'Saldo');
-                $event->sheet->setCellValue('L3', 'Adjust');
-                $event->sheet->setCellValue('M3', 'Saldo Akhir');
-                $event->sheet->setCellValue('N3', 'HPP');
-                $event->sheet->setCellValue('O3', 'Harga Jual');
-                $event->sheet->setCellValue('P3', 'Laba');
+                $event->sheet->setCellValue('J3', 'Saldo');
+                $event->sheet->setCellValue('K3', 'Adjust');
+                $event->sheet->setCellValue('L3', 'Saldo Akhir');
+                $event->sheet->setCellValue('M3', 'HPP');
+                $event->sheet->setCellValue('N3', 'Harga Jual');
+                $event->sheet->setCellValue('O3', 'Laba');
 
 
 
                 // assign cell styles
-                $event->sheet->getStyle('A:P')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('A:P')->getAlignment()->setVertical('center');
+                $event->sheet->getStyle('A:O')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:O')->getAlignment()->setVertical('center');
                 $event->sheet->getColumnDimension('A')->setAutoSize(true);
                 $event->sheet->getColumnDimension('B')->setAutoSize(true);
                 $event->sheet->getColumnDimension('C')->setAutoSize(true);
@@ -120,7 +118,6 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->getColumnDimension('M')->setAutoSize(true);
                 $event->sheet->getColumnDimension('N')->setAutoSize(true);
                 $event->sheet->getColumnDimension('O')->setAutoSize(true);
-                $event->sheet->getColumnDimension('P')->setAutoSize(true);
 
                 $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },
