@@ -406,7 +406,7 @@ class PembelianBaruController extends Controller
                 $trpembelian = session('transaksi_pembelian_baru');
 
                 $trmutasihd = new Trmutasihd();
-                $trmutasihd->Transaksi = $trpembelian["transaksi"];
+                $trmutasihd->Transaksi = 'PEMBELIAN';
                 $trmutasihd->Nomor = $formatNomor;
                 $trmutasihd->Tanggal = date('Y-m-d H:i');
                 $trmutasihd->KodeSuppCust = $trpembelian["kode"];
