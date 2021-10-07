@@ -319,6 +319,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('tracestok', 'TraceStokController');
         Route::resource('trcetak', 'TrcetakController');
         Route::resource('mutasibulanan', 'MutasiBulananController');
+        Route::resource('labarugi', 'LabaRugiController');
     });
 
 

@@ -14,11 +14,12 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class MutasiBulanan implements FromCollection, WithEvents, WithMapping
+
+class LabaRugi implements FromCollection, WithEvents, WithMapping
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     protected $data;
 
     function __construct($data, $periode, $lastdate)
@@ -38,21 +39,20 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
     {
         $lastdate = $this->lastdate;
         return [
-            $data['KodeBarang'],
-            $data['Nama'],
-            $data['SaldoAwal'],
-            $data['Pembelian'],
-            $data['IN'],
-            $data['Retur'],
-            $data['OUT'],
-            $data['Rusak'],
-            $data['Penjualan'],
-            $data['Saldo'],
-            $data['Adjust'],
-            $data['SaldoAkhir'],
-            $data['HPP'],
-            $data['HargaJual'],
-            $data['Laba'],
+            '',
+            $data['Januari'],
+            $data['Februari'],
+            $data['Maret'],
+            $data['April'],
+            $data['Mei'],
+            $data['Juni'],
+            $data['Juli'],
+            $data['Agustus'],
+            $data['September'],
+            $data['Oktober'],
+            $data['November'],
+            $data['Desember'],
+
         ];
     }
 
@@ -74,35 +74,43 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 // at row 1, insert 2 rows
                 $event->sheet->insertNewRowBefore(1, 3);
 
-                $event->sheet->mergeCells('A1:P1');
-                $event->sheet->mergeCells('A2:P2');
+                $event->sheet->mergeCells('A1:M1');
+                $event->sheet->mergeCells('A2:M2');
 
-                $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
+                // $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
 
                 // assign cell values
-                $event->sheet->setCellValue('A1', 'Laporan Mutasi Bulanan');
+                $event->sheet->setCellValue('A1', 'Laporan Laba Rugi');
                 $event->sheet->setCellValue('A2', 'Periode ' . $this->periode);
-                $event->sheet->setCellValue('A3', 'Kode Barang');
-                $event->sheet->setCellValue('B3', 'Nama Barang');
-                $event->sheet->setCellValue('C3', 'Saldo Awal');
-                $event->sheet->setCellValue('D3', 'Pembelian');
-                $event->sheet->setCellValue('E3', 'Transfer IN');
-                $event->sheet->setCellValue('F3', 'Retur Pembelian');
-                $event->sheet->setCellValue('G3', 'Transfer OUT');
-                $event->sheet->setCellValue('H3', 'Hilang / Rusak');
-                $event->sheet->setCellValue('I3', 'Penjualan');
-                $event->sheet->setCellValue('J3', 'Saldo');
-                $event->sheet->setCellValue('K3', 'Adjust');
-                $event->sheet->setCellValue('L3', 'Saldo Akhir');
-                $event->sheet->setCellValue('M3', 'HPP');
-                $event->sheet->setCellValue('N3', 'Harga Jual');
-                $event->sheet->setCellValue('O3', 'Laba');
+                $event->sheet->setCellValue('A3', 'Keterangan');
+                $event->sheet->setCellValue('A4', 'Penjualan');
+                $event->sheet->setCellValue('A5', 'Potongan Penjualan');
+                $event->sheet->setCellValue('A6', 'Bunga');
+                $event->sheet->setCellValue('A7', 'Total');
+                $event->sheet->setCellValue('A8', 'Persediaan Awal');
+                $event->sheet->setCellValue('A9', 'Pembelian');
+                $event->sheet->setCellValue('A10', 'Retur Barang (-)');
+                $event->sheet->setCellValue('A11', 'Persediaan Akhir (-)');
+                $event->sheet->setCellValue('A12', 'Harga Pokok Penjualan');
+                $event->sheet->setCellValue('A13', 'LABA KOTOR');
 
-
+                $event->sheet->setCellValue('A3', 'Keterangan');
+                $event->sheet->setCellValue('B3', 'Januari');
+                $event->sheet->setCellValue('C3', 'Februari');
+                $event->sheet->setCellValue('D3', 'Maret');
+                $event->sheet->setCellValue('E3', 'April');
+                $event->sheet->setCellValue('F3', 'Mei');
+                $event->sheet->setCellValue('G3', 'Juni');
+                $event->sheet->setCellValue('H3', 'Juli');
+                $event->sheet->setCellValue('I3', 'Agustus');
+                $event->sheet->setCellValue('J3', 'September');
+                $event->sheet->setCellValue('K3', 'Oktober');
+                $event->sheet->setCellValue('L3', 'November');
+                $event->sheet->setCellValue('M3', 'Desember');
 
                 // assign cell styles
-                $event->sheet->getStyle('A:O')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('A:O')->getAlignment()->setVertical('center');
+                $event->sheet->getStyle('A:M')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:M')->getAlignment()->setVertical('center');
                 $event->sheet->getColumnDimension('A')->setAutoSize(true);
                 $event->sheet->getColumnDimension('B')->setAutoSize(true);
                 $event->sheet->getColumnDimension('C')->setAutoSize(true);
@@ -116,9 +124,6 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->getColumnDimension('K')->setAutoSize(true);
                 $event->sheet->getColumnDimension('L')->setAutoSize(true);
                 $event->sheet->getColumnDimension('M')->setAutoSize(true);
-                $event->sheet->getColumnDimension('N')->setAutoSize(true);
-                $event->sheet->getColumnDimension('O')->setAutoSize(true);
-
                 $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },
         ];

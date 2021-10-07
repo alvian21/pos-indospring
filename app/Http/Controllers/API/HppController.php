@@ -33,22 +33,22 @@ class HppController extends Controller
         DB::beginTransaction();
         try {
 
-            foreach ($mshpp as $keydata => $value) {
-                foreach ($periode as $key => $pe) {
-                    foreach ($lokasi as $keylok => $lok) {
-                        $cek = Trhpp::where('KodeLokasi', $lok)->where('KodeBarang', $value->KodeBarang)->where('Periode', $pe)->first();
+            // foreach ($mshpp as $keydata => $value) {
+            //     foreach ($periode as $key => $pe) {
+            //         foreach ($lokasi as $keylok => $lok) {
+            //             $cek = Trhpp::where('KodeLokasi', $lok)->where('KodeBarang', $value->KodeBarang)->where('Periode', $pe)->first();
 
-                        if (!$cek) {
-                            $hpp = new Trhpp();
-                            $hpp->Periode = $pe;
-                            $hpp->KodeBarang = $value->KodeBarang;
-                            $hpp->KodeLokasi = $lok;
-                            $hpp->Hpp = $value->Hpp;
-                            $hpp->save();
-                        }
-                    }
-                }
-            }
+            //             if (!$cek) {
+            //                 $hpp = new Trhpp();
+            //                 $hpp->Periode = $pe;
+            //                 $hpp->KodeBarang = $value->KodeBarang;
+            //                 $hpp->KodeLokasi = $lok;
+            //                 $hpp->Hpp = $value->Hpp;
+            //                 $hpp->save();
+            //             }
+            //         }
+            //     }
+            // }
 
 
             DB::commit();
