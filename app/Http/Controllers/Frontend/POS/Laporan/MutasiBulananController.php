@@ -73,7 +73,7 @@ class MutasiBulananController extends Controller
             }
 
             $arr = [];
-            $dataperiode = date('Ym');
+            $dataperiode = date('Ym', strtotime($periode));
             foreach ($data as $key => $value) {
                 $x['KodeBarang'] = $value->KodeBarang;
                 $x['Nama'] = $value->Nama;
