@@ -214,6 +214,8 @@ function customSearch($keyword, $arrayToSearch){
                 <li><a class="nav-link" href="{{route('poslaporan.mutasibulanan.index')}}">Mutasi Bulanan</a></li>
                 @elseif ($item == 'POS - Laporan - Laba Rugi')
                 <li><a class="nav-link" href="{{route('poslaporan.labarugi.index')}}">Laba Rugi</a></li>
+                @elseif ($item == 'POS - Laporan - Retur Pembelian')
+                <li><a class="nav-link" href="{{route('poslaporan.retur_pembelian.index')}}">Retur Pembelian</a></li>
                 @endif
                 @empty
                 @endforelse

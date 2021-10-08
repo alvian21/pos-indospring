@@ -298,6 +298,8 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     Route::group(['namespace' => 'POS\Laporan', 'prefix' => 'pos/laporan', 'as' => 'poslaporan.'], function () {
 
         // Route::get('/penjualan/cetakpdf','PenjualanController@cetakPdf');
+        Route::post('/retur_pembelian/cetakpdf', 'ReturPembelianController@cetakPdf')->name('retur_pembelian.cetakpdf');
+        Route::post('/retur_pembelian/cetakdetail', 'ReturPembelianController@cetakDetail')->name('retur_pembelian.cetakdetail');
         Route::post('/penjualan/cetakpdf', 'PenjualanController@cetakPdf')->name('penjualan.cetakpdf');
         Route::post('/penjualan/cetakdetail', 'PenjualanController@cetakDetail')->name('penjualan.cetakdetail');
         Route::post('/pembelian/cetakpdf', 'PembelianController@cetakPdf')->name('pembelian.cetakpdf');
@@ -320,6 +322,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
         Route::resource('trcetak', 'TrcetakController');
         Route::resource('mutasibulanan', 'MutasiBulananController');
         Route::resource('labarugi', 'LabaRugiController');
+        Route::resource('retur_pembelian', 'ReturPembelianController');
     });
 
 
