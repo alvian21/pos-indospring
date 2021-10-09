@@ -122,6 +122,7 @@ class MutasiBulananController extends Controller
             } else {
 
                 if (isset($arr[0])) {
+                    array_multisort( array_column($arr, "KodeBarang"), SORT_ASC, $arr );
                     $data = json_decode(json_encode($arr), true);
                     $data = collect($data);
                     $lastdate = date("Y-m-t", strtotime($periode));
