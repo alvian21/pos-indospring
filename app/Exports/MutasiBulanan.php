@@ -77,7 +77,7 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->mergeCells('A1:O1');
                 $event->sheet->mergeCells('A2:O2');
 
-                $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
+                // $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
 
                 // assign cell values
                 $event->sheet->setCellValue('A1', 'Laporan Mutasi Bulanan');
