@@ -74,8 +74,8 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 // at row 1, insert 2 rows
                 $event->sheet->insertNewRowBefore(1, 3);
 
-                $event->sheet->mergeCells('A1:P1');
-                $event->sheet->mergeCells('A2:P2');
+                $event->sheet->mergeCells('A1:O1');
+                $event->sheet->mergeCells('A2:O2');
 
                 $event->sheet->mergeCells(sprintf('A%d:B%d', $last_row, $last_row));
 
@@ -119,7 +119,7 @@ class MutasiBulanan implements FromCollection, WithEvents, WithMapping
                 $event->sheet->getColumnDimension('N')->setAutoSize(true);
                 $event->sheet->getColumnDimension('O')->setAutoSize(true);
 
-                $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
+                // $event->sheet->getStyle(sprintf('A%d', $last_row))->applyFromArray($style_text_center);
             },
         ];
     }
