@@ -185,6 +185,8 @@
                             method:"GET",
                             data:{'nomor':nomor,'update':1},
                             success:function(data){
+                                console.log(data);
+                                return false;
                                 window.location.href = "{{route('pos.pembelianbaru.index')}}"
                         }
                     })

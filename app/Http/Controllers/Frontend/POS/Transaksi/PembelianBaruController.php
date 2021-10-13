@@ -446,35 +446,37 @@ class PembelianBaruController extends Controller
                     $trmutasidt->save();
 
                     //hitung trhpp
-                    $datamutasi = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->select(DB::raw('SUM(Jumlah) as TotalBarang'), DB::raw('SUM(Jumlah * Harga) as TotalHarga'))->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->where('LokasiTujuan', $trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->get();
-                    foreach ($datamutasi as $key => $row) {
-                        if ($row->TotalBarang > 0) {
-                            $hitung = $row->TotalHarga / $row->TotalBarang;
-                            $trhpp = Trhpp::where('Periode', $periode)->where('KodeLokasi', $trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->first();
-                            if ($trhpp) {
-                                $trhpp->Periode = $periode;
-                                $trhpp->KodeBarang = $value["barang"];
-                                $trhpp->KodeLokasi = $trpembelian["lokasi"];
-                                $trhpp->Hpp = round($hitung);
-                                $trhpp->save();
-                            } else {
-                                $trhpp = new Trhpp();
-                                $trhpp->Periode = $periode;
-                                $trhpp->KodeBarang = $value["barang"];
-                                $trhpp->KodeLokasi = $trpembelian["lokasi"];
-                                $trhpp->Hpp = round($hitung);
-                                $trhpp->save();
-                            }
-                        }
-                    }
+                    // $datamutasi = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->select(DB::raw('SUM(Jumlah) as TotalBarang'), DB::raw('SUM(Jumlah * Harga) as TotalHarga'))->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->where('LokasiTujuan', $trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->get();
+                    // foreach ($datamutasi as $key => $row) {
+                    //     if ($row->TotalBarang > 0) {
+                    //         $hitung = $row->TotalHarga / $row->TotalBarang;
+                    //         $trhpp = Trhpp::where('Periode', $periode)->where('KodeLokasi', $trpembelian["lokasi"])->where('KodeBarang', $value["barang"])->first();
+                    //         if ($trhpp) {
+                    //             $trhpp->Periode = $periode;
+                    //             $trhpp->KodeBarang = $value["barang"];
+                    //             $trhpp->KodeLokasi = $trpembelian["lokasi"];
+                    //             $trhpp->Hpp = round($hitung);
+                    //             $trhpp->save();
+                    //         } else {
+                    //             $trhpp = new Trhpp();
+                    //             $trhpp->Periode = $periode;
+                    //             $trhpp->KodeBarang = $value["barang"];
+                    //             $trhpp->KodeLokasi = $trpembelian["lokasi"];
+                    //             $trhpp->Hpp = round($hitung);
+                    //             $trhpp->save();
+                    //         }
+                    //     }
+                    // }
+                    // dd($datamutasi);
                 }
 
+
+                DB::commit();
                 session()->forget('detail_transaksi_pembelian_baru');
                 session()->forget('transaksi_pembelian_baru');
                 session()->save();
 
 
-                DB::commit();
                 return redirect()->route('pos.pembelianbaru.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
             } catch (\Exception $th) {
                 //throw $th;
@@ -854,32 +856,68 @@ class PembelianBaruController extends Controller
         if ($request->ajax()) {
             if ($request->get('update') == 1) {
                 $nomor = $request->get('nomor');
-                $trmutasidt = Trmutasidt::where('Nomor', $nomor)->get();
-                $trmutasihd = Trmutasihd::where('Nomor', $nomor)->first();
-                if ($trmutasihd->StatusPesanan != 'POST') {
-                    foreach ($trmutasidt as $key => $value) {
-                        $cek = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->where('KodeLokasi', auth()->user()->KodeLokasi)->orderBy('Tanggal', 'DESC')->first();
-                        $trsaldobarang = new Trsaldobarang();
-                        if ($cek) {
-                            $trsaldobarang->Saldo = $cek->Saldo + $value->Jumlah;
-                        } else {
-                            $trsaldobarang->Saldo =  $value->Jumlah;
+
+                DB::beginTransaction();
+                try {
+                    $trmutasidt = Trmutasidt::where('Nomor', $nomor)->get();
+                    $trmutasihd = Trmutasihd::where('Nomor', $nomor)->first();
+                    if ($trmutasihd->StatusPesanan != 'POST') {
+                        foreach ($trmutasidt as $key => $value) {
+                            $cek = Trsaldobarang::where('KodeBarang', $value->KodeBarang)->where('KodeLokasi', auth()->user()->KodeLokasi)->orderBy('Tanggal', 'DESC')->first();
+                            $trsaldobarang = new Trsaldobarang();
+                            if ($cek) {
+                                $trsaldobarang->Saldo = $cek->Saldo + $value->Jumlah;
+                            } else {
+                                $trsaldobarang->Saldo =  $value->Jumlah;
+                            }
+                            $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
+                            $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
+                            $trsaldobarang->KodeBarang = $value->KodeBarang;
+                            $trsaldobarang->save();
+                            $periode = date('Ym');
+                            $month = date('m');
+                            $year = date('Y');
+                            $datamutasi = Trmutasihd::join('trmutasidt', 'trmutasihd.Nomor', 'trmutasidt.Nomor')->select(DB::raw('SUM(Jumlah) as TotalBarang'), DB::raw('SUM(Jumlah * Harga) as TotalHarga'))->where('trmutasihd.Transaksi', 'PEMBELIAN')->whereYear('Tanggal', $year)->whereMonth('Tanggal', $month)->where('LokasiTujuan', $trmutasihd->LokasiTujuan)->where('KodeBarang', $value->KodeBarang)->first();
+
+                            if ($datamutasi->TotalBarang > 0) {
+                                $hitung = $datamutasi->TotalHarga / $datamutasi->TotalBarang;
+                                $trhpp = Trhpp::where('Periode', $periode)->where('KodeLokasi', auth()->user()->KodeLokasi)->where('KodeBarang', $value->KodeBarang)->first();
+                                if ($trhpp) {
+                                    $trhpp->Hpp = round($hitung);
+                                    $trhpp->save();
+                                } else {
+                                    $trhpp = new Trhpp();
+                                    $trhpp->Periode = $periode;
+                                    $trhpp->KodeBarang =  $value->KodeBarang;
+                                    $trhpp->KodeLokasi =  auth()->user()->KodeLokasi;
+                                    $trhpp->Hpp = round($hitung);
+                                    $trhpp->save();
+                                }
+                            } else {
+                                $trhpp = new Trhpp();
+                                $trhpp->Periode = $periode;
+                                $trhpp->KodeBarang =  $value->KodeBarang;
+                                $trhpp->KodeLokasi =  auth()->user()->KodeLokasi;
+                                $trhpp->Hpp = $trmutasidt->Harga;
+                                $trhpp->save();
+                            }
                         }
-                        $trsaldobarang->KodeLokasi = auth()->user()->KodeLokasi;
-                        $trsaldobarang->Tanggal = date('Y-m-d H:i:s');
-                        $trsaldobarang->KodeBarang = $value->KodeBarang;
-                        $trsaldobarang->save();
+
+
+                        $trmutasihd->StatusPesanan = 'POST';
+                        $trmutasihd->save();
                     }
 
-
-                    $trmutasihd->StatusPesanan = 'POST';
-                    $trmutasihd->save();
+                    DB::commit();
+                    session()->flash('success', 'Transaksi pembelian berhasil diupdate');
+                    return response()->json([
+                        'message' => 'success'
+                    ]);
+                } catch (\Exception $th) {
+                    //throw $th;
+                    DB::rollBack();
+                    return response($th);
                 }
-
-                session()->flash('success', 'Transaksi pembelian berhasil diupdate');
-                return response()->json([
-                    'message' => 'success'
-                ]);
             }
         }
     }
