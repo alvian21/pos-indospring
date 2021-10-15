@@ -116,8 +116,10 @@ class PinjamanController extends Controller
         if ($level != 0) {
             $update = Trpinjaman::where("Nomor", $id);
             if ($level == 1) {
+                $status_final = null;
                 if ($request->get('status') == 1) {
                     $status = "VERIFIKASI";
+                    $status_final = "CAIR";
                     $petugasNote = null;
                 } elseif ($request->get('status') == 0) {
                     $status = "TDK VERIFIKASI";
@@ -127,7 +129,8 @@ class PinjamanController extends Controller
                     'ApprovalStatus' => $status,
                     'PetugasNama' => $nama,
                     'PetugasDate' => date('Y-m-d H:i'),
-                    'PetugasNote' => $petugasNote
+                    'PetugasNote' => $petugasNote,
+                    'StatusFinal' => $status_final
                 ]);
             } elseif ($level == 2) {
                 if ($request->get('status') == 1) {
@@ -175,5 +178,19 @@ class PinjamanController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function update_status(Request $request)
+    {
+        if ($request->ajax()) {
+            $update = Trpinjaman::where("Nomor", $request->get('nomor_pinjaman'))->update([
+                'KeteranganFinal' => $request->get('keterangan_final'),
+                'StatusFinal' => $request->get('status_final'),
+            ]);
+            $request->session()->flash('success', 'Pinjaman berhasil di update!');
+            return response()->json([
+                'status' => true
+            ]);
+        }
     }
 }

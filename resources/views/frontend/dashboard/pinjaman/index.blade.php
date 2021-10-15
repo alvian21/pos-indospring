@@ -68,6 +68,8 @@
                                         <th rowspan="2">Cicilan Total</th>
                                         <th rowspan="2">Berapa Kali Bayar</th>
                                         <th rowspan="2">Alasan</th>
+                                        <th rowspan="2">Keterangan Final</th>
+                                        <th rowspan="2">Status Final</th>
                                         <th rowspan="2">Tanggal Pengajuan</th>
                                         <th rowspan="2">Approval Status</th>
                                         <th colspan="3" class="text-center">Petugas</th>
@@ -89,8 +91,14 @@
                                 <tbody>
                                     @foreach ($trpinjaman as $item)
                                     <tr>
-                                        <td><button type="button" data-id="{{ $item->Nomor }}"
+                                        <td>
+                                            <button type="button" data-id="{{ $item->Nomor }}"
                                                 class="btn btn-info btnedit">Edit</button>
+
+                                            @if ($item->ApprovalStatus == "VERIFIKASI" && $level == 1)
+                                            <button type="button" data-id="{{ $item->Nomor }}"
+                                                class="btn btn-warning btneditstatus">Edit Status</button>
+                                            @endif
                                         </td>
                                         <td>{{ $item->Nomor }}</td>
                                         <td>{{ $item->KodeAnggota }}</td>
@@ -98,22 +106,30 @@
                                         <td>{{ $item->SubDept }}</td>
                                         <td style="text-align:right">
                                             {{ str_replace(',','.', number_format($item->PengajuanPinjaman)) }}</td>
-                                        <td style="text-align:right">{{ str_replace(',','.', number_format($item->CicilanTotal)) }}</td>
+                                        <td style="text-align:right">{{ str_replace(',','.',
+                                            number_format($item->CicilanTotal)) }}</td>
                                         <td style="text-align:right">{{ $item->BerapaKaliBayar }}</td>
                                         <td>{{ $item->Alasan }}</td>
+                                        <td>{{ $item->KeteranganFinal }}</td>
+                                        <td>{{ $item->StatusFinal }}</td>
+
                                         <td>{{ date('d M y',strtotime( $item->TanggalPengajuan)) }}</td>
                                         <td>{{ $item->ApprovalStatus }}</td>
                                         <td>{{ $item->PetugasNama }}</td>
                                         <td>{{ $item->PetugasNote }}</td>
-                                        <td>{{ ($item->PetugasDate != null && date('Y',strtotime( $item->PetugasDate)) != '1970') ? date('d M y',strtotime( $item->PetugasDate)) : '' }}
+                                        <td>{{ ($item->PetugasDate != null && date('Y',strtotime( $item->PetugasDate))
+                                            != '1970') ? date('d M y',strtotime( $item->PetugasDate)) : '' }}
                                         </td>
                                         <td>{{ $item->DiketahuiNama }}</td>
                                         <td>{{ $item->DiketahuiNote }}</td>
-                                        <td>{{ ($item->DiketahuiDate != null && date('Y',strtotime( $item->DiketahuiDate)) != '1970') ? date('d M y',strtotime( $item->DiketahuiDate)) : '' }}
+                                        <td>{{ ($item->DiketahuiDate != null && date('Y',strtotime(
+                                            $item->DiketahuiDate)) != '1970') ? date('d M y',strtotime(
+                                            $item->DiketahuiDate)) : '' }}
                                         </td>
                                         <td>{{ $item->ApprovalNama }}</td>
                                         <td>{{ $item->ApprovalNote }}</td>
-                                        <td>{{ ($item->ApprovalDate !=null && date('Y',strtotime( $item->ApprovalDate)) != '1970') ? date('d M y',strtotime( $item->ApprovalDate)) : '' }}
+                                        <td>{{ ($item->ApprovalDate !=null && date('Y',strtotime( $item->ApprovalDate))
+                                            != '1970') ? date('d M y',strtotime( $item->ApprovalDate)) : '' }}
                                         </td>
 
                                     </tr>
@@ -164,6 +180,43 @@
 </div>
 </div>
 
+
+<!-- Modal edit status-->
+<div class="modal fade" id="editStatusModal" tabindex="-1" role="dialog" aria-labelledby="editStatusModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form method="POST" id="editStatusForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editStatusModalLabel">Edit Status Pinjaman</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" name="nomor_pinjaman" id="nomor_pinjaman">
+                    <div class="form-group">
+                        <label for="status_final">Status Final</label>
+                        <select class="form-control" name="status_final" id="status_final">
+                            <option value="CAIR">CAIR</option>
+                            <option value="BATAL">BATAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="keterangan_final">Keterangan Final</label>
+                        <textarea class="form-control" id="keterangan_final" rows="5" name="keterangan_final"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button value="save" type="button" class="btn btn-primary" id="btnUpdateStatus">Save Changes</button>
+                </div>
+        </form>
+    </div>
+</div>
+</div>
+
 <!-- Modal Image-->
 {{-- <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel"
     aria-hidden="true">
@@ -176,23 +229,23 @@
                 </button>
             </div>
             <form enctype="multipart/form-data" method="POST" action="{{route('update_pinjaman')}}">
-@csrf
-{{method_field("PUT")}}
-<div class="modal-body">
-    <input type="hidden" name="id" id="id">
-    <img alt="image" class="img-thumbnail" id="previewimage">
-    <div class="form-group mt-3 formimage">
-        <label for="image">Upload Image</label>
-        <input type="file" class="form-control" id="image" required>
+                @csrf
+                {{method_field("PUT")}}
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="id">
+                    <img alt="image" class="img-thumbnail" id="previewimage">
+                    <div class="form-group mt-3 formimage">
+                        <label for="image">Upload Image</label>
+                        <input type="file" class="form-control" id="image" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btnupdateimage">Save changes</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-primary btnupdateimage">Save changes</button>
-</div>
-</form>
-</div>
-</div>
 </div> --}}
 @endsection
 @section('scripts')
@@ -217,7 +270,7 @@
      function( settings, data, dataIndex ) {
         var min = $('#min').val();
         var max = $('#max').val();
-        var parseDate = moment(data[9]).format('YYYY/MM/DD')
+        var parseDate = moment(data[11]).format('YYYY/MM/DD')
         var date = new Date( parseDate );
         if (
             ( min == "" || max == "" )
@@ -268,23 +321,23 @@
                 return $(this).text() == filter;
                 }).prop('selected', true);
                 if (filter == "Show All") {
-                    table.columns(10).search("").draw();
+                    table.columns(12).search("").draw();
                     table.columns(1).search("").draw();
 
                 }else{
                     table.columns(1).search("").draw();
-                    table.columns(10).search("(^"+filter+"$)",true,false).draw();
+                    table.columns(12).search("(^"+filter+"$)",true,false).draw();
                 }
             }
 
         $('.selectsearch').change(function() {
                 if (this.value == "Show All") {
-                    table.columns(10).search("").draw();
+                    table.columns(12).search("").draw();
                     table.columns(1).search("").draw();
                     createItem("Show All");
                 }else{
                     table.columns(1).search("").draw();
-                    table.columns(10).search("(^"+this.value+"$)",true,false).draw();
+                    table.columns(12).search("(^"+this.value+"$)",true,false).draw();
                     createItem(this.value);
                 }
         });
@@ -363,6 +416,36 @@
          $('#imageModal').modal('show');
 
      });
+
+     $(document).on('click','.btneditstatus', function () {
+        $tr = $(this).closest('tr');
+        var nomor = $(this).data('id');
+        var data = $tr.children('td').map(function(){
+            return $(this).text();
+        }).get();
+            if(data[10]){
+                $('#status_final').val(data[10]).change()
+            }else{
+                $('#status_final').val("CAIR").change()
+            }
+        $('#keterangan_final').val(data[9])
+        $('#nomor_pinjaman').val(nomor)
+        $('#editStatusModal').modal('show')
+      })
+
+      $('#btnUpdateStatus').on('click', function () {
+            var form = $('#editStatusForm').serialize()
+             $.ajax({
+                 url:"{{route('pinjaman.update_status')}}",
+                 method:"POST",
+                 data:form,
+                 success:function(response){
+                     if(response.status){
+                       location.reload(true)
+                     }
+                 }
+             })
+       })
     })
 </script>
 @endsection

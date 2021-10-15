@@ -128,6 +128,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     //pinjaman
     Route::group(['namespace' => 'Pinjaman'], function () {
 
+        Route::post('/pinjaman/update_status','PinjamanController@update_status')->name('pinjaman.update_status');
         Route::resource('pinjaman', 'PinjamanController');
     });
 
