@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\BackupDatabase;
 use App\Console\Commands\HppSchedule;
+use App\Console\Commands\ResetSaldoEkop;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,7 +17,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
        BackupDatabase::class,
-       HppSchedule::class
+       HppSchedule::class,
+       ResetSaldoEkop::class
     ];
 
     /**
@@ -31,6 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:run --only-db --disable-notifications')->daily()->at('00:01');
         $schedule->command('send:database')->daily()->at('00:02');
         $schedule->command('hpp:create')->monthlyOn(1, '00:03');
+        $schedule->command('saldo:reset')->monthlyOn(15, '00:05');
     }
 
     /**
