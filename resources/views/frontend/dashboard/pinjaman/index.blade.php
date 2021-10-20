@@ -38,6 +38,7 @@
                             <select id="select" class="form-control input-sm selectsearch">
                                 <option>Show All</option>
                                 <option>PENGAJUAN</option>
+                                <option>DISETUJUI</option>
                                 <option>VERIFIKASI</option>
                                 <option>TDK VERIFIKASI</option>
                             </select>
@@ -71,6 +72,7 @@
                                         <th rowspan="2">Keterangan Final</th>
                                         <th rowspan="2">Status Final</th>
                                         <th rowspan="2">Tanggal Pengajuan</th>
+                                        <th rowspan="2">Tanggal Potongan</th>
                                         <th rowspan="2">Approval Status</th>
                                         <th colspan="3" class="text-center">Petugas</th>
                                         <th colspan="3" class="text-center">Diketahui</th>
@@ -95,7 +97,7 @@
                                             <button type="button" data-id="{{ $item->Nomor }}"
                                                 class="btn btn-info btnedit">Edit</button>
 
-                                            @if ($item->ApprovalStatus == "VERIFIKASI" && $level == 1)
+                                            @if ($item->ApprovalStatus == "DISETUJUI" && $level == 1)
                                             <button type="button" data-id="{{ $item->Nomor }}"
                                                 class="btn btn-warning btneditstatus">Edit Status</button>
                                             @endif
@@ -114,6 +116,7 @@
                                         <td>{{ $item->StatusFinal }}</td>
 
                                         <td>{{ date('d M y',strtotime( $item->TanggalPengajuan)) }}</td>
+                                        <td>{{ date('d M y',strtotime( $item->TanggalPotongan)) }}</td>
                                         <td>{{ $item->ApprovalStatus }}</td>
                                         <td>{{ $item->PetugasNama }}</td>
                                         <td>{{ $item->PetugasNote }}</td>
@@ -200,9 +203,14 @@
                         <label for="status_final">Status Final</label>
                         <select class="form-control" name="status_final" id="status_final">
                             <option value="CAIR">CAIR</option>
+                            <option value="PENDING">PENDING</option>
                             <option value="BATAL">BATAL</option>
                         </select>
                     </div>
+                    <div class="form-group" id="formpotongan">
+                        <label for="tanggal_potongan">Tanggal Potongan</label>
+                        <input type="date" name="tanggal_potongan" class="form-control" id="tanggal_potongan" >
+                      </div>
                     <div class="form-group">
                         <label for="keterangan_final">Keterangan Final</label>
                         <textarea class="form-control" id="keterangan_final" rows="5" name="keterangan_final"></textarea>
@@ -321,23 +329,23 @@
                 return $(this).text() == filter;
                 }).prop('selected', true);
                 if (filter == "Show All") {
-                    table.columns(12).search("").draw();
+                    table.columns(13).search("").draw();
                     table.columns(1).search("").draw();
 
                 }else{
                     table.columns(1).search("").draw();
-                    table.columns(12).search("(^"+filter+"$)",true,false).draw();
+                    table.columns(13).search("(^"+filter+"$)",true,false).draw();
                 }
             }
 
         $('.selectsearch').change(function() {
                 if (this.value == "Show All") {
-                    table.columns(12).search("").draw();
+                    table.columns(13).search("").draw();
                     table.columns(1).search("").draw();
                     createItem("Show All");
                 }else{
                     table.columns(1).search("").draw();
-                    table.columns(12).search("(^"+this.value+"$)",true,false).draw();
+                    table.columns(13).search("(^"+this.value+"$)",true,false).draw();
                     createItem(this.value);
                 }
         });
@@ -424,7 +432,9 @@
             return $(this).text();
         }).get();
             if(data[10]){
+                var tanggal = moment(data[12]).format('Y-M-D')
                 $('#status_final').val(data[10]).change()
+                $('#tanggal_potongan').val(tanggal)
             }else{
                 $('#status_final').val("CAIR").change()
             }
@@ -432,6 +442,15 @@
         $('#nomor_pinjaman').val(nomor)
         $('#editStatusModal').modal('show')
       })
+      $('#formpotongan').hide()
+      $(document).on('change','#status_final', function () {
+          var status = $(this).find(':selected').val()
+          if(status == 'PENDING'){
+              $('#formpotongan').show()
+          }else{
+            $('#formpotongan').hide()
+          }
+       })
 
       $('#btnUpdateStatus').on('click', function () {
             var form = $('#editStatusForm').serialize()

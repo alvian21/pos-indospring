@@ -24,7 +24,8 @@ class PinjamanController extends Controller
                 $trpinjaman = Trpinjaman::where(function ($query) {
                     $query->OrWhere("ApprovalStatus", "PENGAJUAN")
                         ->OrWhere("ApprovalStatus", "VERIFIKASI")
-                        ->OrWhere("ApprovalStatus", "TDK VERIFIKASI");
+                        ->OrWhere("ApprovalStatus", "TDK VERIFIKASI")
+                        ->OrWhere("ApprovalStatus", "DISETUJUI");
                 })->get();
             } elseif ($level == 2) {
                 $trpinjaman = Trpinjaman::where(function ($query) {
@@ -186,6 +187,7 @@ class PinjamanController extends Controller
             $update = Trpinjaman::where("Nomor", $request->get('nomor_pinjaman'))->update([
                 'KeteranganFinal' => $request->get('keterangan_final'),
                 'StatusFinal' => $request->get('status_final'),
+                'TanggalPotongan' => $request->get('tanggal_potongan'),
             ]);
             $request->session()->flash('success', 'Pinjaman berhasil di update!');
             return response()->json([
