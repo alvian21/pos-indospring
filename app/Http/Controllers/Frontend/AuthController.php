@@ -65,7 +65,8 @@ class AuthController extends Controller
     {
         Auth::guard('web')->logout();
         Session::flush();
-
+        session()->forget('detail_transaksi_pembelian_baru');
+        session()->forget('transaksi_pembelian_baru');
         return redirect('/login')
             ->with('alert-info', 'Anda telah keluar, Sampai ketemu lagi!');
     }
