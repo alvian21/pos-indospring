@@ -80,7 +80,7 @@ class PembelianBaruController extends Controller
             $data = [
                 'transaksi' => 'PEMBELIAN',
                 'nomor' => $formatNomor,
-                'kode' => 0,
+                'kode' => '',
                 'tanggal' => date('d M y H:i'),
                 'diskon_persen' => '0',
                 'pajak' => '10',
