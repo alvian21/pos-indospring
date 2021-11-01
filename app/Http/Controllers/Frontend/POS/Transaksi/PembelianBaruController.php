@@ -422,7 +422,7 @@ class PembelianBaruController extends Controller
                 }
 
                 $trmutasihd->Pajak = $trpembelian["pajak"];
-                $trmutasihd->LokasiTujuan = $trpembelian["lokasi"];
+                $trmutasihd->LokasiTujuan = auth('web')->user()->KodeLokasi;
                 $trmutasihd->TotalHarga = $trpembelian["total_harga"];
                 $trmutasihd->UserUpdateSP = auth('web')->user()->UserLogin;
                 $trmutasihd->StatusPesanan = "Dalam Proses";
@@ -469,13 +469,9 @@ class PembelianBaruController extends Controller
                     // }
                     // dd($datamutasi);
                 }
-
-
-                DB::commit();
                 session()->forget('detail_transaksi_pembelian_baru');
                 session()->forget('transaksi_pembelian_baru');
-                session()->save();
-
+                DB::commit();
 
                 return redirect()->route('pos.pembelianbaru.index')->with("success", "Detail dan data transaksi pembelian berhasil disimpan");
             } catch (\Exception $th) {
