@@ -83,10 +83,13 @@ class TagihanKreditController extends Controller
                 $data = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->orderBy('SubDept')->orderBy('Kode')->get();
                 if(!empty($data)){
                     $data = json_decode(json_encode($data),true);
+                    $ids = array_column($data, 'Kode');
+                    $ids = array_unique($ids);
+                    $data = array_filter($data, function ($key, $value) use ($ids) {
+                        return in_array($value, array_keys($ids));
+                    }, ARRAY_FILTER_USE_BOTH);
                     $total = array_sum(array_column($data,'SaldoBelanjaKredit'));
                     $data = collect($data);
-
-
                     return Excel::download(new TagihanKredit($data, $periode, $total), 'laporan-tagihan-kredit.xlsx');
                 }
 
