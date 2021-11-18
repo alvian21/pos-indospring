@@ -927,7 +927,7 @@ class KasirController extends Controller
             $status = 'nol';
         }
 
-        $saldoEkop = number_format($saldoEkop, 2, ',', '.');
+        // $saldoEkop = number_format($saldoEkop, 2, ',', '.');
         return response()->json([
             'Saldo' => $saldoEkop,
             'Total' => $ttl,

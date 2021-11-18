@@ -793,7 +793,7 @@
                             $('#pembayaran_tunai').val(0);
                             $('#ttl_pembayaran_tunai').val(0);
                             $('#pembayaran_ekop').val(0);
-                            $('#pembayaran_kredit').val(data['Total'])
+                            $('#pembayaran_kredit').val(convertToRupiah(data['Total']))
                             $('#pembayaran_tunai').attr('readonly', true);
                         }else{
                             $('#ttl_pembayaran_tunai').val(ttl_belanja);
@@ -815,7 +815,7 @@
                         if(parseInt(saldo) > parseInt(data['Total'])){
                             $('#pembayaran_tunai').val(0);
                             $('#ttl_pembayaran_tunai').val(0);
-                            $('#pembayaran_ekop').val(data['Total']);
+                            $('#pembayaran_ekop').val(convertToRupiah(data['Total']));
                         }else{
                             $('#ttl_pembayaran_tunai').val(convertToRupiah(ttl_belanja));
                             $('#pembayaran_ekop').val(0);
