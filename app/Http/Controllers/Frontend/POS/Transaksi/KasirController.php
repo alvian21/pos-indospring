@@ -898,20 +898,20 @@ class KasirController extends Controller
             if ($SaldoMinusBunga->aktif == 1 && $ttl >= $tunai) {
                 $ttl = $ttl - $tunai;
                 $ttl = $ttl + (($SaldoMinusBunga->Nilai / 100) * $ttl);
-                $ttl = number_format($ttl, 2, ',', '.');
+                $ttl =  $ttl;
             } elseif ($ttl < $tunai) {
                 $ttl = 0;
             } elseif ($SaldoMinusBunga->aktif == 0 && $ttl >= $tunai) {
                 $ttl = $ttl - $tunai;
-                $ttl = number_format($ttl, 2, ',', '.');
+                $ttl =  $ttl;
             }
 
             if ($tunai == 0 || $tunai == '') {
                 if ($SaldoMinusBunga->aktif == 1 && $total_belanja >= $tunai) {
                     $ttl = $total_belanja + (($SaldoMinusBunga->Nilai / 100) * $total_belanja);
-                    $ttl = number_format($ttl, 2, ',', '.');
+                    $ttl =  $ttl;
                 } elseif ($SaldoMinusBunga->aktif == 0 && $total_belanja >= $tunai) {
-                    $ttl = number_format($total_belanja, 2, ',', '.');
+                    $ttl = $total_belanja;
                 }
             }
         }
@@ -929,8 +929,8 @@ class KasirController extends Controller
 
         // $saldoEkop = number_format($saldoEkop, 2, ',', '.');
         return response()->json([
-            'Saldo' => $saldoEkop,
-            'Total' => $ttl,
+            'Saldo' => round($saldoEkop),
+            'Total' => round($ttl),
             'status' => $status
         ]);
     }

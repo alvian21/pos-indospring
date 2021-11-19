@@ -767,7 +767,7 @@
                     var ekop = 0;
                     var pembayaran_tunai  = 0;
                     var ttl_pembayaran_tunai = 0;
-                    // console.log(data)
+                    console.log(data['Total'])
 
                     if(kode != 'UMUM'){
 
@@ -787,9 +787,9 @@
 
                     if(data['status']=='minus'){
                         // console.log(data)
-                        $('#saldo_kredit').val(saldo);
+                        $('#saldo_kredit').val(convertToRupiah(saldo));
                         $('#saldo_ekop').val(0);
-                        if(convertToAngka(saldo) > parseInt(data['Total'])){
+                        if(saldo > parseInt(data['Total'])){
                             $('#pembayaran_tunai').val(0);
                             $('#ttl_pembayaran_tunai').val(0);
                             $('#pembayaran_ekop').val(0);
@@ -806,7 +806,7 @@
 
                         $('#pembayaran_kredit').attr('readonly', true);
                         get_kredit = data['Saldo']
-                        get_kredit = convertToAngka(get_kredit)
+                        get_kredit = get_kredit
                         input_kredit = data['Total']
                         $('#datacktunai').show()
                     }else if(data['status']=='plus'){
