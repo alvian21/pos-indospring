@@ -33,7 +33,7 @@ class SettingController extends Controller
         $cetak = Mssetting::where('Kode', 'Cetak')->first();
         $HitungSimPin = Mssetting::where('Kode', 'HitungSimPin')->first();
         $FooterPrinter = Mssetting::where('Kode', 'FooterPrinter')->first();
-
+        $ToleransiApproval = Mssetting::where('Kode','RecordTanggalMaksimalSetting')->first();
         return view(
             "frontend.settings.setting.index",
             [
@@ -52,6 +52,7 @@ class SettingController extends Controller
                 'cetak' => $cetak,
                 'HitungSimPin' => $HitungSimPin,
                 'FooterPrinter' => $FooterPrinter,
+                'ToleransiApproval' => $ToleransiApproval,
             ]
         );
     }
@@ -272,6 +273,18 @@ class SettingController extends Controller
         if ($retname14) {
             $retname14->Nama = $request->get('inputfooter');
             $retname14->save();
+        }
+        $name15 = $request->get('name15');
+        $retname15 = Mssetting::where('Kode', $name15)->first();
+        if ($retname15) {
+            if ($request->get('ckmblToleransiApproval') == "on") {
+                $retname15->aktif = 1;
+            } else {
+                $retname15->aktif = 0;
+            }
+            $retname15->Nilai = $request->get('inputmblToleransiApprovalnilai');
+            $retname15->Nama = $request->get('inputToleransiApprovalnama');
+            $retname15->save();
         }
 
         session()->forget('transaksi_penjualan');

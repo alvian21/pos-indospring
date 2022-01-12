@@ -561,7 +561,32 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            <div class="row">
+                                                <input type="hidden" name="name15" value="{{$ToleransiApproval->Kode}}">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control"
+                                                        id="exampleFormControlTextarea1" rows="6"
+                                                        name="inputToleransiApprovalnama">{{$ToleransiApproval->Nama}}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" class="text-center form-control"
+                                                        value="{{$ToleransiApproval->Nilai}}"
+                                                        name="inputmblToleransiApprovalnilai">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div
+                                                        class="custom-control custom-switch custom-switch-md float-right">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="MobileToleransiApproval" @if($ToleransiApproval->aktif == 1 )
+                                                        checked
+                                                        @endif name="ckmblToleransiApproval">
+                                                        <label class="custom-control-label"
+                                                            for="MobileToleransiApproval"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
