@@ -48,10 +48,10 @@
                 </li>
                 <li><a class="nav-link" href="{{route('synchronize.aktivasi.index')}}"> Aktifasi Kartu</a>
                 </li>
-                <li><a class="nav-link" href="{{route('synchronize.ekop.index')}}">Saldo E-Kop</a>
-                </li>
-                <li><a class="nav-link" href="{{route('synchronize.saldobarang.index')}}">Saldo Barang</a>
-                </li>
+                {{-- <li><a class="nav-link" href="{{route('synchronize.ekop.index')}}">Saldo E-Kop</a>
+                </li> --}}
+                {{-- <li><a class="nav-link" href="{{route('synchronize.saldobarang.index')}}">Saldo Barang</a>
+                </li> --}}
                 <li><a class="nav-link" href="{{route('synchronize.listpromo.index')}}"> List Promo</a>
                 </li>
             </ul>

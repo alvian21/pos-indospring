@@ -415,6 +415,9 @@ class KasirController extends Controller
                 $statusbayar = '';
                 $totalbayar = 0;
                 $kembalian  = 0;
+                $statussaldo = false;
+                $saldoawal = 0;
+                $saldoakhir = 0;
                 if ($tunai > 0 && $pembayaran_ekop != $trkasir["total_harga_setelah_pajak"] && $pembayaran_kredit != $trkasir["total_harga_setelah_pajak"]) {
                     $trmutasihd->PembayaranTunai = $tunai;
                     //saldototalbelanjatunai
@@ -444,6 +447,9 @@ class KasirController extends Controller
                     $trsaldoekop->save();
                     $statusbayar = 'Ekop';
                     $totalbayar += $pembayaran_ekop;
+                    $statussaldo = true;
+                    $saldoawal = $cek[0]->Saldo;
+                    $saldoakhir = $trsaldoekop->Saldo;
                 }
                 if (($pembayaran_kredit != '' || $pembayaran_kredit > 0) && $pembayaran_kredit != 0) {
                     $cek = DB::select('call CEKSALDOEKOP(?)', [
@@ -486,6 +492,9 @@ class KasirController extends Controller
                     $trsaldokredit->save();
                     $statusbayar = 'Kredit';
                     $totalbayar += $pembayaran_kredit;
+                    $statussaldo = true;
+                    $saldoawal = $cek[0]->Saldo;
+                    $saldoakhir = $trsaldoekop->Saldo;
                 }
 
 
@@ -539,7 +548,7 @@ class KasirController extends Controller
                 $cetak = Mssetting::where('Kode', 'Cetak')->where('aktif', 1)->first();
 
                 if ($cetak) {
-                    $this->CetakStruk($datadetail, $formatNomor, $barcode_cust, $statusbayar, $totalbayar, $kembalian);
+                    $this->CetakStruk($datadetail, $formatNomor, $barcode_cust, $statusbayar, $totalbayar, $kembalian, $statussaldo, $saldoawal, $saldoakhir);
                 }
 
 
@@ -1048,7 +1057,7 @@ class KasirController extends Controller
         // $printer->close();
     }
 
-    public function CetakStruk($datadetail, $nomor, $anggota, $pembayaran, $totalbayar, $kembalian)
+    public function CetakStruk($datadetail, $nomor, $anggota, $pembayaran, $totalbayar, $kembalian, $statussaldo, $saldoawal, $saldoakhir)
     {
         $profile = CapabilityProfile::load("simple");
         $connector = new WindowsPrintConnector(config('app.printer'));
@@ -1187,6 +1196,17 @@ class KasirController extends Controller
                 $printer->initialize();
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->text($footer->Nama . "\n");
+                if ($statussaldo) {
+                    $printer->text("----------------------------------------\n");
+                    if ($pembayaran == 'Ekop') {
+                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", number_format($saldoawal, 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
+                    } else {
+                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format($saldoawal, 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format($saldoakhir, 0)));
+                    }
+                }
+                $printer->text("\n");
 
                 $printer->feed(2); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
@@ -1219,6 +1239,17 @@ class KasirController extends Controller
                 $printer->initialize();
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->text($footer->Nama . "\n");
+                if ($statussaldo) {
+                    $printer->text("----------------------------------------\n");
+                    if ($pembayaran == 'Ekop') {
+                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", number_format($saldoawal, 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
+                    } else {
+                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format($saldoawal, 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format($saldoakhir, 0)));
+                    }
+                }
+                $printer->text("\n");
 
                 $printer->feed(2); // mencetak 5 baris kosong agar terangkat (pemotong kertas saya memiliki jarak 5 baris dari toner)
                 $printer->cut();
