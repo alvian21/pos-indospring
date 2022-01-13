@@ -1197,13 +1197,14 @@ class KasirController extends Controller
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->text($footer->Nama . "\n");
                 if ($statussaldo) {
+                    $printer->setFont(Printer::FONT_B);
                     $printer->text("----------------------------------------\n");
                     if ($pembayaran == 'Ekop') {
                         $printer->text(buatBaris4Kolom('Saldo Awal', '', "", number_format($saldoawal, 0)));
                         $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
                     } else {
-                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format($saldoawal, 0)));
-                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format($saldoakhir, 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format(abs($saldoawal), 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format(abs($saldoakhir), 0)));
                     }
                 }
                 $printer->text("\n");
@@ -1240,13 +1241,14 @@ class KasirController extends Controller
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->text($footer->Nama . "\n");
                 if ($statussaldo) {
+                    $printer->setFont(Printer::FONT_B);
                     $printer->text("----------------------------------------\n");
                     if ($pembayaran == 'Ekop') {
                         $printer->text(buatBaris4Kolom('Saldo Awal', '', "", number_format($saldoawal, 0)));
                         $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
                     } else {
-                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format($saldoawal, 0)));
-                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format($saldoakhir, 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format(abs($saldoawal), 0)));
+                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format(abs($saldoakhir), 0)));
                     }
                 }
                 $printer->text("\n");
