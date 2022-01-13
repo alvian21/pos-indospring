@@ -1155,6 +1155,53 @@ class KasirController extends Controller
             return implode("\n", $hasilBaris) . "\n";
         }
 
+
+
+        function buatBaris4KolomSaldo($kolom1, $kolom2, $kolom3, $kolom4)
+        {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+            $lebar_kolom_1 = 12;
+            $lebar_kolom_2 = 5;
+            $lebar_kolom_3 = 7;
+            $lebar_kolom_4 = 10;
+
+            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n
+            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+            $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+            $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+            $kolom4 = wordwrap($kolom4, $lebar_kolom_4, "\n", true);
+
+            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+            $kolom1Array = explode("\n", $kolom1);
+            $kolom2Array = explode("\n", $kolom2);
+            $kolom3Array = explode("\n", $kolom3);
+            $kolom4Array = explode("\n", $kolom4);
+
+            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+            $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array), count($kolom4Array));
+
+            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+            $hasilBaris = array();
+
+            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris
+            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan,
+                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
+
+                // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+                $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+                $hasilKolom4 = str_pad((isset($kolom4Array[$i]) ? $kolom4Array[$i] : ""), $lebar_kolom_4, " ", STR_PAD_LEFT);
+
+                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+                $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3 . " " . $hasilKolom4;
+            }
+
+            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+            return implode("\n", $hasilBaris) . "\n";
+        }
+
         // Membuat judul
         $printer->initialize();
         $printer->selectPrintMode(Printer::MODE_FONT_B); // Setting teks menjadi lebih besar
@@ -1200,11 +1247,11 @@ class KasirController extends Controller
                     $printer->setFont(Printer::FONT_B);
                     $printer->text("----------------------------------------\n");
                     if ($pembayaran == 'Ekop') {
-                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", number_format($saldoawal, 0)));
-                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Awal', '', "", number_format($saldoawal, 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
                     } else {
-                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format(abs($saldoawal), 0)));
-                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format(abs($saldoakhir), 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Awal', '', "", "(-)" . number_format(abs($saldoawal), 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Akhir', '', "", "(-)" . number_format(abs($saldoakhir), 0)));
                     }
                 }
                 $printer->text("\n");
@@ -1244,11 +1291,11 @@ class KasirController extends Controller
                     $printer->setFont(Printer::FONT_B);
                     $printer->text("----------------------------------------\n");
                     if ($pembayaran == 'Ekop') {
-                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", number_format($saldoawal, 0)));
-                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Awal', '', "", number_format($saldoawal, 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
                     } else {
-                        $printer->text(buatBaris4Kolom('Saldo Awal', '', "", "(-)" . number_format(abs($saldoawal), 0)));
-                        $printer->text(buatBaris4Kolom('Saldo Akhir', '', "", "(-)" . number_format(abs($saldoakhir), 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Awal', '', "", "(-)" . number_format(abs($saldoawal), 0)));
+                        $printer->text(buatBaris4KolomSaldo('Saldo Akhir', '', "", "(-)" . number_format(abs($saldoakhir), 0)));
                     }
                 }
                 $printer->text("\n");
