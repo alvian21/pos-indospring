@@ -1246,6 +1246,8 @@ class KasirController extends Controller
                 if ($statussaldo) {
                     $printer->setFont(Printer::FONT_B);
                     $printer->text("----------------------------------------\n");
+                    $saldo = "Saldo ".$pembayaran;
+                    $printer->text($saldo."\n");
                     if ($pembayaran == 'Ekop') {
                         $printer->text(buatBaris4KolomSaldo('Saldo Awal', '', "", number_format($saldoawal, 0)));
                         $printer->text(buatBaris4KolomSaldo('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
@@ -1290,6 +1292,8 @@ class KasirController extends Controller
                 if ($statussaldo) {
                     $printer->setFont(Printer::FONT_B);
                     $printer->text("----------------------------------------\n");
+                    $saldo = "Saldo ".$pembayaran;
+                    $printer->text($saldo."\n");
                     if ($pembayaran == 'Ekop') {
                         $printer->text(buatBaris4KolomSaldo('Saldo Awal', '', "", number_format($saldoawal, 0)));
                         $printer->text(buatBaris4KolomSaldo('Saldo Akhir', '', "", number_format($saldoakhir, 0)));
