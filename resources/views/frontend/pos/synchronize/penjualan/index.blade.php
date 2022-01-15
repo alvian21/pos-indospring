@@ -91,6 +91,7 @@
                     method:"POST",
                     data:{'tanggal':tanggal,'status':'insert'}
                 }).done(function (response) {
+                    console.log(response);
                     if(response.status){
                         swal("Success!", response.message, "success");
                         $('.spinner-border').remove()
