@@ -86,24 +86,24 @@ class PenjualanController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['status']) {
-                    if(!empty($response['saldototalbelanjatunai'])){
-                        Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
-                    }
-                    if(!empty($response['saldototalbelanjaekop'])){
-                        Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
-                    }
+                    // if(!empty($response['saldototalbelanjatunai'])){
+                    //     Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
+                    // }
+                    // if(!empty($response['saldototalbelanjaekop'])){
+                    //     Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
+                    // }
 
-                    if(!empty($response['saldototalbelanjakredit'])){
-                        Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
-                    }
+                    // if(!empty($response['saldototalbelanjakredit'])){
+                    //     Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
+                    // }
 
-                    if(!empty($response['saldototalbelanja'])){
-                        Trsaldototalbelanja::insert($response['saldototalbelanja']);
-                    }
+                    // if(!empty($response['saldototalbelanja'])){
+                    //     Trsaldototalbelanja::insert($response['saldototalbelanja']);
+                    // }
 
-                    if(!empty($response['saldobarang'])){
-                        Trsaldobarang::insert($response['saldobarang']);
-                    }
+                    // if(!empty($response['saldobarang'])){
+                    //     Trsaldobarang::insert($response['saldobarang']);
+                    // }
                     Trsaldoekop::insert($response['saldoekop']);
 
 
