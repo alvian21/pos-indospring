@@ -86,22 +86,22 @@ class PenjualanController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['status']) {
-                    if(isset($response['saldototalbelanjatunai'])){
+                    if(!empty($response['saldototalbelanjatunai'])){
                         Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
                     }
-                    if(isset($response['saldototalbelanjaekop'])){
+                    if(!empty($response['saldototalbelanjaekop'])){
                         Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
                     }
 
-                    if(isset($response['saldototalbelanjakredit'])){
+                    if(!empty($response['saldototalbelanjakredit'])){
                         Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
                     }
 
-                    if(isset($response['saldototalbelanja'])){
+                    if(!empty($response['saldototalbelanja'])){
                         Trsaldototalbelanja::insert($response['saldototalbelanja']);
                     }
 
-                    if(isset($response['saldobarang'])){
+                    if(!empty($response['saldobarang'])){
                         Trsaldobarang::insert($response['saldobarang']);
                     }
                     Trsaldoekop::insert($response['saldoekop']);
