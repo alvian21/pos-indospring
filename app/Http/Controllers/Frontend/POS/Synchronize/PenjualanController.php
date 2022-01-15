@@ -104,7 +104,11 @@ class PenjualanController extends Controller
                     // if(!empty($response['saldobarang'])){
                     //     Trsaldobarang::insert($response['saldobarang']);
                     // }
-                    Trsaldoekop::insert($response['saldoekop']);
+
+                     if(!empty($response['saldoekop'])){
+                        Trsaldoekop::insert($response['saldoekop']);
+                    }
+
 
 
                     // Trsaldototalbelanja::insert($response['saldototalbelanja']);
