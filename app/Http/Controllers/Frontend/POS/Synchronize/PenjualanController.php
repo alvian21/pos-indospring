@@ -52,7 +52,7 @@ class PenjualanController extends Controller
             $koneksi = 'mysql2';
             DB::beginTransaction();
 
-            // try {
+            try {
                 $backuphd = Trmutasihd::where('Transaksi', 'PENJUALAN')->whereDate('Tanggal', $tanggal)->get();
                 $mutasidt = Trmutasidt::where('Transaksi', 'PENJUALAN')->whereDate('LastUpdate', $tanggal)->get();
                 $backuphd = json_encode($backuphd);
@@ -84,7 +84,7 @@ class PenjualanController extends Controller
                 $response = $response->getBody()->getContents();
 
                 $response = json_decode($response, true);
-                return response()->json($response);
+
                 if ($response['status']) {
                     if(isset($response['saldototalbelanjatunai'])){
                         Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
@@ -126,18 +126,18 @@ class PenjualanController extends Controller
                         ]
                     );
                 }
-            // } catch (\Exception $th) {
-            //     //throw $th;
-            //     DB::rollBack();
+            } catch (\Exception $th) {
+                //throw $th;
+                DB::rollBack();
 
-            //     return response()->json(
-            //         [
-            //             'status' => false,
-            //             'message' => $th,
-            //             'code' => Response::HTTP_BAD_REQUEST
-            //         ]
-            //     );
-            // }
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => $th,
+                        'code' => Response::HTTP_BAD_REQUEST
+                    ]
+                );
+            }
         }
     }
 
