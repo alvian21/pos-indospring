@@ -86,12 +86,29 @@ class PenjualanController extends Controller
                 $response = json_decode($response, true);
 
                 if ($response['status']) {
-                    Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
+                    if(isset($response['saldototalbelanjatunai'])){
+                        Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
+                    }
+                    if(isset($response['saldototalbelanjaekop'])){
+                        Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
+                    }
+
+                    if(isset($response['saldototalbelanjakredit'])){
+                        Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
+                    }
+
+                    if(isset($response['saldototalbelanja'])){
+                        Trsaldototalbelanja::insert($response['saldototalbelanja']);
+                    }
+
+                    if(isset($response['saldobarang'])){
+                        Trsaldobarang::insert($response['saldobarang']);
+                    }
                     Trsaldoekop::insert($response['saldoekop']);
-                    Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
-                    Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
-                    Trsaldototalbelanja::insert($response['saldototalbelanja']);
-                    Trsaldobarang::insert($response['saldobarang']);
+
+
+                    // Trsaldototalbelanja::insert($response['saldototalbelanja']);
+                    // Trsaldobarang::insert($response['saldobarang']);
                     DB::commit();
 
                     return response()->json(
