@@ -87,22 +87,59 @@ class PenjualanController extends Controller
 
                 if ($response['status']) {
                     if(!empty($response['saldototalbelanjatunai'])){
-                        Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
+                        // Trsaldototalbelanjatunai::insert($response['saldototalbelanjatunai']);
+                        foreach ($response['saldototalbelanjatunai'] as $key => $value) {
+                            $newsaldotunai = new Trsaldototalbelanjatunai();
+                            $newsaldotunai->Tanggal = $value['Tanggal'];
+                            $newsaldotunai->KodeUser = $value['KodeUser'];
+                            $newsaldotunai->Saldo = $value['Saldo'];
+                            $newsaldotunai->save();
+                         }
                     }
                     if(!empty($response['saldototalbelanjaekop'])){
-                        Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
+                        // Trsaldototalbelanjaekop::insert($response['saldototalbelanjaekop']);
+                        foreach ($response['saldototalbelanjaekop'] as $key => $value) {
+                            $newtotalbelanjaekop = new Trsaldototalbelanjaekop();
+                            $newtotalbelanjaekop->Tanggal = $value['Tanggal'];
+                            $newtotalbelanjaekop->KodeUser = $value['KodeUser'];
+                            $newtotalbelanjaekop->Saldo = $value['Saldo'];
+                            $newtotalbelanjaekop->save();
+                         }
                     }
 
                     if(!empty($response['saldototalbelanjakredit'])){
-                        Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
+                        // Trsaldototalbelanjakredit::insert($response['saldototalbelanjakredit']);
+                        foreach ($response['saldototalbelanjakredit'] as $key => $value) {
+                            $newsaldototalkredit = new Trsaldototalbelanjakredit();
+                            $newsaldototalkredit->Tanggal = $value['Tanggal'];
+                            $newsaldototalkredit->KodeUser = $value['KodeUser'];
+                            $newsaldototalkredit->Saldo = $value['Saldo'];
+                            $newsaldototalkredit->save();
+                         }
                     }
 
                     if(!empty($response['saldototalbelanja'])){
-                        Trsaldototalbelanja::insert($response['saldototalbelanja']);
+                        // Trsaldototalbelanja::insert($response['saldototalbelanja']);
+
+                        foreach ($response['saldototalbelanja'] as $key => $value) {
+                            $saldototalbelanja = new Trsaldototalbelanja();
+                            $saldototalbelanja->Tanggal = $value['Tanggal'];
+                            $saldototalbelanja->KodeUser = $value['KodeUser'];
+                            $saldototalbelanja->Saldo = $value['Saldo'];
+                            $saldototalbelanja->save();
+                         }
                     }
 
                     if(!empty($response['saldobarang'])){
-                        Trsaldobarang::insert($response['saldobarang']);
+                        // Trsaldobarang::insert($response['saldobarang']);
+                        foreach ($response['saldobarang'] as $key => $value) {
+                            $saldobarang = new Trsaldobarang();
+                            $saldobarang->Tanggal = $value['Tanggal'];
+                            $saldobarang->KodeBarang = $value['KodeBarang'];
+                            $saldobarang->KodeLokasi = $value['KodeLokasi'];
+                            $saldobarang->Saldo = $value['Saldo'];
+                            $saldobarang->save();
+                         }
                     }
 
                      if(!empty($response['saldoekop'])){
