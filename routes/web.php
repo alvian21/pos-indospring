@@ -78,7 +78,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
             Route::get("/updateemail", "ListAnggotaController@UpdateEmail")->name('updateemail');
         });
 
-        Route::group(['prefix' => 'cicilan','as'=>'cicilan.'], function () {
+        Route::group(['prefix' => 'cicilan', 'as' => 'cicilan.'], function () {
             Route::get("/getdata", "MsCicilanController@getData")->name('getdata');
         });
         Route::resource('anggota', 'ListAnggotaController');
@@ -89,7 +89,10 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     //koperasi transaksi
     Route::group(['namespace' => 'Koperasi\Transaksi', 'prefix' => 'koperasi', 'as' => 'koperasi.'], function () {
 
-
+        Route::group(['prefix' => 'shu', 'as' => 'shu.'], function () {
+            Route::post('/import_excel', 'SHUController@SHUImport')->name('import');
+        });
+        Route::resource('shu', 'SHUController');
         Route::group(['prefix' => 'saldo', 'as' => 'saldo.'], function () {
             Route::get('ceksaldo', 'SaldoController@CekSaldo')->name('cek');
         });
@@ -128,7 +131,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
     //pinjaman
     Route::group(['namespace' => 'Pinjaman'], function () {
 
-        Route::post('/pinjaman/update_status','PinjamanController@update_status')->name('pinjaman.update_status');
+        Route::post('/pinjaman/update_status', 'PinjamanController@update_status')->name('pinjaman.update_status');
         Route::resource('pinjaman', 'PinjamanController');
     });
 
