@@ -20,9 +20,11 @@
                                         data-target="#modalImport">
                                         Import Excel
                                     </button>
-                                    {{-- <a type="button" href="{{ route('koperasi.anggota.create') }}"
-                                        class="btn btn-primary float-right addAnggota ml-2">Tambah
-                                        Anggota</a> --}}
+                                    <button type="button" class="btn btn-danger" data-toggle="modal"
+                                        data-target="#modalHapus">
+                                        Hapus SHU
+                                    </button>
+
 
                                 </div>
                             </div>
@@ -112,6 +114,40 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+      <div class="modal fade" id="modalHapus" tabindex="-1" role="dialog" aria-labelledby="modalHapusLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalHapusLabel">Hapus SHU</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('koperasi.shu.hapus') }}">
+                    @csrf
+                    @method('delete')
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="periode">Periode</label>
+                            <select class="form-control" name="periode" id="periode">
+                                @foreach ($tahun as $item)
+                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @endforeach
+
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Hapus</button>
                     </div>
                 </form>
             </div>

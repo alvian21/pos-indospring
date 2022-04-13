@@ -118,6 +118,13 @@ class SHUController extends Controller
         }
     }
 
+    public function hapus_shu(Request $request)
+    {
+        $periode = $request->get('periode');
+        Trshu::where('periode', $periode)->delete();
+        return redirect()->back()->with('success', 'Data has been deleted');
+    }
+
     public function rupiah($data)
     {
         $format = "Rp. " . number_format($data, 2, ',', '.');

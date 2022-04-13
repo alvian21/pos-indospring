@@ -91,6 +91,7 @@ Route::group(['middleware' => 'auth:web', 'namespace' => 'Frontend', 'prefix' =>
 
         Route::group(['prefix' => 'shu', 'as' => 'shu.'], function () {
             Route::post('/import_excel', 'SHUController@SHUImport')->name('import');
+            Route::delete('/hapus_shu', 'SHUController@hapus_shu')->name('hapus');
         });
         Route::resource('shu', 'SHUController');
         Route::group(['prefix' => 'saldo', 'as' => 'saldo.'], function () {
