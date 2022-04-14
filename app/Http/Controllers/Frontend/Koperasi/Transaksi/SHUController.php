@@ -20,7 +20,13 @@ class SHUController extends Controller
     {
         $tahun = [];
         if ($request->ajax()) {
-            $shu = Trshu::all();
+
+            if ($request->has('periode') && $request->get('periode') != 'Show All') {
+                $shu = Trshu::where('periode', $request->get('periode'))->get();
+            } else {
+                $shu = Trshu::all();
+            }
+
             return Datatables::of($shu)
                 ->addIndexColumn()
                 ->editColumn('nilai_poin', function ($data) {
@@ -29,11 +35,6 @@ class SHUController extends Controller
                 ->editColumn('total_kontribusi', function ($data) {
                     return $this->rupiah($data->total_kontribusi);
                 })
-                // ->addColumn('action', function ($data) {
-                //     $btn = '<a href="' . route('koperasi.shu.show', [$data->id]) . '" class="btnAksi btnDetail"><i data-feather="eye"></i></a>';
-                //     return $btn;
-                // })
-                // ->rawColumns(['action'])
                 ->make(true);
         }
         for ($i = 2019; $i <= date('Y'); $i++) {

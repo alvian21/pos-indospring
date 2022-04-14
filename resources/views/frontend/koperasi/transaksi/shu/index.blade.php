@@ -33,7 +33,12 @@
                         <div class="card-body">
                             @include('frontend.include.alert')
                             <div class="table-responsive">
-
+                                <select id="select" class="form-control input-sm selectsearch">
+                                    <option value="Show All">Show All</option>
+                                    @foreach ($tahun as $item)
+                                        <option value="{{ $item }}">{{ $item }}</option>
+                                    @endforeach
+                                </select>
                                 <table class="table table-bordered display nowrap" id="table-anggota" cellspacing="0"
                                     width="100%">
                                     <thead>
@@ -45,34 +50,12 @@
                                             <th>Poin</th>
                                             <th>Nilai Poin</th>
                                             <th>Periode</th>
-                                            {{-- <th>Aksi</th> --}}
+
                                         </tr>
 
                                     </thead>
                                     <tbody>
-                                        {{-- @forelse ($anggota as $item)
-                                    <tr>
-                                        <td>{{$item->Kode}}</td>
-                                        <td>{{$item->Email}}</td>
-                                        <td>{{$item->Nama}}</td>
-                                        <td>{{$item->Aktif}}</td>
-                                        <td>{{$item->Sex}}</td>
-                                        <td>{{$item->Grp}}</td>
-                                        <td>{{$item->Pangkat}}</td>
-                                        <td>{{$item->SubDept}}</td>
-                                        <td>{{$item->TglMasuk}}</td>
-                                        <td>{{$item->TglKeluar}}</td>
-                                        <td>{{$item->UserUpdate}}</td>
-                                        <td>{{$item->LastUpdate}}</td>
-                                        <td>
-                                            <a href="{{route('koperasi.anggota.edit',[$item->Kode])}}" class="btn btn-warning">Edit</a>
-                                            <button type="button" class="btn btn-warning btnpassword" data-kode="{{$item->Kode}}">Reset Password</button>
-                                            <button type="button" class="btn btn-warning btnemail" data-kode="{{$item->Kode}}">Reset Email</button>
-                                        </td>
-                                    </tr>
-                                    @empty
 
-                                    @endforelse --}}
 
                                     </tbody>
                                 </table>
@@ -120,7 +103,7 @@
         </div>
     </div>
 
-      <div class="modal fade" id="modalHapus" tabindex="-1" role="dialog" aria-labelledby="modalHapusLabel"
+    <div class="modal fade" id="modalHapus" tabindex="-1" role="dialog" aria-labelledby="modalHapusLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -160,8 +143,11 @@
 
             var table = $("#table-anggota").DataTable({
                 "scrollX": true,
-                    processing: true,
+                processing: true,
                 serverSide: false,
+                dom: "<'row'<'col-sm-9'l><'col-sm-3'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-9'i><'col-sm-3'p>>",
                 ajax: "{{ route('koperasi.shu.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
@@ -193,85 +179,26 @@
                         data: 'periode',
                         name: 'periode'
                     }
-
-                    // {
-                    //     data: 'action',
-                    //     name: 'action',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
                 ],
             });
+            $(".dataTables_filter").append(select);
+            $('.selectsearch').on('change', function() {
+                var periode = $(this).find(':selected').val()
+                table.clear().draw();
+                $.ajax({
+                    url: "{{route('koperasi.shu.index')}}",
+                    method: "GET",
+                    data: {
+                        periode: periode
+                    },
+                    success: function(response) {
+                        table.rows.add(response.data);
+                        table.columns.adjust().draw();
+                    }
+                })
 
-            $(document).on('click', '.btnpassword', function() {
-                var kode = $(this).data("kode");
-                swal({
-                        title: "Apa anda yakin?",
-                        text: "Proses ini akan me-RESET Password (000000)",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    })
-                    .then((willUpdate) => {
-                        if (willUpdate) {
-
-                            $.ajax({
-                                url: "{{ route('koperasi.updatepassword') }}",
-                                method: "GET",
-                                data: {
-                                    'kode': kode
-                                },
-                                success: function(data) {
-                                    swal("Password berhasil di update!", {
-                                        icon: "success",
-                                    });
-
-                                    setTimeout(function() {
-                                        window.location.href =
-                                            "{{ route('koperasi.anggota.index') }}"
-                                    }, 1500)
-                                }
-                            })
-
-
-                        }
-                    });
             })
 
-            $(document).on('click', '.btnemail', function() {
-                var kode = $(this).data("kode");
-                swal({
-                        title: "Apa anda yakin?",
-                        text: "Proses ini akan me-RESET Email",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    })
-                    .then((willUpdate) => {
-                        if (willUpdate) {
-
-                            $.ajax({
-                                url: "{{ route('koperasi.updateemail') }}",
-                                method: "GET",
-                                data: {
-                                    'kode': kode
-                                },
-                                success: function(data) {
-                                    swal("Email berhasil di update!", {
-                                        icon: "success",
-                                    });
-
-                                    setTimeout(function() {
-                                        window.location.href =
-                                            "{{ route('koperasi.anggota.index') }}"
-                                    }, 1500)
-                                }
-                            })
-
-
-                        }
-                    });
-            })
         })
     </script>
 @endsection
