@@ -75,7 +75,8 @@ function customSearch($keyword, $arrayToSearch)
                     @if ($item == 'Koperasi - Master - Anggota')
                         <li><a class="nav-link" href="{{ route('koperasi.anggota.index') }}">Anggota</a></li>
                     @elseif ($item == 'Koperasi - Master - Transaksi')
-                        <li><a class="nav-link" href="{{ route('koperasi.transaksi.index') }}">Transaksi</a></li>
+                        <li><a class="nav-link" href="{{ route('koperasi.transaksi.index') }}">Transaksi</a>
+                        </li>
                         {{-- <li><a class="nav-link" href="#">Account Lain-lain</a></li> --}}
                     @elseif ($item == 'Koperasi - Master - Cicilan')
                         <li><a class="nav-link" href="{{ route('koperasi.cicilan.index') }}">Cicilan</a></li>
@@ -91,9 +92,11 @@ function customSearch($keyword, $arrayToSearch)
                         class="fas fa-columns"></i><span>Transaksi</span></a>
             @endif
             <ul class="dropdown-menu">
-                <li><a class="nav-link" href="{{ route('koperasi.shu.index') }}">SHU</a></li>
+
                 @forelse ($datarole as $item)
-                    @if ($item == 'Koperasi - Transaksi - Cek Saldo')
+                    @if ($item == 'Koperasi - Transaksi - SHU')
+                        <li><a class="nav-link" href="{{ route('koperasi.shu.index') }}">SHU</a></li>
+                    @elseif ($item == 'Koperasi - Transaksi - Cek Saldo')
                         <li><a class="nav-link" href="{{ route('koperasi.saldo.index') }}">Cek Saldo</a></li>
                     @elseif ($item == 'Koperasi - Transaksi - Approval Pinjaman')
                         <li><a class="nav-link" href="{{ route('pinjaman.index') }}">Approval Pinjaman</a></li>
@@ -103,7 +106,8 @@ function customSearch($keyword, $arrayToSearch)
                         <li><a class="nav-link" href="{{ route('koperasi.pembayaran.index') }}">Pembayaran</a>
                         </li>
                     @elseif ($item == 'Koperasi - Transaksi - Aktivasi e-kop')
-                        <li><a class="nav-link" href="{{ route('koperasi.aktivasi.index') }}">Aktivasi e-kop</a>
+                        <li><a class="nav-link" href="{{ route('koperasi.aktivasi.index') }}">Aktivasi
+                                e-kop</a>
                         </li>
                     @elseif ($item == 'Koperasi - Transaksi - Proses Bulanan')
                         <li><a class="nav-link" href="{{ route('koperasi.proses-bulanan.index') }}">Proses
@@ -155,7 +159,8 @@ function customSearch($keyword, $arrayToSearch)
                     @elseif ($item == 'POS - Master - Barang')
                         <li><a class="nav-link" href="{{ route('master.barang.index') }}">Barang</a></li>
                     @elseif ($item == 'POS - Master - Supplier')
-                        <li><a class="nav-link" href="{{ route('pos.master.supplier.index') }}">Supplier</a></li>
+                        <li><a class="nav-link" href="{{ route('pos.master.supplier.index') }}">Supplier</a>
+                        </li>
                     @endif
                 @empty
                 @endforelse
@@ -169,14 +174,16 @@ function customSearch($keyword, $arrayToSearch)
             <ul class="dropdown-menu">
                 @forelse ($datarole as $item)
                     @if ($item == 'POS - Transaksi - Pembelian')
-                        <li><a class="nav-link" href="{{ route('pos.pembelianbaru.index') }}">Pembelian</a></li>
+                        <li><a class="nav-link" href="{{ route('pos.pembelianbaru.index') }}">Pembelian</a>
+                        </li>
                     @elseif ($item == 'POS - Transaksi - Penjualan')
                         <li><a class="nav-link" href="{{ route('pos.penjualan.index') }}">Penjualan</a></li>
                     @elseif ($item == 'POS - Transaksi - Transfer Antar Toko')
                         <li><a class="nav-link" href="{{ route('pos.tfantartoko.index') }}">Transfer Antar
                                 Toko</a></li>
                     @elseif ($item == 'POS - Transaksi - Stock Opname')
-                        <li><a class="nav-link" href="{{ route('pos.stockopname.index') }}">Stock Opname</a></li>
+                        <li><a class="nav-link" href="{{ route('pos.stockopname.index') }}">Stock Opname</a>
+                        </li>
                     @elseif ($item == 'POS - Transaksi - Stock Hilang/Rusak')
                         <li><a class="nav-link" href="{{ route('pos.stockhilang.index') }}">Stock Hilang /
                                 Rusak</a></li>

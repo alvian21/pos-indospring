@@ -32,8 +32,15 @@ class SHUImport implements ToCollection
                     $anggota = Trshu::where('kode', $kode)->where('periode', $periode)->first();
                     if (!$anggota) {
                         $trshu = new Trshu();
-                        $trshu->kode = $kode;
-                        $trshu->nama = $nama;
+
+                        if ($value[1] == 'GRAND TOTAL') {
+                            $trshu->kode = "TOTSHU" . $periode;
+                            $trshu->nama = "GRAND TOTAL " . $periode;
+                        } else {
+                            $trshu->kode = $kode;
+                            $trshu->nama = $nama;
+                        }
+
                         $trshu->total_kontribusi = $total_kontribusi;
                         $trshu->poin = $poin;
                         $trshu->nilai_poin = $nilai_poin;
