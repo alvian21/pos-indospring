@@ -127,9 +127,12 @@ class MutasiBulananController extends Controller
                     $data = collect($data);
                     $lastdate = date("Y-m-t", strtotime($periode));
 
-                    return Excel::download(new MutasiBulanan($data, $periode, $lastdate), 'laporan-mutasi-bulanan.xlsx');
+                    return Excel::download(new MutasiBulanan($data, $periode, $lastdate), 'laporan-mutasi-bulanan.xlsx', null, [\Maatwebsite\Excel\Excel::XLSX]);
                 } else {
-                    return redirect()->back()->withErrors(['maaf data pada periode ' . $periode . ' masih kosong']);
+                    return response()->json([
+                        'status' => false,
+                        'data' => 'maaf data pada periode ' . $periode . ' masih kosong'
+                    ]);
                 }
             }
         }

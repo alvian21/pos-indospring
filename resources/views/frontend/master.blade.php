@@ -23,8 +23,8 @@
     <link rel="stylesheet" href="{{ asset('assets/modules/bootstrap-daterangepicker/daterangepicker.css') }}">
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/components.css')}}">
-    <link rel="stylesheet" href="{{ asset('css/layout-skin.css')}}">
+    <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout-skin.css') }}">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
         integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
@@ -75,27 +75,42 @@
         crossorigin="anonymous"></script>
 
     <script>
-    //     myFunction()
-    //    function myFunction() {
-    //     if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ){
-    //         alert('Opera');
-    //     }
-    //     else if(navigator.userAgent.indexOf("Chrome") != -1 ){
-    //         alert('Chrome');
-    //     }
-    //     else if(navigator.userAgent.indexOf("Safari") != -1){
-    //         alert('Safari');
-    //     }
-    //     else if(navigator.userAgent.indexOf("Firefox") != -1 ){
-    //          alert('Firefox');
-    //     }
-    //     else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )){
-    //       alert('IE');
-    //     }
-    //     else{
-    //        alert('unknown');
-    //     }
-    // }
+
+        function tampil_alert(data, status) {
+            if (status == 'success') {
+                iziToast.success({
+                    title: 'Yeay!',
+                    message: data,
+                    position: 'topRight'
+                });
+            } else if (status == 'info') {
+                iziToast.info({
+                    title: 'Hello!',
+                    message: data,
+                    position: 'topRight'
+                });
+            } else if (status == 'error') {
+                iziToast.error({
+                    title: 'Auch!',
+                    message: data,
+                    position: 'topRight'
+                });
+            } else if (status == 'warning') {
+                iziToast.warning({
+                    title: 'Warning!',
+                    message: data,
+                    position: 'topRight'
+                });
+            }
+        }
+
+        function csrf_ajax() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        }
     </script>
     @include('frontend.include.toastr')
     @yield('scripts')
