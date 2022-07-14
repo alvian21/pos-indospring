@@ -44,7 +44,8 @@ class TagihanKreditController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'periode' => 'required',
+            'periode_awal' => 'required',
+            'periode_akhir' => 'required',
             'cetak' => 'required'
         ]);
 
@@ -52,21 +53,21 @@ class TagihanKreditController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         } else {
 
-            $periode = $request->get('periode');
+            $periode_awal = $request->get('periode_awal');
+            $periode_akhir = $request->get('periode_akhir');
             $cetak = $request->get('cetak');
-            $bulan = date('m', strtotime($periode));
-            $tahun = date('Y', strtotime($periode));
-            $periode = date(" F  Y", strtotime($periode));
 
+            $periode = $periode_awal .' s/d '.$periode_akhir;
+            
             if ($cetak == 'pdf') {
-                $group = Trsaldoreset::select('SubDept')->join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->groupBy('SubDept')->get();
+                $group = Trsaldoreset::select('SubDept')->join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereDate('Tanggal', '>=', $periode_awal)->whereDate('Tanggal', '<=', $periode_akhir)->groupBy('SubDept')->get();
 
                 $arr = [];
 
                 foreach ($group as $key => $value) {
                     $x['SubDept'] = $value->SubDept;
-                    $saldoreset = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('SubDept', $value->SubDept)->orderBy('SubDept')->orderBy('Kode')->get();
-                    $total = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->where('SubDept', $value->SubDept)->groupBy('SubDept')->sum('SaldoBelanjaKredit');
+                    $saldoreset = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereDate('Tanggal', '>=', $periode_awal)->whereDate('Tanggal', '<=', $periode_akhir)->where('SubDept', $value->SubDept)->orderBy('SubDept')->orderBy('Kode')->get();
+                    $total = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereDate('Tanggal', '>=', $periode_awal)->whereDate('Tanggal', '<=', $periode_akhir)->where('SubDept', $value->SubDept)->groupBy('SubDept')->sum('SaldoBelanjaKredit');
                     $x['data'] = $saldoreset;
                     $x['total'] = $total;
                     array_push($arr, $x);
@@ -80,7 +81,7 @@ class TagihanKreditController extends Controller
                 )->setPaper('a4', 'potrait');
                 return $pdf->stream('laporan-tagihankredit-pdf', array('Attachment' => 0));
             }else{
-                $data = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereMonth('Tanggal', $bulan)->whereYear('Tanggal', $tahun)->orderBy('SubDept')->orderBy('Kode')->get();
+                $data = Trsaldoreset::join('msanggota', 'trsaldoreset.KodeUser', 'msanggota.Kode')->where('SaldoBelanjaKredit', '>', 0)->whereDate('Tanggal', '>=', $periode_awal)->whereDate('Tanggal', '<=', $periode_akhir)->orderBy('SubDept')->orderBy('Kode')->get();
                 if(!empty($data)){
                     $data = json_decode(json_encode($data),true);
                     $ids = array_column($data, 'Kode');
